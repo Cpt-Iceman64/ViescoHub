@@ -328,18 +328,22 @@
 
         setTimeout(() => {
             if (window.fbListen) {
-                document.getElementById('sync-status').innerHTML = "🟢 Connecté et synchronisé en temps réel";
-                document.getElementById('sync-status').className = "text-emerald-400 font-bold text-sm md:text-base mb-2";
                 window.fbListen('viescohub_data', 'casiers', (docData) => {
+                    document.getElementById('sync-status').innerHTML = "🟢 Connecté et synchronisé en temps réel";
+                    document.getElementById('sync-status').className = "text-emerald-400 font-bold text-sm md:text-base mb-2";
                     if (docData && docData.data) {
                         baseCasiers = docData.data;
                         if(document.getElementById('tab-saisie').classList.contains('active')) {
                             afficherBaseDonnees();
                         }
                     }
+                }, (error) => {
+                    console.error(error);
+                    document.getElementById('sync-status').innerHTML = "🔴 Erreur Firebase: " + error.message;
+                    document.getElementById('sync-status').className = "text-red-400 font-bold text-sm md:text-base mb-2";
                 });
             } else {
-                document.getElementById('sync-status').innerHTML = "🔴 Erreur de connexion à la base de données";
+                document.getElementById('sync-status').innerHTML = "🔴 Erreur : Firebase non chargé";
                 document.getElementById('sync-status').className = "text-red-400 font-bold text-sm md:text-base mb-2";
             }
         }, 1500);

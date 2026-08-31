@@ -23,10 +23,13 @@ window.fbGet = function(collection, docId) {
       .catch(function(error) { console.error("Erreur de lecture: ", error); return null; });
 };
 
-window.fbListen = function(collection, docId, callback) {
+window.fbListen = function(collection, docId, callback, onError) {
     return db.collection(collection).doc(docId).onSnapshot(function(doc) {
         if (doc.exists) {
             callback(doc.data());
         }
+    }, function(error) {
+        if (onError) onError(error);
+        else console.error("Erreur d'écoute: ", error);
     });
 };
