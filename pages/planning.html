@@ -429,6 +429,10 @@
 
     <script src="../js/assistant.js"></script>
 
+    <!-- Firebase Compat SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+    <script src="../js/firebase-config.js"></script>
     <script>
         // --- Paramètres Agenda ---
         const PIXELS_PER_MINUTE = 2; // Hauteur = 2px par minute (donc 1h = 120px)
@@ -467,10 +471,24 @@
             const dayIndex = new Date().getDay(); // 0 = Dimanche, 1 = Lundi, 5 = Vendredi, 6 = Samedi
             const days = ['lundi', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'lundi'];
             setDay(days[dayIndex]);
+            
+            // Firebase Real-time sync
+            setTimeout(() => {
+                if (window.fbListen) {
+                    window.fbListen('viescohub_data', 'planning', (data) => {
+                        if (data) {
+                            if (data.eventsData) eventsData = data.eventsData;
+                            if (data.aedNames) aedNames = data.aedNames;
+                            renderGrid();
+                        }
+                    });
+                }
+            }, 1000); // Wait for module load
         }
 
         function loadFromStorage() {
             try {
+                // Fallback local storage avant chargement Firebase
                 const storedEvents = localStorage.getItem('viesco_events_v2');
                 if (storedEvents) eventsData = JSON.parse(storedEvents);
                 
@@ -483,6 +501,14 @@
             try {
                 localStorage.setItem('viesco_events_v2', JSON.stringify(eventsData));
                 localStorage.setItem('viesco_planning_aeds', JSON.stringify(aedNames));
+                
+                // Sauvegarde Firebase
+                if (window.fbSet) {
+                    window.fbSet('viescohub_data', 'planning', {
+                        eventsData: eventsData,
+                        aedNames: aedNames
+                    });
+                }
             } catch(e) {}
         }
 
