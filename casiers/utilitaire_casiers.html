@@ -358,6 +358,17 @@
             }
         }, 1500);
 
+        // --- HORLOGE TEMPS RÉEL --- //
+        function updateClock() {
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+            const dateStr = now.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
+            const clockEl = document.getElementById('live-time');
+            if (clockEl) clockEl.textContent = dateStr.charAt(0).toUpperCase() + dateStr.slice(1) + ' • ' + timeStr;
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
     </script>
 </body>
 </html>
