@@ -335,9 +335,9 @@
     `;
 
     // wrapper.appendChild(avatar);
-    container.appendChild(bubble);
+    // container.appendChild(bubble);
     // container.appendChild(wrapper);
-    document.body.appendChild(container);
+    // document.body.appendChild(container);
 
     let isBubbleOpen = true; // Affiché par défaut au changement de page
     let talkTimeout;

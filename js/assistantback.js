@@ -341,9 +341,9 @@
     `;
 
     // wrapper.appendChild(avatar);
-    container.appendChild(bubble);
+    // container.appendChild(bubble);
     // container.appendChild(wrapper);
-    document.body.appendChild(container);
+    // document.body.appendChild(container);
 
     // --- Logique d'interaction ---
     let isBubbleOpen = true; // Ouvert par défaut au changement de page !
