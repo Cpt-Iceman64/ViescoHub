@@ -343,7 +343,7 @@
         <div class="w-full flex flex-col xl:flex-row gap-8 items-start">
             
             <!-- Palette des zones (Outils) -->
-            <div class="w-full xl:w-56 shrink-0 glass-panel p-5 rounded-2xl no-print sticky top-28 z-20">
+            <div class="w-full xl:w-56 shrink-0 glass-panel p-5 rounded-2xl no-print relative xl:sticky xl:top-28 xl:z-20">
                 <h3 class="text-sm font-bold text-slate-300 uppercase tracking-widest mb-4 flex items-center justify-between">
                     Outils
                     <button onclick="window.print()" class="text-slate-400 hover:text-yellow-400 transition-colors" title="Imprimer">
@@ -351,7 +351,7 @@
                     </button>
                 </h3>
                 
-                <div class="flex flex-col gap-2" id="zone-palette">
+                <div class="flex flex-row overflow-x-auto xl:flex-col gap-2 pb-2 xl:pb-0" id="zone-palette">
                     <!-- Généré en JS -->
                 </div>
 
@@ -427,7 +427,7 @@
         </div>
     </main>
 
-    <script src="../js/assistant.js"></script>
+    <script src="../js/menu.js"></script>
 
     <!-- Firebase Compat SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
