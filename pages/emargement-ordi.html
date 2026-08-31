@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Impression - Prêt d'Ordinateurs</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @media screen {
+            body {
+                background-color: #080c16;
+                background-image: 
+                    linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px),
+                    linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px);
+                background-size: 50px 50px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                padding: 2rem;
+                min-height: 100vh;
+                font-family: system-ui, -apple-system, sans-serif;
+            }
+
+            .a4-preview {
+                background: white;
+                /* Dimensions strictes A4 Portrait */
+                width: 210mm;
+                height: 297mm;
+                box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+                margin-top: 1rem;
+                padding: 15mm;
+                box-sizing: border-box;
+            }
+        }
+
+        @media print {
+            @page {
+                size: A4 portrait;
+                margin: 10mm; /* Marge physique pour éviter que l'imprimante ne coupe les bords du tableau */
+            }
+            body {
+                margin: 0;
+                padding: 0;
+                background: white;
+            }
+            .no-print {
+                display: none !important;
+            }
+            .a4-preview {
+                width: 100%;
+                height: 100%;
+                box-shadow: none;
+                margin: 0;
+                padding: 0;
+            }
+        }
+
+        .doc-container {
+            color: black;
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        /* En-tête du document avec ligne de séparation nette */
+        .header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-bottom: 20px; 
+            border-bottom: 2px solid black;
+            padding-bottom: 15px;
+        }
+        
+        .logo { width: 50px; height: 65px; flex-shrink: 0; }
+        .logo img { max-width: 100%; max-height: 100%; object-fit: contain; }
+        
+        .title-container { text-align: center; flex-grow: 1; }
+        .doc-title { font-size: 16pt; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;}
+        .doc-subtitle { font-size: 11pt; color: #333; margin-top: 4px; }
+
+        .register-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 10pt;
+            flex-grow: 1; /* Permet au tableau de prendre toute la place disponible */
+        }
+        
+        /* Correction : Bordures appliquées sur toutes les cellules pour un tableau fermé */
+        .register-table th, .register-table td {
+            border: 1px solid #000;
+            padding: 8px 6px;
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        .register-table th {
+            background-color: #f1f5f9;
+            font-weight: bold;
+            font-size: 10.5pt;
+            text-transform: uppercase;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        /* Hauteur fixe pour les lignes afin de garantir un espacement propre pour écrire */
+        .register-table tbody tr {
+            height: 35px; /* Légèrement réduit pour éviter que la bordure du bas ne soit coupée */
+        }
+
+        /* Largeurs spécifiques des colonnes pour optimiser l'espace */
+        .col-date { width: 12%; }
+        .col-heure { width: 10%; }
+        .col-nom { width: 35%; text-align: left !important; padding-left: 10px !important; }
+        .col-ordi { width: 13%; font-weight: bold; }
+        .col-objet { width: 30%; text-align: left !important; padding-left: 10px !important; }
+    </style>
+</head>
+<body>
+
+    <div class="no-print w-full max-w-4xl mx-auto flex justify-between items-center bg-slate-900/80 backdrop-blur-md border border-slate-700 p-4 rounded-2xl shadow-xl z-50 sticky top-4">
+        <div class="flex items-center gap-3">
+            <div class="p-2 bg-pink-500/20 text-pink-500 rounded-lg">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+            </div>
+            <div>
+                <h1 class="text-white font-bold text-lg leading-tight">Impression Registre Ordinateurs</h1>
+                <p class="text-slate-400 text-xs font-medium">Format A4 Portrait • Tableau de suivi fermé</p>
+            </div>
+        </div>
+        <div class="flex gap-3">
+            <a href="documents.html" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white text-sm font-bold rounded-lg transition-colors">
+                Retour
+            </a>
+            <button onclick="window.print()" class="flex items-center gap-2 px-5 py-2 bg-pink-600 hover:bg-pink-500 text-white text-sm font-bold rounded-lg transition-all shadow-[0_0_15px_rgba(236,72,153,0.3)] hover:shadow-[0_0_25px_rgba(236,72,153,0.5)]">
+                Imprimer
+            </button>
+        </div>
+    </div>
+
+    <div class="a4-preview">
+        <div class="doc-container">
+            
+            <!-- En-tête mis à jour sans le mot CDI -->
+            <div class="header">
+                <div class="logo">
+                    <img src="../logo.png" alt="Logo Collège" />
+                </div>
+                <div class="title-container">
+                    <div class="doc-title">Registre de Prêt d'Ordinateurs</div>
+                    <div class="doc-subtitle">Salle d'Étude</div>
+                </div>
+            </div>
+
+            <!-- Tableau avec bordures complètes -->
+            <table class="register-table">
+                <thead>
+                    <tr>
+                        <th class="col-date">Date</th>
+                        <th class="col-heure">Heure</th>
+                        <th class="col-nom">Nom et Prénom de l'élève</th>
+                        <th class="col-ordi">N° Ordi</th>
+                        <th class="col-objet">Objet / Travail</th>
+                    </tr>
+                </thead>
+                <tbody id="table-body">
+                    <!-- Les lignes vides seront générées par JavaScript -->
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+
+    <script>
+        // Le nombre de lignes vides à générer pour remplir parfaitement une page A4
+        // Ajusté à 24 pour laisser la marge inférieure visible et non rognée
+        const NUMBER_OF_ROWS = 24; 
+        const tableBody = document.getElementById('table-body');
+        
+        let rowsHTML = '';
+        for (let i = 0; i < NUMBER_OF_ROWS; i++) {
+            rowsHTML += `
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            `;
+        }
+        
+        tableBody.innerHTML = rowsHTML;
+    </script>
+</body>
+</html>

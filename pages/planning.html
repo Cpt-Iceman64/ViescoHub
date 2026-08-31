@@ -1,0 +1,1266 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Planning Temps Réel - ViescoHub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #080c16;
+            color: #f8fafc;
+            background-image: 
+                linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            background-position: center top;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .glow-text { position: relative; }
+        .glow-text::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%;
+            height: 10px;
+            background: #eab308; /* Yellow 500 */
+            filter: blur(20px);
+            opacity: 0.5;
+            z-index: -1;
+        }
+
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        }
+
+        /* Palette de zones */
+        .zone-btn {
+            transition: all 0.2s ease;
+            opacity: 0.7;
+            transform: scale(0.98);
+        }
+        .zone-btn.selected {
+            opacity: 1;
+            transform: scale(1.05);
+            box-shadow: 0 0 15px currentColor;
+            z-index: 10;
+        }
+        .zone-btn:hover {
+            opacity: 0.9;
+            transform: scale(1.02);
+        }
+
+        /* Événements sur la grille (Google Calendar style) */
+        .event-block {
+            position: absolute;
+            left: 0;
+            right: 0;
+            border-radius: 6px;
+            padding: 2px 6px;
+            font-size: 11px;
+            font-weight: bold;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: flex-start;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            transition: all 0.2s;
+            cursor: pointer;
+            z-index: 10;
+        }
+        .event-block:hover {
+            filter: brightness(1.2);
+            z-index: 20 !important;
+            transform: scale(1.02);
+        }
+        .event-time {
+            font-size: 9px;
+            color: rgba(255, 255, 255, 0.9);
+            font-family: monospace;
+            margin-top: 2px;
+            pointer-events: none;
+        }
+
+        /* Lignes de fond */
+        .grid-bg-line {
+            position: absolute;
+            left: 0;
+            right: 0;
+            border-top: 1px dashed rgba(255,255,255,0.05);
+            pointer-events: none;
+        }
+        .grid-bg-line.hour-line {
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        /* Zones Colors */
+        .bg-zone-viesco { background-color: #3b82f6; color: white; }
+        .bg-zone-permanence { background-color: #8b5cf6; color: white; }
+        .bg-zone-porte { background-color: #f97316; color: white; }
+        .bg-zone-couloirs { background-color: #14b8a6; color: white; }
+        .bg-zone-renfort { background-color: #ef4444; color: white; }
+        .bg-zone-repas { background-color: #22c55e; color: white; }
+        .bg-zone-cartes { background-color: #ec4899; color: white; }
+        .bg-zone-cantine { background-color: #f59e0b; color: white; }
+        .bg-zone-cour { background-color: #06b6d4; color: white; }
+        .bg-zone-cours { background-color: #64748b; color: white; }
+
+        @media print {
+            @page {
+                size: A4 landscape;
+                margin: 1cm;
+            }
+            body, html {
+                background: white !important;
+                color: black !important;
+                background-image: none !important;
+                height: auto !important;
+                overflow: visible !important;
+            }
+            
+            /* Masquer l'interface écran */
+            body > *:not(#print-container) {
+                display: none !important;
+            }
+            
+            #print-container {
+                display: block !important;
+                width: 100%;
+                background: white !important;
+            }
+
+            .print-day-wrapper {
+                page-break-after: always;
+                width: 100%;
+                position: relative;
+                overflow: visible;
+            }
+            .print-day-wrapper:last-child {
+                page-break-after: auto;
+            }
+
+            .print-grid-container {
+                position: relative;
+                width: 100%;
+                display: flex;
+            }
+            .print-aed-col {
+                flex: 1;
+                border-right: 1px solid #cbd5e1;
+                position: relative;
+            }
+            .print-aed-col:last-child {
+                border-right: none;
+            }
+            .print-bg-line {
+                position: absolute;
+                left: 0;
+                right: 0;
+                border-top: 1px dashed #cbd5e1;
+                z-index: 0;
+            }
+            .print-time-label {
+                position: absolute;
+                left: -50px;
+                width: 40px;
+                text-align: right;
+                font-size: 14px;
+                font-family: monospace;
+                font-weight: bold;
+                color: #475569;
+            }
+            .print-event-block {
+                position: absolute;
+                left: 2px;
+                right: 2px;
+                border-radius: 4px;
+                border: 1px solid rgba(0,0,0,0.4);
+                padding: 2px 4px;
+                display: flex;
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: flex-start;
+                z-index: 10;
+                overflow: hidden;
+            }
+            .print-event-title {
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                margin-right: 4px;
+                line-height: 1.2;
+            }
+            .print-event-time {
+                white-space: nowrap;
+                flex-shrink: 0;
+                line-height: 1.2;
+            }
+            .print-aed-header {
+                text-align: center;
+                font-weight: bold;
+                padding: 10px 0;
+                border-bottom: 2px solid #000;
+                color: #000;
+                font-size: 16px;
+                text-transform: uppercase;
+            }
+            
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+        }
+        @media screen {
+            #print-container { display: none !important; }
+        }
+    </style>
+</head>
+<body class="overflow-x-hidden">
+
+    <!-- Modal d'Édition -->
+    <div id="time-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+        <div class="bg-slate-900 border border-slate-700 rounded-2xl p-6 shadow-2xl w-max min-w-[380px] max-w-[95vw]">
+            <h3 class="text-white font-bold text-lg mb-1">Modifier le bloc</h3>
+            
+            <div class="mb-4">
+                <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Affectation :</label>
+                <select id="modal-zone-select" class="w-full bg-slate-800 text-white border border-slate-700 rounded-lg p-2 focus:border-yellow-400 focus:outline-none text-sm font-bold appearance-none cursor-pointer">
+                    <!-- Options injectées en JS -->
+                </select>
+            </div>
+            
+            <div class="flex gap-4 mb-6">
+                <div class="flex-1">
+                    <label class="block text-xs font-bold text-slate-400 uppercase mb-2">De :</label>
+                    <input type="time" id="modal-start" class="w-full bg-slate-800 text-white border border-slate-700 rounded-lg p-2 focus:border-yellow-400 focus:outline-none" required>
+                </div>
+                <div class="flex-1">
+                    <label class="block text-xs font-bold text-slate-400 uppercase mb-2">À :</label>
+                    <input type="time" id="modal-end" class="w-full bg-slate-800 text-white border border-slate-700 rounded-lg p-2 focus:border-yellow-400 focus:outline-none" required>
+                </div>
+            </div>
+
+            <div class="flex justify-between">
+                <div class="flex gap-2">
+                    <button id="modal-delete" class="text-red-400 hover:bg-red-400/10 px-3 py-2 rounded-lg font-bold text-sm transition-colors">Supprimer</button>
+                    <button id="modal-copy" class="text-blue-400 hover:bg-blue-400/10 px-3 py-2 rounded-lg font-bold text-sm transition-colors" title="Copier ce bloc">Copier</button>
+                </div>
+                <div class="flex gap-2">
+                    <button onclick="closeModal()" class="text-slate-400 hover:text-white px-3 py-2 rounded-lg font-bold text-sm transition-colors">Annuler</button>
+                    <button id="modal-save" class="bg-yellow-400 hover:bg-yellow-500 text-slate-900 px-4 py-2 rounded-lg font-bold text-sm transition-colors">Valider</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Barre d'actions flottante pour la sélection multiple -->
+    <div id="selection-bar" class="hidden fixed bottom-10 left-1/2 transform -translate-x-1/2 bg-slate-900 border border-slate-700 rounded-full px-6 py-3 shadow-[0_10px_30px_rgba(0,0,0,0.5)] items-center gap-4 z-50 no-print">
+        <span class="text-white font-bold text-sm"><span id="sel-count">2</span> blocs sélectionnés</span>
+        <div class="h-6 w-px bg-slate-700"></div>
+        <button onclick="mergeSelected()" class="text-cyan-400 hover:text-cyan-300 font-bold text-sm transition-colors flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h10a2 2 0 0 1 2 2v10"></path><path d="M14 16h-4a2 2 0 0 1-2-2V4"></path><polyline points="10 8 14 4 10 0"></polyline></svg>
+            Fusionner
+        </button>
+        <button onclick="deleteSelected()" class="text-red-400 hover:text-red-300 font-bold text-sm transition-colors flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+            Supprimer
+        </button>
+        <button onclick="clearSelection()" class="text-slate-400 hover:text-white transition-colors ml-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+    </div>
+
+    <!-- Menu Contextuel Grille (Coller) -->
+    <div id="grid-context-menu" class="hidden absolute bg-slate-800 border border-slate-600 rounded-lg shadow-xl z-50 overflow-hidden no-print">
+        <button onclick="executePaste()" class="w-full text-left px-4 py-2.5 text-sm font-bold text-white hover:bg-slate-700 transition-colors flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+            Coller ici
+        </button>
+    </div>
+
+    <!-- Lueur ambiante jaune -->
+    <div class="absolute top-[-20%] right-[-10%] w-[60%] h-[500px] bg-yellow-900/20 rounded-full blur-[120px] pointer-events-none -z-10 no-print"></div>
+
+    <header class="w-full no-print z-30 bg-[#05080f]/90 backdrop-blur-sm border-b border-slate-800/50 sticky top-0">
+        <div class="w-full px-6 md:px-12 py-5 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="text-yellow-400">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 2L2 7l10 5 10-5-10-5Z" />
+                        <path d="m2 17 10 5 10-5" />
+                        <path d="m2 12 10 5 10-5" />
+                    </svg>
+                </div>
+                <span class="text-xl font-bold tracking-tight text-white">Viesco<span class="text-yellow-400">Hub</span></span>
+            </div>
+
+            <nav class="hidden md:flex items-center gap-8 text-xs font-bold tracking-widest uppercase text-slate-400">
+                <a href="../index.html" class="hover:text-yellow-400 transition-colors">Accueil</a>
+                <a href="absences.html" class="hover:text-yellow-400 transition-colors">Absences</a>
+                <a href="bilan-absences.html" class="hover:text-yellow-400 transition-colors">Bilan Abs.</a>
+                <a href="programme-retenues.html" class="hover:text-yellow-400 transition-colors">Retenues</a>
+                <a href="bilan-sanctions.html" class="hover:text-yellow-400 transition-colors">Bilan Sanc.</a>
+                <a href="createur-devoirs.html" class="hover:text-yellow-400 transition-colors">Devoirs</a>
+                <a href="documents.html" class="hover:text-yellow-400 transition-colors">Documents</a>
+                <a href="#" class="text-white hover:text-yellow-400 transition-colors">Planning</a>
+                <span class="text-slate-600">|</span>
+                <div class="flex items-center gap-2 bg-slate-900 border border-slate-800 px-3 py-1.5 rounded-full">
+                    <div class="w-1.5 h-1.5 rounded-full bg-yellow-400 animate-pulse"></div>
+                    <span id="live-time" class="text-sm font-bold text-yellow-400 font-mono">--:--</span>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main class="flex-grow w-full max-w-[1400px] mx-auto px-6 py-10 flex flex-col items-center">
+        
+        <div class="text-center mb-8 no-print w-full flex flex-col items-center">
+            <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-800/50 border border-slate-700 mb-6">
+                <div class="w-1.5 h-1.5 rounded-full bg-yellow-400 shadow-[0_0_8px_#facc15]"></div>
+                <span class="text-[10px] font-bold tracking-widest text-slate-300 uppercase">Haute Précision</span>
+            </div>
+            <h1 class="text-4xl md:text-5xl font-black text-white tracking-tight mb-4">
+                Planning <span class="text-white glow-text" id="day-title">Journalier</span>
+            </h1>
+            <p class="text-slate-400 max-w-2xl mx-auto font-medium text-sm">
+                Sélectionne un outil puis <b>clique dans une colonne AED</b> pour ajouter une tâche.<br>
+                Fais un <b>clic droit</b> sur n'importe quel bloc pour définir son heure exacte (ex: 07h55 - 08h00).
+            </p>
+        </div>
+
+        <div class="w-full flex flex-col xl:flex-row gap-8 items-start">
+            
+            <!-- Palette des zones (Outils) -->
+            <div class="w-full xl:w-56 shrink-0 glass-panel p-5 rounded-2xl no-print sticky top-28 z-20">
+                <h3 class="text-sm font-bold text-slate-300 uppercase tracking-widest mb-4 flex items-center justify-between">
+                    Outils
+                    <button onclick="window.print()" class="text-slate-400 hover:text-yellow-400 transition-colors" title="Imprimer">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+                    </button>
+                </h3>
+                
+                <div class="flex flex-col gap-2" id="zone-palette">
+                    <!-- Généré en JS -->
+                </div>
+
+                <button onclick="clearDay()" class="w-full mt-6 py-2 bg-slate-800 hover:bg-red-500/20 text-slate-400 hover:text-red-400 rounded-lg text-xs font-bold border border-slate-700 hover:border-red-500/50 transition-all flex items-center justify-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                    Vider le jour
+                </button>
+            </div>
+
+            <!-- Grille du Planning (Style Calendrier) -->
+            <div class="w-full flex flex-col gap-4">
+                
+                <!-- Onglets Jours -->
+                <div class="flex items-center gap-2 bg-[#05080f] p-1 rounded-xl border border-slate-800/50 w-fit no-print mx-auto xl:mx-0">
+                    <button onclick="setDay('lundi')" id="tab-lundi" class="day-tab px-6 py-2 rounded-lg text-sm font-bold text-slate-400 hover:text-white transition-colors">Lundi</button>
+                    <button onclick="setDay('mardi')" id="tab-mardi" class="day-tab px-6 py-2 rounded-lg text-sm font-bold text-slate-400 hover:text-white transition-colors">Mardi</button>
+                    <button onclick="setDay('mercredi')" id="tab-mercredi" class="day-tab px-6 py-2 rounded-lg text-sm font-bold text-slate-400 hover:text-white transition-colors">Mercredi</button>
+                    <button onclick="setDay('jeudi')" id="tab-jeudi" class="day-tab px-6 py-2 rounded-lg text-sm font-bold text-slate-400 hover:text-white transition-colors">Jeudi</button>
+                    <button onclick="setDay('vendredi')" id="tab-vendredi" class="day-tab px-6 py-2 rounded-lg text-sm font-bold text-slate-400 hover:text-white transition-colors">Vendredi</button>
+                </div>
+
+                <div class="w-full glass-panel p-2 md:p-6 rounded-2xl overflow-x-auto print-border relative" id="schedule-wrapper">
+                    <!-- Titre & Bouton Imprimer -->
+                    <div class="flex justify-between items-center mb-6 px-2 no-print">
+                        <div>
+                            <h2 class="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-200 tracking-tight">Planning Équipe</h2>
+                            <p class="text-slate-400 text-sm font-medium mt-1">Gère les créneaux et postes des AED</p>
+                        </div>
+                        <div class="flex gap-4 items-center">
+                            <input type="file" id="import-file" class="hidden" accept=".json" onchange="importData(event)">
+                            <button onclick="document.getElementById('import-file').click()" class="text-slate-400 hover:text-blue-400 transition-colors" title="Importer une sauvegarde">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                            </button>
+                            <button onclick="exportData()" class="text-slate-400 hover:text-emerald-400 transition-colors" title="Sauvegarder / Exporter">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                            </button>
+                            <div class="w-px h-5 bg-slate-700/50 mx-1"></div>
+                            <button onclick="clearDay()" class="text-slate-400 hover:text-red-400 transition-colors" title="Effacer la journée">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+                            </button>
+                            <button onclick="prepareAndPrint()" class="text-slate-400 hover:text-yellow-400 transition-colors" title="Imprimer">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="min-w-[800px]">
+                        <!-- Header Colonnes AED -->
+                        <div class="flex gap-2 mb-2 pl-[70px]" id="grid-header">
+                            <!-- inputs AED générés en JS -->
+                        </div>
+
+                        <!-- L'agenda complet en hauteur -->
+                        <div class="relative w-full flex mt-2 bg-slate-900/40 rounded-xl border border-slate-700/50 overflow-hidden" id="timeline-container" style="height: 1200px;">
+                            
+                            <!-- Lignes horizontales générées en JS -->
+                            <div id="grid-lines" class="absolute inset-0 pointer-events-none"></div>
+
+                            <!-- Colonne des heures -->
+                            <div id="time-labels" class="w-[70px] shrink-0 border-r border-slate-700/50 relative bg-slate-900/80"></div>
+
+                            <!-- Colonnes AED où les blocs se placeront -->
+                            <div class="flex-1 flex relative" id="aed-columns">
+                                <div class="flex-1 border-r border-slate-700/50 relative aed-col cursor-crosshair hover:bg-slate-800/30 transition-colors" data-aed="0" onmousedown="addEventClick(event, 0)" oncontextmenu="pasteEvent(event, 0)"></div>
+                                <div class="flex-1 border-r border-slate-700/50 relative aed-col cursor-crosshair hover:bg-slate-800/30 transition-colors" data-aed="1" onmousedown="addEventClick(event, 1)" oncontextmenu="pasteEvent(event, 1)"></div>
+                                <div class="flex-1 border-r border-slate-700/50 relative aed-col cursor-crosshair hover:bg-slate-800/30 transition-colors" data-aed="2" onmousedown="addEventClick(event, 2)" oncontextmenu="pasteEvent(event, 2)"></div>
+                                <div class="flex-1 border-r border-slate-700/50 relative aed-col cursor-crosshair hover:bg-slate-800/30 transition-colors" data-aed="3" onmousedown="addEventClick(event, 3)" oncontextmenu="pasteEvent(event, 3)"></div>
+                                <div class="flex-1 border-slate-700/50 relative aed-col cursor-crosshair hover:bg-slate-800/30 transition-colors" data-aed="4" onmousedown="addEventClick(event, 4)" oncontextmenu="pasteEvent(event, 4)"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="../js/assistant.js"></script>
+
+    <script>
+        // --- Paramètres Agenda ---
+        const PIXELS_PER_MINUTE = 2; // Hauteur = 2px par minute (donc 1h = 120px)
+        const START_HOUR = 7;
+        const START_MINUTE = 30; // La grille commence toujours à 7h30
+
+        const zones = [
+            { id: 'viesco', label: 'Vie Scolaire', colorClass: 'bg-zone-viesco', hex: '#3b82f6', defaultMins: 30 },
+            { id: 'permanence', label: 'Permanence', colorClass: 'bg-zone-permanence', hex: '#8b5cf6', defaultMins: 55 },
+            { id: 'porte', label: 'Porte', colorClass: 'bg-zone-porte', hex: '#f97316', defaultMins: 5 },
+            { id: 'couloirs', label: 'Couloirs', colorClass: 'bg-zone-couloirs', hex: '#14b8a6', defaultMins: 5 },
+            { id: 'renfort', label: 'Renfort', colorClass: 'bg-zone-renfort', hex: '#ef4444', defaultMins: 30 },
+            { id: 'repas', label: 'Repas', colorClass: 'bg-zone-repas', hex: '#22c55e', defaultMins: 30 },
+            { id: 'cartes', label: 'Cartes', colorClass: 'bg-zone-cartes', hex: '#ec4899', defaultMins: 30 },
+            { id: 'cantine', label: 'Cantine', colorClass: 'bg-zone-cantine', hex: '#f59e0b', defaultMins: 30 },
+            { id: 'cour', label: 'Cour', colorClass: 'bg-zone-cour', hex: '#06b6d4', defaultMins: 15 }
+        ];
+
+        let selectedZoneId = 'viesco';
+        let currentDay = 'lundi';
+        let aedNames = ['AED 1', 'AED 2', 'AED 3', 'AED 4', 'AED 5'];
+        
+        // Data structure : tableau d'objets pour chaque jour
+        // ex: { "lundi": [ { id: "evt_123", aedIdx: 0, zoneId: "porte", start: "07:55", end: "08:00" } ] }
+        let eventsData = { 'lundi': [], 'mardi': [], 'mercredi': [], 'jeudi': [], 'vendredi': [] };
+
+        let editingEventId = null;
+        let selectedEventIds = [];
+        let copiedEventObj = null; // Stocke { zoneId, durationMins }
+
+        // --- Init ---
+        function init() {
+            loadFromStorage();
+            renderPalette();
+            
+            const dayIndex = new Date().getDay(); // 0 = Dimanche, 1 = Lundi, 5 = Vendredi, 6 = Samedi
+            const days = ['lundi', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'lundi'];
+            setDay(days[dayIndex]);
+        }
+
+        function loadFromStorage() {
+            try {
+                const storedEvents = localStorage.getItem('viesco_events_v2');
+                if (storedEvents) eventsData = JSON.parse(storedEvents);
+                
+                const storedAeds = localStorage.getItem('viesco_planning_aeds');
+                if (storedAeds) aedNames = JSON.parse(storedAeds);
+            } catch(e) {}
+        }
+
+        function saveToStorage() {
+            try {
+                localStorage.setItem('viesco_events_v2', JSON.stringify(eventsData));
+                localStorage.setItem('viesco_planning_aeds', JSON.stringify(aedNames));
+            } catch(e) {}
+        }
+
+        function renderPalette() {
+            const paletteEl = document.getElementById('zone-palette');
+            paletteEl.innerHTML = '';
+            zones.forEach(zone => {
+                const btn = document.createElement('button');
+                btn.className = `w-full text-left px-3 py-2.5 rounded-lg font-bold text-xs flex items-center gap-3 zone-btn ${zone.colorClass}`;
+                if (zone.id === selectedZoneId) {
+                    btn.classList.add('selected');
+                    if (zone.hex) btn.style.boxShadow = `0 0 15px ${zone.hex}`;
+                }
+                btn.innerHTML = `<div class="w-2.5 h-2.5 rounded-full bg-white/50"></div> ${zone.label}`;
+                btn.onclick = () => { selectedZoneId = zone.id; renderPalette(); };
+                paletteEl.appendChild(btn);
+            });
+        }
+
+        function updateAedName(index, newName) {
+            aedNames[index] = newName || `AED ${index + 1}`;
+            saveToStorage();
+        }
+
+        function renderGridHeaders() {
+            const headerRow = document.getElementById('grid-header');
+            headerRow.innerHTML = '';
+            
+            // Calculer le total d'heures par AED pour le jour courant
+            let aedTotals = [0, 0, 0, 0, 0];
+            if (eventsData[currentDay]) {
+                eventsData[currentDay].forEach(evt => {
+                    let startMins = timeStrToMins(evt.start);
+                    let endMins = timeStrToMins(evt.end);
+                    if (endMins > startMins) {
+                        aedTotals[evt.aedIdx] += (endMins - startMins);
+                    }
+                });
+            }
+
+            for(let i=0; i<5; i++) {
+                const container = document.createElement('div');
+                container.className = 'flex-1 mx-1 relative flex flex-col justify-end mt-2';
+                
+                const input = document.createElement('input');
+                input.type = "text";
+                input.value = aedNames[i];
+                input.className = "w-full h-10 text-center font-bold text-white bg-slate-800/80 border border-slate-700 rounded-lg focus:outline-none focus:border-yellow-400 focus:ring-1 focus:ring-yellow-400 uppercase tracking-wide print-black";
+                input.onblur = (e) => {
+                    updateAedName(i, e.target.value);
+                    // Rafraîchir pour être sûr que l'impression est aussi à jour
+                    renderGridHeaders();
+                };
+                
+                container.appendChild(input);
+                
+                let totalMins = aedTotals[i];
+                if (totalMins > 0) {
+                    let h = Math.floor(totalMins / 60);
+                    let m = totalMins % 60;
+                    let timeStr = `${h}h${m > 0 ? m.toString().padStart(2, '0') : ''}`;
+                    
+                    const timeBadge = document.createElement('div');
+                    timeBadge.className = 'absolute -top-3 right-0 bg-slate-700 text-yellow-400 text-[10px] font-bold px-1.5 py-0.5 rounded-md border border-slate-600 shadow-sm pointer-events-none z-10';
+                    timeBadge.textContent = timeStr;
+                    container.appendChild(timeBadge);
+                }
+                
+                headerRow.appendChild(container);
+            }
+        }
+
+        function drawBackgroundLines() {
+            const linesContainer = document.getElementById('grid-lines');
+            const labelsContainer = document.getElementById('time-labels');
+            linesContainer.innerHTML = '';
+            labelsContainer.innerHTML = '';
+
+            const endHour = currentDay === 'mercredi' ? 12 : 17;
+            const endMinute = 30;
+            
+            const totalMins = (endHour * 60 + endMinute) - (START_HOUR * 60 + START_MINUTE);
+            document.getElementById('timeline-container').style.height = (totalMins * PIXELS_PER_MINUTE) + 'px';
+
+            for(let m = 0; m <= totalMins; m += 30) {
+                const px = m * PIXELS_PER_MINUTE;
+                const isHour = ((START_MINUTE + m) % 60 === 0);
+                
+                // Ligne
+                const line = document.createElement('div');
+                line.className = `grid-bg-line ${isHour ? 'hour-line' : ''}`;
+                line.style.top = px + 'px';
+                linesContainer.appendChild(line);
+
+                // Label (ex: 08:00)
+                if (isHour || m === 0 || m === totalMins) {
+                    const h = Math.floor((START_HOUR * 60 + START_MINUTE + m) / 60);
+                    const min = (START_HOUR * 60 + START_MINUTE + m) % 60;
+                    const labelStr = `${h.toString().padStart(2, '0')}:${min.toString().padStart(2, '0')}`;
+                    
+                    const label = document.createElement('div');
+                    let transformClass = (m === 0) ? '' : '-translate-y-1/2';
+                    label.className = `absolute w-full text-center text-xs font-mono font-bold text-slate-500 ${transformClass}`;
+                    label.style.top = px + 'px';
+                    label.textContent = labelStr;
+                    labelsContainer.appendChild(label);
+                }
+            }
+        }
+
+        function setDay(day) {
+            currentDay = day;
+            document.getElementById('day-title').textContent = day.charAt(0).toUpperCase() + day.slice(1);
+            document.querySelectorAll('.day-tab').forEach(t => {
+                t.classList.remove('bg-yellow-400', 'text-slate-900', 'shadow-[0_0_10px_#facc15]');
+                t.classList.add('text-slate-400');
+            });
+            document.getElementById('tab-' + day).classList.add('bg-yellow-400', 'text-slate-900', 'shadow-[0_0_10px_#facc15]');
+
+            clearSelection(); // Efface la sélection en changeant de jour
+            renderGridHeaders();
+            drawBackgroundLines();
+            renderEvents();
+        }
+
+        // --- Logique Métier (Agenda) ---
+        function timeStrToMins(timeStr) {
+            const [h, m] = timeStr.split(':').map(Number);
+            return h * 60 + m;
+        }
+
+        function minsToTimeStr(totalMins) {
+            const h = Math.floor(totalMins / 60);
+            const m = totalMins % 60;
+            return `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}`;
+        }
+
+        let isDraggingNewEvent = false;
+        let dragEventObj = null;
+        let dragStartY = 0;
+        let dragAedIdx = -1;
+
+        let isMovingEvent = false;
+        let movingEventObj = null;
+        let moveStartClientY = 0;
+        let moveOriginalStartMins = 0;
+        let moveOriginalEndMins = 0;
+        let moveOriginalAedIdx = 0;
+
+        function addEventClick(e, aedIdx) {
+            // Ignorer si ce n'est pas un clic gauche
+            if (e.button !== 0) return;
+
+            // Ignorer si on clique sur un événement existant
+            if (e.target !== e.currentTarget) return;
+
+            // Bloquer le scroll du texte
+            e.preventDefault();
+
+            isDraggingNewEvent = true;
+            dragAedIdx = aedIdx;
+            dragStartY = e.offsetY;
+
+            // Coordonnée Y (pixels) dans la colonne
+            const rawMins = dragStartY / PIXELS_PER_MINUTE;
+            const absoluteMins = (START_HOUR * 60 + START_MINUTE) + rawMins;
+            
+            // Arrondir au bloc de 5 mins le plus proche
+            const snappedStartMins = Math.floor(absoluteMins / 5) * 5; 
+            
+            // Récupérer la durée par défaut de la zone
+            const zoneObj = zones.find(z => z.id === selectedZoneId) || { defaultMins: 30 };
+            const defaultDuration = zoneObj.defaultMins || 30;
+            
+            let maxMins = (currentDay === 'mercredi' ? 12*60 + 30 : 17*60 + 30);
+            let endMins = snappedStartMins + defaultDuration;
+            if (endMins > maxMins) endMins = maxMins;
+            
+            dragEventObj = {
+                id: 'evt_' + Date.now() + '_' + Math.floor(Math.random()*1000),
+                aedIdx: aedIdx,
+                zoneId: selectedZoneId,
+                start: minsToTimeStr(snappedStartMins),
+                end: minsToTimeStr(endMins),
+                startMins: snappedStartMins // champ temporaire
+            };
+
+            eventsData[currentDay].push(dragEventObj);
+            renderEvents();
+
+            document.addEventListener('mousemove', onDragEvent);
+            document.addEventListener('mouseup', endDragEvent);
+        }
+
+        function onDragEvent(e) {
+            if (!isDraggingNewEvent || !dragEventObj) return;
+
+            const col = document.querySelector(`.aed-col[data-aed="${dragAedIdx}"]`);
+            const rect = col.getBoundingClientRect();
+            let currentY = e.clientY - rect.top;
+
+            // On empêche de remonter plus haut que le point de départ
+            if (currentY < dragStartY + 10) currentY = dragStartY + 10;
+
+            const absoluteMins = (START_HOUR * 60 + START_MINUTE) + (currentY / PIXELS_PER_MINUTE);
+            let snappedEndMins = Math.ceil(absoluteMins / 5) * 5; // Arrondi sup. à 5 mins
+
+            let maxMins = (currentDay === 'mercredi' ? 12*60 + 30 : 17*60 + 30);
+            if (snappedEndMins > maxMins) snappedEndMins = maxMins;
+
+            if (snappedEndMins - dragEventObj.startMins < 5) {
+                snappedEndMins = dragEventObj.startMins + 5;
+            }
+
+            dragEventObj.end = minsToTimeStr(snappedEndMins);
+            renderEvents();
+        }
+
+        function endDragEvent(e) {
+            if (!isDraggingNewEvent) return;
+            isDraggingNewEvent = false;
+            
+            if (dragEventObj) {
+                delete dragEventObj.startMins;
+            }
+            dragEventObj = null;
+
+            document.removeEventListener('mousemove', onDragEvent);
+            document.removeEventListener('mouseup', endDragEvent);
+            
+            saveToStorage();
+        }
+
+        // --- Logique de Déplacement (Move) ---
+        function onMoveEvent(e) {
+            if (!isMovingEvent || !movingEventObj) return;
+
+            let deltaY = e.clientY - moveStartClientY;
+            let deltaMins = deltaY / PIXELS_PER_MINUTE;
+            
+            // On arrondit pour "magnétiser" toutes les 5 minutes
+            let snappedDeltaMins = Math.round(deltaMins / 5) * 5;
+            
+            let newStartMins = moveOriginalStartMins + snappedDeltaMins;
+            let newEndMins = moveOriginalEndMins + snappedDeltaMins;
+
+            let maxMins = (currentDay === 'mercredi' ? 12*60 + 30 : 17*60 + 30);
+            let minMins = START_HOUR * 60 + START_MINUTE;
+            
+            if (newStartMins < minMins) {
+                let diff = minMins - newStartMins;
+                newStartMins += diff;
+                newEndMins += diff;
+            }
+            if (newEndMins > maxMins) {
+                let diff = newEndMins - maxMins;
+                newStartMins -= diff;
+                newEndMins -= diff;
+            }
+
+            movingEventObj.start = minsToTimeStr(newStartMins);
+            movingEventObj.end = minsToTimeStr(newEndMins);
+
+            // Changement de colonne AED
+            let elements = document.elementsFromPoint(e.clientX, e.clientY);
+            let colEl = elements.find(el => el.classList && el.classList.contains('aed-col'));
+            if (colEl) {
+                let newAedIdx = parseInt(colEl.getAttribute('data-aed'));
+                if (!isNaN(newAedIdx)) {
+                    movingEventObj.aedIdx = newAedIdx;
+                }
+            }
+
+            renderEvents();
+        }
+
+        function endMoveEvent(e) {
+            if (!isMovingEvent) return;
+            isMovingEvent = false;
+            movingEventObj = null;
+            document.removeEventListener('mousemove', onMoveEvent);
+            document.removeEventListener('mouseup', endMoveEvent);
+            saveToStorage();
+        }
+
+        function renderEvents() {
+            // Vider les colonnes
+            document.querySelectorAll('.aed-col').forEach(col => col.innerHTML = '');
+
+            const events = eventsData[currentDay] || [];
+            
+            events.forEach(evt => {
+                const zoneObj = zones.find(z => z.id === evt.zoneId) || zones[0];
+                
+                const startMins = timeStrToMins(evt.start);
+                const endMins = timeStrToMins(evt.end);
+                
+                // Calcul position et hauteur
+                const topPx = (startMins - (START_HOUR * 60 + START_MINUTE)) * PIXELS_PER_MINUTE;
+                const heightPx = (endMins - startMins) * PIXELS_PER_MINUTE;
+
+                const block = document.createElement('div');
+                block.className = `event-block ${zoneObj.colorClass} mx-1`;
+                block.style.top = topPx + 'px';
+                block.style.height = Math.max(heightPx, 12) + 'px'; // Minimum 12px pour être cliquable
+                
+                // Si très petit, on centre verticalement et on réduit le padding
+                if (heightPx <= 20) {
+                    block.style.padding = '0 6px';
+                    block.style.alignItems = 'center';
+                }
+
+                const labelSpan = document.createElement('span');
+                labelSpan.className = 'event-title';
+                labelSpan.textContent = zoneObj.label;
+                block.appendChild(labelSpan);
+
+                const timeSpan = document.createElement('span');
+                timeSpan.className = 'event-time';
+                timeSpan.textContent = `${evt.start} - ${evt.end}`;
+                block.appendChild(timeSpan);
+
+                // Mise en évidence si sélectionné
+                if (selectedEventIds.includes(evt.id)) {
+                    block.classList.add('ring-2', 'ring-white', 'shadow-lg');
+                    block.style.zIndex = '15';
+                }
+
+                // Déplacement au Cliqué-Glissé
+                block.onmousedown = (e) => {
+                    if (e.button !== 0 || e.shiftKey) return; // Ignore clic droit et maj
+                    e.stopPropagation(); // Évite de créer un nouvel event
+                    
+                    isMovingEvent = true;
+                    movingEventObj = evt;
+                    moveStartClientY = e.clientY;
+                    moveOriginalStartMins = timeStrToMins(evt.start);
+                    moveOriginalEndMins = timeStrToMins(evt.end);
+                    moveOriginalAedIdx = evt.aedIdx;
+                    
+                    document.addEventListener('mousemove', onMoveEvent);
+                    document.addEventListener('mouseup', endMoveEvent);
+                };
+
+                block.oncontextmenu = (e) => {
+                    e.preventDefault();
+                    if (selectedEventIds.length === 0) {
+                        openModal(evt.id);
+                    }
+                };
+
+                // Sélection avec MAJ + Clic
+                block.onclick = (e) => {
+                    if (e.shiftKey) {
+                        e.stopPropagation();
+                        const idx = selectedEventIds.indexOf(evt.id);
+                        if (idx > -1) {
+                            selectedEventIds.splice(idx, 1);
+                        } else {
+                            selectedEventIds.push(evt.id);
+                        }
+                        updateSelectionBar();
+                        renderEvents();
+                    }
+                };
+
+                block.title = "Clic droit pour modifier, MAJ+Clic pour sélectionner";
+
+                const col = document.querySelector(`.aed-col[data-aed="${evt.aedIdx}"]`);
+                if (col) col.appendChild(block);
+            });
+
+            // Mettre à jour dynamiquement le total des heures dans l'en-tête
+            renderGridHeaders();
+        }
+
+        function updateSelectionBar() {
+            const bar = document.getElementById('selection-bar');
+            if (selectedEventIds.length > 0) {
+                document.getElementById('sel-count').textContent = selectedEventIds.length;
+                bar.classList.remove('hidden');
+                bar.classList.add('flex');
+            } else {
+                bar.classList.add('hidden');
+                bar.classList.remove('flex');
+            }
+        }
+
+        function clearSelection() {
+            selectedEventIds = [];
+            updateSelectionBar();
+            renderEvents();
+        }
+
+        function deleteSelected() {
+            eventsData[currentDay] = eventsData[currentDay].filter(e => !selectedEventIds.includes(e.id));
+            clearSelection();
+            saveToStorage();
+        }
+
+        function mergeSelected() {
+            if (selectedEventIds.length < 2) {
+                alert("Il faut au moins 2 blocs pour fusionner !");
+                return;
+            }
+
+            let selectedEvents = eventsData[currentDay].filter(e => selectedEventIds.includes(e.id));
+            
+            let minStart = 9999;
+            let maxEnd = 0;
+            
+            selectedEvents.forEach(e => {
+                let s = timeStrToMins(e.start);
+                let eEnd = timeStrToMins(e.end);
+                if (s < minStart) minStart = s;
+                if (eEnd > maxEnd) maxEnd = eEnd;
+            });
+
+            // On base le nouveau bloc sur le premier élément sélectionné
+            let primaryEvt = selectedEvents[0];
+            
+            let newEvt = {
+                id: 'evt_' + Date.now() + '_' + Math.floor(Math.random()*1000),
+                aedIdx: primaryEvt.aedIdx,
+                zoneId: primaryEvt.zoneId,
+                start: minsToTimeStr(minStart),
+                end: minsToTimeStr(maxEnd)
+            };
+
+            // Supprimer les anciens et ajouter le fusionné
+            eventsData[currentDay] = eventsData[currentDay].filter(e => !selectedEventIds.includes(e.id));
+            eventsData[currentDay].push(newEvt);
+            
+            clearSelection();
+            saveToStorage();
+        }
+
+        function clearDay() {
+            if (confirm(`Voulez-vous effacer tout le planning du ${currentDay} ?`)) {
+                eventsData[currentDay] = [];
+                saveToStorage();
+                renderEvents();
+            }
+        }
+
+        // --- Fenêtre Modale (Clic Droit) ---
+        function openModal(eventId) {
+            const evt = eventsData[currentDay].find(e => e.id === eventId);
+            if (!evt) return;
+            
+            editingEventId = eventId;
+            
+            const selectEl = document.getElementById('modal-zone-select');
+            if (selectEl) {
+                selectEl.innerHTML = '';
+                zones.forEach(z => {
+                    const opt = document.createElement('option');
+                    opt.value = z.id;
+                    opt.textContent = z.label;
+                    if (z.id === evt.zoneId) opt.selected = true;
+                    selectEl.appendChild(opt);
+                });
+            }
+
+            document.getElementById('modal-start').value = evt.start;
+            document.getElementById('modal-end').value = evt.end;
+
+            document.getElementById('time-modal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            editingEventId = null;
+            document.getElementById('time-modal').classList.add('hidden');
+        }
+
+        document.getElementById('modal-save').onclick = () => {
+            const newStart = document.getElementById('modal-start').value;
+            const newEnd = document.getElementById('modal-end').value;
+            const selectEl = document.getElementById('modal-zone-select');
+            const newZoneId = selectEl ? selectEl.value : null;
+
+            // Petite validation (début doit être avant la fin)
+            if (timeStrToMins(newStart) >= timeStrToMins(newEnd)) {
+                alert("L'heure de fin doit être après l'heure de début !");
+                return;
+            }
+
+            const evt = eventsData[currentDay].find(e => e.id === editingEventId);
+            if (evt) {
+                evt.start = newStart;
+                evt.end = newEnd;
+                if (newZoneId) evt.zoneId = newZoneId;
+                saveToStorage();
+                renderEvents();
+            }
+            closeModal();
+        };
+
+        document.getElementById('modal-delete').onclick = () => {
+            eventsData[currentDay] = eventsData[currentDay].filter(e => e.id !== editingEventId);
+            saveToStorage();
+            renderEvents();
+            closeModal();
+        };
+
+        document.getElementById('modal-copy').onclick = () => {
+            const evt = eventsData[currentDay].find(e => e.id === editingEventId);
+            if (evt) {
+                const duration = timeStrToMins(evt.end) - timeStrToMins(evt.start);
+                copiedEventObj = { zoneId: evt.zoneId, durationMins: duration };
+            }
+            closeModal();
+        };
+
+        let pendingPasteY = 0;
+        let pendingPasteAedIdx = -1;
+
+        function pasteEvent(e, aedIdx) {
+            e.preventDefault(); // Empêche le menu contextuel du navigateur
+            if (!copiedEventObj) return;
+
+            // Ignorer si on clique sur un bloc existant
+            if (e.target !== e.currentTarget) return;
+
+            pendingPasteY = e.offsetY;
+            pendingPasteAedIdx = aedIdx;
+
+            const menu = document.getElementById('grid-context-menu');
+            menu.style.left = e.pageX + 'px';
+            menu.style.top = e.pageY + 'px';
+            menu.classList.remove('hidden');
+        }
+
+        function executePaste() {
+            const menu = document.getElementById('grid-context-menu');
+            menu.classList.add('hidden');
+
+            const absoluteMins = (START_HOUR * 60 + START_MINUTE) + (pendingPasteY / PIXELS_PER_MINUTE);
+            
+            // Arrondir au bloc de 5 mins
+            const snappedStartMins = Math.floor(absoluteMins / 5) * 5; 
+            let endMins = snappedStartMins + copiedEventObj.durationMins;
+            
+            let maxMins = (currentDay === 'mercredi' ? 12*60 + 30 : 17*60 + 30);
+            if (endMins > maxMins) endMins = maxMins;
+
+            const newEvent = {
+                id: 'evt_' + Date.now() + '_' + Math.floor(Math.random()*1000),
+                aedIdx: pendingPasteAedIdx,
+                zoneId: copiedEventObj.zoneId,
+                start: minsToTimeStr(snappedStartMins),
+                end: minsToTimeStr(endMins)
+            };
+
+            eventsData[currentDay].push(newEvent);
+            saveToStorage();
+            renderEvents();
+        }
+
+        // Cacher le menu contextuel si on clique n'importe où (sauf sur le menu lui-même)
+        document.addEventListener('mousedown', (e) => {
+            const menu = document.getElementById('grid-context-menu');
+            if (menu && !menu.classList.contains('hidden') && e.button === 0) {
+                if (!menu.contains(e.target)) {
+                    menu.classList.add('hidden');
+                }
+            }
+        });
+
+        // --- Horloge en temps réel ---
+        function updateClock() {
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+            const dateStr = now.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
+            const clockEl = document.getElementById('live-time');
+            if (clockEl) clockEl.textContent = dateStr.charAt(0).toUpperCase() + dateStr.slice(1) + ' • ' + timeStr;
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // --- Export / Import ---
+        function exportData() {
+            const dataToSave = {
+                eventsData: eventsData,
+                aedNames: aedNames
+            };
+            const jsonStr = JSON.stringify(dataToSave, null, 2);
+            const blob = new Blob([jsonStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            
+            const date = new Date().toISOString().split('T')[0];
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `sauvegarde_planning_${date}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function importData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const parsed = JSON.parse(e.target.result);
+                    if (parsed.eventsData && parsed.aedNames) {
+                        eventsData = parsed.eventsData;
+                        aedNames = parsed.aedNames;
+                        saveToStorage();
+                        
+                        renderGridHeaders();
+                        renderEvents();
+                        alert("Le planning a été importé avec succès !");
+                    } else {
+                        alert("Le fichier de sauvegarde semble invalide.");
+                    }
+                } catch(err) {
+                    alert("Erreur lors de la lecture du fichier.");
+                }
+                // Réinitialiser l'input pour pouvoir importer à nouveau
+                event.target.value = "";
+            };
+            reader.readAsText(file);
+        }
+
+        // --- Impression Mutlijours ---
+        function prepareAndPrint() {
+            const container = document.getElementById('print-container');
+            container.innerHTML = '';
+            
+            // Échelle spéciale impression (0.9 pixel par minute au lieu de l'échelle d'écran)
+            // Cela donne 600 mins * 0.9 = 540px, ce qui rentre très largement en hauteur sur A4 Paysage
+            const PRINT_PX_PER_MIN = 0.9;
+            
+            const daysToPrint = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi'];
+            
+            daysToPrint.forEach((day) => {
+                const dayWrapper = document.createElement('div');
+                dayWrapper.className = 'print-day-wrapper';
+                
+                // Titre du jour
+                const title = document.createElement('h1');
+                title.style.cssText = 'text-align: center; font-size: 32px; font-weight: 900; margin-bottom: 20px; color: #000; text-transform: uppercase; font-family: sans-serif; border-bottom: 4px solid #000; padding-bottom: 10px;';
+                title.textContent = "Planning Vie Scolaire - " + day;
+                dayWrapper.appendChild(title);
+                
+                // Ligne d'en-tête (AED)
+                // Calculer les totaux pour l'impression de ce jour
+                let printAedTotals = [0, 0, 0, 0, 0];
+                if (eventsData[day]) {
+                    eventsData[day].forEach(evt => {
+                        let startMins = timeStrToMins(evt.start);
+                        let endMins = timeStrToMins(evt.end);
+                        if (endMins > startMins) {
+                            printAedTotals[evt.aedIdx] += (endMins - startMins);
+                        }
+                    });
+                }
+                
+                const headerRow = document.createElement('div');
+                headerRow.style.cssText = 'display: flex; margin-left: 60px;';
+                aedNames.forEach((name, idx) => {
+                    let totalMins = printAedTotals[idx];
+                    let h = Math.floor(totalMins / 60);
+                    let m = totalMins % 60;
+                    let timeStr = "";
+                    if (totalMins > 0) {
+                        timeStr = ` (${h}h${m > 0 ? m.toString().padStart(2, '0') : ''})`;
+                    }
+                    
+                    const hDiv = document.createElement('div');
+                    hDiv.className = 'print-aed-header';
+                    hDiv.style.flex = '1';
+                    hDiv.textContent = name + timeStr;
+                    headerRow.appendChild(hDiv);
+                });
+                dayWrapper.appendChild(headerRow);
+                
+                // Conteneur de la grille
+                let maxMins = (day === 'mercredi' ? 12*60 + 30 : 17*60 + 30);
+                let totalMins = maxMins - (START_HOUR * 60 + START_MINUTE);
+                let totalHeight = totalMins * PRINT_PX_PER_MIN;
+                
+                const gridContainer = document.createElement('div');
+                gridContainer.className = 'print-grid-container';
+                gridContainer.style.cssText = `margin-left: 60px; height: ${totalHeight}px; border: 2px solid #cbd5e1; border-top: none;`;
+                
+                // Lignes de fond et labels d'heures
+                for (let m = 0; m <= totalMins; m += 30) {
+                    let y = m * PRINT_PX_PER_MIN;
+                    let absoluteMins = (START_HOUR * 60 + START_MINUTE) + m;
+                    let h = Math.floor(absoluteMins / 60);
+                    let min = absoluteMins % 60;
+                    
+                    const line = document.createElement('div');
+                    line.className = 'print-bg-line';
+                    line.style.top = y + 'px';
+                    gridContainer.appendChild(line);
+                    
+                    if (min === 0 || m === 0) {
+                        const label = document.createElement('div');
+                        label.className = 'print-time-label';
+                        label.style.top = y + 'px';
+                        label.style.transform = m === 0 ? 'none' : 'translateY(-50%)';
+                        label.textContent = h.toString().padStart(2, '0') + ':' + min.toString().padStart(2, '0');
+                        gridContainer.appendChild(label);
+                    }
+                }
+                
+                // Colonnes AED
+                const colsWrapper = document.createElement('div');
+                colsWrapper.style.cssText = 'position: absolute; inset: 0; display: flex; z-index: 5;';
+                gridContainer.appendChild(colsWrapper);
+                
+                let cols = [];
+                for (let i = 0; i < 5; i++) {
+                    const col = document.createElement('div');
+                    col.className = 'print-aed-col';
+                    colsWrapper.appendChild(col);
+                    cols.push(col);
+                }
+                
+                // Placer les blocs d'événements
+                if (eventsData[day]) {
+                    eventsData[day].forEach(evt => {
+                        let startMins = timeStrToMins(evt.start);
+                        let endMins = timeStrToMins(evt.end);
+                        let topPx = (startMins - (START_HOUR * 60 + START_MINUTE)) * PRINT_PX_PER_MIN;
+                        let heightPx = (endMins - startMins) * PRINT_PX_PER_MIN;
+                        if (heightPx < 0) heightPx = 0;
+                        
+                        const zoneObj = zones.find(z => z.id === evt.zoneId) || zones[0];
+                        
+                        const block = document.createElement('div');
+                        block.className = 'print-event-block';
+                        block.style.top = topPx + 'px';
+                        block.style.height = heightPx + 'px';
+                        block.style.backgroundColor = zoneObj.hex || '#ccc';
+                        block.style.color = '#ffffff'; 
+                        
+                        if (heightPx <= 20) {
+                            block.style.padding = '0 4px';
+                            block.style.alignItems = 'center';
+                        }
+                        
+                        const titleEl = document.createElement('div');
+                        titleEl.className = 'print-event-title';
+                        titleEl.style.cssText = 'font-weight: bold; font-size: 13px; font-family: sans-serif;';
+                        titleEl.textContent = zoneObj.label;
+                        block.appendChild(titleEl);
+                        
+                        const timeEl = document.createElement('div');
+                        timeEl.className = 'print-event-time';
+                        timeEl.style.cssText = 'font-size: 11px; opacity: 0.9; font-family: monospace; font-weight: bold;';
+                        timeEl.textContent = evt.start + ' - ' + evt.end;
+                        block.appendChild(timeEl);
+                        
+                        if (cols[evt.aedIdx]) {
+                            cols[evt.aedIdx].appendChild(block);
+                        }
+                    });
+                }
+                
+                dayWrapper.appendChild(gridContainer);
+                container.appendChild(dayWrapper);
+            });
+            
+            // Lancer l'impression juste après que le DOM soit créé
+            setTimeout(() => {
+                window.print();
+            }, 200);
+        }
+
+        init();
+    </script>
+    <div id="print-container"></div>
+</body>
+</html>

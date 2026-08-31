@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bilan Trimestriel - ViescoHub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #080c16;
+            color: #f8fafc;
+            background-image:
+                linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            background-position: center top;
+            min-height: 100vh;
+        }
+
+        .btn-glow {
+            box-shadow: 0 0 15px rgba(139, 92, 246, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .btn-glow:hover {
+            box-shadow: 0 0 25px rgba(139, 92, 246, 0.6);
+            transform: translateY(-1px);
+        }
+
+        .stat-card {
+            background: linear-gradient(145deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.9) 100%);
+            border: 1px solid rgba(51, 65, 85, 0.5);
+            backdrop-filter: blur(10px);
+            transition: transform 0.2s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-2px);
+            border-color: rgba(167, 139, 250, 0.4);
+        }
+
+        @media print {
+            @page { size: A4 portrait; margin: 1cm; }
+            .no-print { display: none !important; }
+            body { 
+                background: white !important; 
+                color: #0f172a !important; 
+                background-image: none !important;
+                font-size: 12px !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            main { padding: 0 !important; margin: 0 !important; }
+            #dashboard-container { max-width: 100% !important; margin: 0 !important; }
+            
+            .stat-card {
+                background: #f8fafc !important;
+                border: 1px solid #cbd5e1 !important;
+                break-inside: avoid;
+                box-shadow: none !important;
+                padding: 12px !important;
+                color: black !important;
+            }
+            .text-white, .text-slate-300 { color: #0f172a !important; }
+            .text-slate-400, .text-slate-500 { color: #475569 !important; }
+            .text-violet-400, .text-violet-500 { color: #0284c7 !important; }
+            .text-emerald-400 { color: #059669 !important; }
+            .text-orange-400 { color: #ea580c !important; }
+            
+            .border-slate-800, .border-slate-700 { border-color: #cbd5e1 !important; }
+            .border-b { border-bottom-color: #cbd5e1 !important; }
+            
+            .bg-slate-800 { background-color: #e2e8f0 !important; }
+            
+            /* Ajustements de grille pour impression */
+            .print-grid-2 { 
+                display: grid !important; 
+                grid-template-columns: repeat(2, 1fr) !important; 
+                gap: 16px !important;
+            }
+            .print-grid-4 {
+                display: grid !important; 
+                grid-template-columns: repeat(4, 1fr) !important; 
+                gap: 12px !important;
+            }
+            
+            table { width: 100% !important; border-collapse: collapse !important; }
+            th { border-bottom: 2px solid #cbd5e1 !important; color: #475569 !important; }
+            tr { border-bottom: 1px solid #e2e8f0 !important; }
+            
+            h2, h3 { color: #0f172a !important; }
+        }
+    </style>
+</head>
+
+<body class="flex flex-col min-h-screen">
+    <div class="fixed top-1/4 right-0 w-[500px] h-[500px] bg-violet-900/10 rounded-full blur-[120px] pointer-events-none -z-10 no-print"></div>
+
+    <header class="w-full no-print z-30 bg-[#05080f]/90 backdrop-blur-sm border-b border-slate-800/50 sticky top-0">
+        <div class="w-full px-6 md:px-12 py-5 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="text-violet-400">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 2L2 7l10 5 10-5-10-5Z" />
+                        <path d="m2 17 10 5 10-5" />
+                        <path d="m2 12 10 5 10-5" />
+                    </svg>
+                </div>
+                <span class="text-xl font-bold tracking-tight text-white">Viesco<span
+                        class="text-violet-400">Hub</span></span>
+            </div>
+
+            <nav class="hidden md:flex items-center gap-8 text-xs font-bold tracking-widest uppercase text-slate-400">
+                <a href="../index.html" class="hover:text-violet-400 transition-colors">Accueil</a>
+                <a href="absences.html" class="hover:text-violet-400 transition-colors">Absences</a>
+                <a href="bilan-absences.html" class="hover:text-violet-400 transition-colors">Bilan Abs.</a>
+                <a href="programme-retenues.html" class="hover:text-violet-400 transition-colors">Retenues</a>
+                <a href="#" class="text-white hover:text-violet-400 transition-colors">Bilan Sanc.</a>
+                <a href="createur-devoirs.html" class="hover:text-violet-400 transition-colors">Devoirs</a>
+                <a href="documents.html" class="hover:text-violet-400 transition-colors">Documents</a>
+                <a href="planning.html" class="hover:text-violet-400 transition-colors">Planning</a>
+                <span class="text-slate-600">|</span>
+                <div class="flex items-center gap-2 bg-slate-900 border border-slate-800 px-3 py-1.5 rounded-full">
+                    <div class="w-1.5 h-1.5 rounded-full bg-violet-400 animate-pulse"></div>
+                    <span id="live-time" class="text-sm font-bold text-violet-400 font-mono">--:--</span>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main class="flex-grow w-full px-6 py-12 md:py-20 flex flex-col">
+        <div class="max-w-7xl mx-auto w-full mb-8 no-print grid grid-cols-1 lg:grid-cols-12 gap-8 z-10">
+            
+            <!-- Colonne de gauche : Contexte -->
+            <div class="lg:col-span-5 flex flex-col justify-between py-0">
+                <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-violet-900/30 border border-violet-800/50 mb-6 w-fit">
+                    <div class="w-1.5 h-1.5 rounded-full bg-violet-500 animate-pulse"></div>
+                    <span class="text-[10px] font-bold tracking-widest text-violet-300 uppercase">Outil Analytique</span>
+                </div>
+                
+                <h1 class="text-4xl md:text-5xl font-black text-white tracking-tight leading-[1.1] mb-4">
+                    Bilan<br><span class="text-violet-500">Sanctions</span>
+                </h1>
+                
+                <p class="text-sm font-medium text-slate-400 mb-8 leading-relaxed max-w-sm">
+                    Collez l'export CSV Pronote des punitions pour générer instantanément un rapport statistique clair et imprimable.
+                </p>
+                
+                <div class="space-y-4">
+                    <div class="flex items-start gap-4 bg-slate-900/40 p-4 rounded-2xl border border-slate-800/60">
+                        <div class="bg-violet-500/10 p-2.5 rounded-xl text-violet-400">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+                        </div>
+                        <div>
+                            <h4 class="text-white font-bold text-sm">Tableau de Bord</h4>
+                            <p class="text-xs text-slate-500 mt-1">Analyse des motifs fréquents et suivi des KPIs des sanctions.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-start gap-4 bg-slate-900/40 p-4 rounded-2xl border border-slate-800/60">
+                        <div class="bg-violet-500/10 p-2.5 rounded-xl text-violet-400">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                        </div>
+                        <div>
+                            <h4 class="text-white font-bold text-sm">Suivi Intensif</h4>
+                            <p class="text-xs text-slate-500 mt-1">Identifie rapidement les élèves accumulant le plus de sanctions.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Colonne de droite : Zone d'action -->
+            <div class="lg:col-span-7 bg-[#0d1326] p-6 md:p-8 rounded-3xl border border-slate-800 shadow-2xl relative overflow-hidden flex flex-col min-h-[500px]">
+                <div class="absolute top-0 left-0 w-1 h-full bg-violet-500 shadow-[0_0_15px_#8b5cf6]"></div>
+                
+                <div class="flex items-center justify-between mb-4 pl-2">
+                    <div class="flex items-center gap-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-violet-400"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                        <h2 class="text-sm font-bold text-white uppercase tracking-widest">Zone d'importation</h2>
+                    </div>
+                </div>
+                
+                <div class="relative flex-grow flex flex-col mb-6">
+                    <div class="absolute top-3 left-3 flex gap-1.5 z-10">
+                        <div class="w-2.5 h-2.5 rounded-full bg-slate-800"></div>
+                        <div class="w-2.5 h-2.5 rounded-full bg-slate-800"></div>
+                        <div class="w-2.5 h-2.5 rounded-full bg-slate-800"></div>
+                    </div>
+                    <textarea id="input"
+                        class="w-full flex-grow p-4 pt-10 bg-slate-950/50 border border-slate-800/80 rounded-2xl font-mono text-xs text-violet-100 placeholder-slate-600 focus:bg-[#0a0f1c] focus:ring-1 focus:ring-violet-500 focus:border-violet-500 outline-none transition-all resize-none shadow-inner"
+                        placeholder="> Collez le tableau Pronote ci-dessous (format CSV)..."></textarea>
+                </div>
+
+                <div class="flex justify-end items-center gap-3 mt-auto">
+                    <button onclick="document.getElementById('input').value = ''" class="text-slate-400 hover:text-white px-4 py-2 text-sm font-bold transition-colors w-full sm:w-auto text-center">
+                        Effacer
+                    </button>
+                    <button onclick="analyzeClasses()" class="btn-glow bg-white text-slate-950 px-8 py-2.5 rounded-full text-sm font-bold transition-all flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+                        Analyser les classes
+                    </button>
+                </div>
+
+                <!-- Zone de sélection de classe -->
+                <div id="class-selection-container" class="hidden mt-6 bg-slate-900/50 p-5 rounded-2xl border border-slate-700/50 shadow-inner">
+                    <div class="flex items-center gap-2 mb-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-violet-400"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                        <h3 class="text-sm font-bold text-white uppercase tracking-wider">Sélectionnez la vue à générer</h3>
+                    </div>
+                    <div id="class-buttons" class="flex flex-wrap gap-2">
+                        <!-- Boutons générés via JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Container du Tableau de bord -->
+        <div id="dashboard-container" class="w-full max-w-6xl mx-auto hidden">
+            <!-- En-tête du rapport -->
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-8 border-b border-slate-800 pb-4 gap-4">
+                <div>
+                    <h2 id="report-title" class="text-2xl font-black text-white uppercase tracking-tight">Rapport Analytique</h2>
+                    <p class="text-sm text-violet-400 font-medium mt-1">Analyse des punitions et retenues</p>
+                </div>
+                <button onclick="window.print()" class="no-print bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 rounded-lg text-sm font-bold transition-colors border border-slate-700 flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect width="12" height="8" x="6" y="14"/></svg>
+                    Imprimer PDF
+                </button>
+            </div>
+
+            <!-- KPI Cards -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8 print-grid-4">
+                <div class="stat-card p-5 rounded-xl">
+                    <div class="text-slate-400 text-xs font-bold uppercase tracking-wider mb-1">Total Sanctions</div>
+                    <div id="kpi-total" class="text-3xl font-black text-white">0</div>
+                    <div class="text-[10px] text-slate-500 mt-2">Actes enregistrés</div>
+                </div>
+                <div class="stat-card p-5 rounded-xl">
+                    <div class="text-slate-400 text-xs font-bold uppercase tracking-wider mb-1">Élèves Concernés</div>
+                    <div id="kpi-students" class="text-3xl font-black text-violet-400">0</div>
+                    <div class="text-[10px] text-slate-500 mt-2">Profils uniques</div>
+                </div>
+                <div class="stat-card p-5 rounded-xl">
+                    <div class="text-slate-400 text-xs font-bold uppercase tracking-wider mb-1">Sanctions Réalisées</div>
+                    <div id="kpi-realized" class="text-3xl font-black text-emerald-400">0</div>
+                    <div class="text-[10px] text-slate-500 mt-2">Dossiers clos</div>
+                </div>
+                <div class="stat-card p-5 rounded-xl">
+                    <div class="text-slate-400 text-xs font-bold uppercase tracking-wider mb-1">En attente / Prog.</div>
+                    <div id="kpi-pending" class="text-3xl font-black text-orange-400">0</div>
+                    <div class="text-[10px] text-slate-500 mt-2">À suivre</div>
+                </div>
+            </div>
+
+            <!-- Top Motifs & Top Élèves -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 print-grid-2">
+                <!-- Top Motifs -->
+                <div class="stat-card p-5 rounded-xl">
+                    <h3 class="text-sm font-bold text-white uppercase tracking-wider mb-4 border-b border-slate-700/50 pb-2">Principaux Motifs</h3>
+                    <div id="list-motifs" class="space-y-3">
+                        <!-- Généré via JS -->
+                    </div>
+                </div>
+
+                <!-- Élèves les plus sanctionnés -->
+                <div class="stat-card p-5 rounded-xl">
+                    <h3 class="text-sm font-bold text-white uppercase tracking-wider mb-4 border-b border-slate-700/50 pb-2">Suivi Intensif (Élèves les plus sanctionnés)</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm">
+                            <thead>
+                                <tr class="text-slate-500 text-xs uppercase border-b border-slate-800">
+                                    <th class="pb-2 font-medium">Élève</th>
+                                    <th id="th-classe-1" class="pb-2 font-medium">Classe</th>
+                                    <th class="pb-2 font-medium text-right">Nb</th>
+                                </tr>
+                            </thead>
+                            <tbody id="list-students" class="text-slate-300">
+                                <!-- Généré via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Liste complète alphabétique avec détails -->
+            <div class="stat-card p-5 rounded-xl mt-6 print:break-before-page print:shadow-none print:border-none print:p-0 print:mt-4">
+                <h3 class="text-sm font-bold text-white uppercase tracking-wider mb-4 border-b border-slate-700/50 pb-2 print:text-black print:border-slate-300 print:mb-2 print:text-xs">Bilan détaillé par élève</h3>
+                <div class="overflow-x-auto max-h-[500px] overflow-y-auto print:max-h-none print:overflow-visible">
+                    <table class="w-full text-left text-sm print:text-xs">
+                        <thead class="sticky top-0 bg-[#0f172a] print:bg-transparent z-10">
+                            <tr class="text-slate-400 text-xs uppercase border-b border-slate-700 print:border-slate-300">
+                                <th class="pb-3 pt-2 px-2 font-medium print:text-slate-600 print:py-1 w-1/4">Élève (Nb)</th>
+                                <th id="th-classe-2" class="pb-3 pt-2 px-2 font-medium print:text-slate-600 print:py-1 w-1/12">Classe</th>
+                                <th class="pb-3 pt-2 px-2 font-medium print:text-slate-600 print:py-1 w-2/3">Détail des sanctions (Motif & État)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="list-all-students" class="text-slate-300 align-top">
+                            <!-- Généré via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="mt-8 text-center text-xs text-slate-600 print:mt-4 print:text-[10px]">
+                Généré via ViescoHub - Outil d'analyse locale. Aucune donnée n'est envoyée sur des serveurs externes.
+            </div>
+
+        </div>
+
+    </main>
+
+    <script>
+        function updateClock() {
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+            const dateStr = now.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
+            const clockEl = document.getElementById('live-time');
+            if (clockEl) clockEl.textContent = dateStr.charAt(0).toUpperCase() + dateStr.slice(1) + ' • ' + timeStr;
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // Échapper HTML pour la sécurité XSS
+        function escapeHTML(str) {
+            if (!str) return "";
+            return str.replace(/[&<>'"]/g, tag => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
+            }[tag]));
+        }
+
+        // Nettoyer et normaliser une chaîne
+        function normalizeStr(str) {
+            return str ? str.trim().replace(/^"|"$/g, '') : '';
+        }
+
+        let globalParsedData = [];
+
+        function analyzeClasses() {
+            const rawData = document.getElementById('input').value;
+            if (!rawData.trim()) {
+                alert("Veuillez coller des données avant de générer l'analyse.");
+                return;
+            }
+
+            globalParsedData = parseData(rawData);
+            
+            if (globalParsedData.length === 0) {
+                alert("Aucune donnée exploitable trouvée. Vérifiez le format de votre export Pronote.");
+                return;
+            }
+
+            // Extraction des classes uniques
+            const classes = [...new Set(globalParsedData.map(d => d.classe))].sort();
+            
+            const btnContainer = document.getElementById('class-buttons');
+            btnContainer.innerHTML = '';
+            
+            // Bouton Toutes les classes
+            const allBtn = document.createElement('button');
+            allBtn.className = 'px-4 py-2 bg-violet-600 hover:bg-violet-500 text-white text-xs font-bold rounded-xl transition-colors shadow-lg';
+            allBtn.textContent = 'Toutes les classes';
+            allBtn.onclick = () => generateDashboard('Toutes les classes');
+            btnContainer.appendChild(allBtn);
+
+            classes.forEach(c => {
+                const btn = document.createElement('button');
+                btn.className = 'px-3 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-600 hover:border-violet-500 text-slate-300 hover:text-white text-xs font-bold rounded-xl transition-colors';
+                btn.textContent = c;
+                btn.onclick = () => generateDashboard(c);
+                btnContainer.appendChild(btn);
+            });
+
+            document.getElementById('class-selection-container').classList.remove('hidden');
+            document.getElementById('class-selection-container').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        function generateDashboard(targetClass) {
+            let dataToRender = globalParsedData;
+            
+            if (targetClass !== 'Toutes les classes') {
+                dataToRender = globalParsedData.filter(d => d.classe === targetClass);
+                document.getElementById('report-title').textContent = `Rapport Analytique - ${targetClass}`;
+            } else {
+                document.getElementById('report-title').textContent = `Rapport Analytique - Vue Globale`;
+            }
+
+            document.getElementById('dashboard-container').classList.remove('hidden');
+            renderDashboard(dataToRender, targetClass);
+            
+            // Scroll doux vers le résultat
+            document.getElementById('dashboard-container').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function parseData(rawStr) {
+            const lines = rawStr.split('\n');
+            let data = [];
+
+            lines.forEach(line => {
+                if (!line.trim()) return;
+
+                // Séparation par tabulation puis nettoyage
+                const cols = line.split('\t').map(c => normalizeStr(c));
+
+                // CORRECTIF MAJEUR : On ne détecte QUE la ligne principale de sanction (qui contient la classe et le nom)
+                // Cela permet d'ignorer les sous-lignes (les "séances") qui ont des colonnes vides au début pour ne pas fausser les stats
+                if (cols.length >= 2 && cols[0].length > 0 && cols[0].length < 15 && cols[1].length > 2 && !cols[0].toLowerCase().includes("classe") && !cols[0].toLowerCase().includes("date")) {
+                    
+                    let nom = escapeHTML(cols[1]);
+                    let classe = escapeHTML(cols[0]);
+                    
+                    let motif = "Non précisé";
+                    let etat = "Inconnu";
+
+                    // Recherche de l'état sur la ligne principale
+                    for (let c of cols) {
+                        let cLow = c.toLowerCase();
+                        if (cLow.includes("réalisée") || cLow.includes("programmée") || cLow.includes("dépassée") || cLow.includes("attente") || cLow.includes("à programmer")) {
+                            etat = escapeHTML(c);
+                            break;
+                        }
+                    }
+
+                    // Recherche du motif
+                    for(let i=0; i < cols.length; i++) {
+                         let colLow = cols[i].toLowerCase();
+                         if (colLow === "retenue" || colLow === "exclusion" || colLow === "avertissement" || colLow.includes("cumul")) {
+                             if (cols[i].length > 10 && !colLow.match(/^[0-9]{2}\/[0-9]{2}\/[0-9]{4}$/)) {
+                                 motif = escapeHTML(cols[i]);
+                                 break;
+                             } else if (cols[i+1] && cols[i+1].length > 3) {
+                                 motif = escapeHTML(cols[i+1]);
+                                 break;
+                             }
+                         }
+                    }
+
+                    // Cas particulier très fréquent : Le motif commence par "Cumul"
+                    if (motif === "Non précisé") {
+                        const cumulCol = cols.find(c => c.toLowerCase().startsWith("cumul"));
+                        if (cumulCol) motif = escapeHTML(cumulCol);
+                    }
+
+                    // Normalisation basique
+                    if (motif.toLowerCase().includes("cumul de 3") || motif.toLowerCase() === "cumul d'observations") motif = "Cumul d'observations";
+                    if (motif.toLowerCase().includes("violence")) motif = "Violence / Brutalité";
+                    if (motif.toLowerCase().includes("respect")) motif = "Manque de respect";
+
+                    data.push({
+                        nom: nom,
+                        classe: classe,
+                        motif: motif,
+                        etat: etat
+                    });
+                }
+            });
+
+            return data;
+        }
+
+        function renderDashboard(data, targetClass) {
+            
+            const showClass = targetClass === 'Toutes les classes';
+            document.getElementById('th-classe-1').style.display = showClass ? '' : 'none';
+            document.getElementById('th-classe-2').style.display = showClass ? '' : 'none';
+
+            // --- Calcul des KPIs ---
+            const totalSanctions = data.length;
+            const uniqueStudents = new Set(data.map(d => d.nom)).size;
+            
+            let countRealized = 0;
+            let countPending = 0;
+
+            data.forEach(d => {
+                let etat = d.etat.toLowerCase();
+                // "en partie réalisée" inclut le mot "réalisée" donc sera comptée ici
+                if (etat.includes("réalisée") && !etat.includes("non")) {
+                    countRealized++;
+                } else if (etat.includes("programmée") || etat.includes("attente") || etat.includes("dépassée") || etat.includes("à programmer")) {
+                    countPending++;
+                }
+            });
+
+            // Mise à jour de l'UI des KPIs
+            document.getElementById('kpi-total').textContent = totalSanctions;
+            document.getElementById('kpi-students').textContent = uniqueStudents;
+            document.getElementById('kpi-realized').textContent = countRealized;
+            document.getElementById('kpi-pending').textContent = countPending;
+
+            // --- Liste : Principaux Motifs ---
+            const motifsCount = {};
+            data.forEach(d => { motifsCount[d.motif] = (motifsCount[d.motif] || 0) + 1; });
+            
+            // Trier et prendre les 5 premiers
+            const sortedMotifs = Object.entries(motifsCount).sort((a, b) => b[1] - a[1]).slice(0, 5);
+            
+            const motifContainer = document.getElementById('list-motifs');
+            motifContainer.innerHTML = '';
+            
+            sortedMotifs.forEach(([motif, count]) => {
+                const percentage = Math.round((count / totalSanctions) * 100);
+                motifContainer.innerHTML += `
+                    <div>
+                        <div class="flex justify-between text-xs mb-1">
+                            <span class="text-slate-300 font-medium truncate pr-2" title="${motif}">${motif}</span>
+                            <span class="text-violet-400 font-bold">${count} <span class="text-slate-500 font-normal">(${percentage}%)</span></span>
+                        </div>
+                        <div class="w-full bg-slate-800 rounded-full h-1.5">
+                            <div class="bg-violet-500 h-1.5 rounded-full" style="width: ${percentage}%"></div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            // --- Liste : Élèves les plus sanctionnés ---
+            const studentCount = {};
+            const studentClasses = {}; // Pour garder la trace de la classe
+            const studentDetails = {}; // Pour stocker le détail des actes
+
+            data.forEach(d => { 
+                studentCount[d.nom] = (studentCount[d.nom] || 0) + 1; 
+                studentClasses[d.nom] = d.classe;
+                
+                // On stocke chaque motif et état associé à cet élève
+                if (!studentDetails[d.nom]) studentDetails[d.nom] = [];
+                studentDetails[d.nom].push({ motif: d.motif, etat: d.etat });
+            });
+
+            // Trier et prendre les 8 premiers
+            const sortedStudents = Object.entries(studentCount).sort((a, b) => b[1] - a[1]).slice(0, 8);
+            
+            const studentContainer = document.getElementById('list-students');
+            studentContainer.innerHTML = '';
+
+            sortedStudents.forEach(([nom, count]) => {
+                studentContainer.innerHTML += `
+                    <tr class="border-b border-slate-800/50 hover:bg-slate-800/30 transition-colors">
+                        <td class="py-2.5 font-bold text-white text-xs truncate max-w-[150px]">${nom}</td>
+                        ${showClass ? `<td class="py-2.5 text-xs text-slate-400"><span class="bg-slate-800 px-1.5 py-0.5 rounded border border-slate-700">${studentClasses[nom]}</span></td>` : ''}
+                        <td class="py-2.5 text-right font-black text-violet-400 text-sm">${count}</td>
+                    </tr>
+                `;
+            });
+
+            // --- Liste Complète Alphabétique avec détails ---
+            // On récupère tous les noms, on les trie alphabétiquement
+            const alphabeticalStudents = Object.keys(studentCount).sort((a, b) => a.localeCompare(b, 'fr', {sensitivity: 'base'}));
+            const allStudentsContainer = document.getElementById('list-all-students');
+            
+            if (allStudentsContainer) {
+                allStudentsContainer.innerHTML = '';
+                alphabeticalStudents.forEach(nom => {
+                    
+                    // Génération des badges de détails pour l'élève
+                    let detailsHTML = '<div class="flex flex-wrap gap-1.5">';
+                    studentDetails[nom].forEach(acte => {
+                        let shortEtat = acte.etat;
+                        let etatColor = "text-slate-400 print:text-slate-500";
+                        
+                        // Raccourcir et colorer les états pour optimiser la place
+                        const etatLow = acte.etat.toLowerCase();
+                        if (etatLow.includes("réalisée") && !etatLow.includes("non")) {
+                            shortEtat = "Réalisée";
+                            etatColor = "text-emerald-400 print:text-emerald-700";
+                        } else if (etatLow.includes("programmée") || etatLow.includes("attente") || etatLow.includes("à programmer")) {
+                            shortEtat = "Prog.";
+                            etatColor = "text-orange-400 print:text-orange-600";
+                        } else if (etatLow.includes("dépassée") || etatLow.includes("non réalisée")) {
+                            shortEtat = "Non réal.";
+                            etatColor = "text-red-400 print:text-red-600";
+                        }
+
+                        detailsHTML += `
+                            <span class="inline-flex items-baseline gap-1 bg-slate-800/80 print:bg-slate-100 border border-slate-700 print:border-slate-300 rounded px-1.5 py-0.5 text-[10px] print:text-[9px] leading-tight text-slate-200 print:text-slate-800">
+                                <span>${acte.motif}</span> 
+                                <span class="${etatColor} font-bold text-[9px] print:text-[8px]">(${shortEtat})</span>
+                            </span>`;
+                    });
+                    detailsHTML += '</div>';
+
+                    allStudentsContainer.innerHTML += `
+                        <tr class="border-b border-slate-800/50 hover:bg-slate-800/30 transition-colors print:border-slate-200 print:break-inside-avoid">
+                            <td class="py-2.5 px-2 font-bold text-white print:text-black text-xs print:py-1.5">
+                                ${nom} <span class="ml-1 text-violet-500 print:text-violet-700 font-black">(${studentCount[nom]})</span>
+                            </td>
+                            ${showClass ? `<td class="py-2.5 px-2 text-xs text-slate-400 print:text-slate-600 print:py-1.5">
+                                <span class="bg-slate-800 print:bg-transparent print:border-none print:p-0 px-1.5 py-0.5 rounded border border-slate-700">${studentClasses[nom]}</span>
+                            </td>` : ''}
+                            <td class="py-2.5 px-2 print:py-1.5">
+                                ${detailsHTML}
+                            </td>
+                        </tr>
+                    `;
+                });
+            }
+        }
+    </script>
+
+    <!-- Script de l'assistant virtuel -->
+    <script src="../js/assistant.js"></script>
+</body>
+</html>

@@ -1,0 +1,1340 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Passage Self - Nouvelle Interface</title>
+    <!-- Tailwind via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <style>
+        /* Format A4 Portrait */
+        @page { size: A4 portrait; margin: 10mm; }
+
+        @media screen {
+            body {
+                background-color: #080c16;
+                color: #f8fafc;
+                background-image:
+                    linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+                background-size: 50px 50px;
+                background-position: center top;
+                display: flex; flex-direction: column; align-items: center;
+                min-height: 100vh; font-family: 'Inter', system-ui, sans-serif;
+            }
+            .a4-page {
+                width: 210mm; min-height: 297mm; height: auto; margin-top: 1rem; background: #0d1326;
+                padding: 15mm; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
+                display: flex; flex-direction: column; position: relative;
+                border-radius: 1.5rem; border: 1px solid #1e293b; overflow: visible; box-sizing: border-box;
+            }
+            .edit-mode-only { display: flex; }
+            .print-mode-only { display: none; }
+        }
+
+        @media print {
+            @page { margin: 0; }
+            html, body { margin: 0; padding: 0; background: white; color: black; }
+            .a4-page {
+                margin: 0; padding: 15mm; width: 210mm; height: 297mm; box-shadow: none; border: none; border-radius: 0;
+                overflow: hidden; display: flex; flex-direction: column; box-sizing: border-box; background: white;
+            }
+            .no-print, .action-button, .edit-mode-only { display: none !important; }
+            .print-mode-only { display: block; }
+            
+            /* Styles spécifiques à l'impression pour les tags */
+            .print-tag {
+                display: inline-block;
+                border: 2px solid #1e293b;
+                border-radius: 4px;
+                padding: 4px 12px;
+                margin: 4px;
+                font-weight: 800;
+                font-size: 1.1rem;
+                color: #0f172a;
+                background-color: #f8fafc !important; /* Force le fond */
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            
+            /* Ajustement de la grille d'impression */
+            .print-grid {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 10px;
+                margin-top: 15px;
+            }
+        }
+        
+        body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+        /* Design des blocs de créneaux */
+        .slot-card {
+            border: 1px solid #1e293b;
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            background: rgba(15, 23, 42, 0.5);
+            box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.1);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .slot-header {
+            display: flex; align-items: center; justify-content: space-between;
+            border-bottom: 1px dashed #334155; padding-bottom: 0.75rem; margin-bottom: 1rem;
+        }
+
+        .time-badge {
+            background-color: #1e293b; color: #f8fafc; border: 1px solid #334155;
+            font-size: 1.5rem; font-weight: 900;
+            padding: 0.25rem 1rem; border-radius: 8px;
+            letter-spacing: 0.05em;
+        }
+
+        /* Tags d'édition à l'écran */
+        .class-tag {
+            display: inline-flex; align-items: center; gap: 0.5rem;
+            background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.3);
+            color: #fbbf24; font-weight: 700; font-size: 1rem;
+            padding: 0.5rem 1rem; border-radius: 9999px;
+            margin: 0.25rem; transition: all 0.2s;
+        }
+        .class-tag:hover { border-color: rgba(245, 158, 11, 0.6); background: rgba(245, 158, 11, 0.25); }
+        
+        .tag-remove {
+            color: #fbbf24; cursor: pointer; padding: 2px;
+        }
+        .tag-remove:hover { color: #f59e0b; }
+
+        /* Styles de la banque de boutons */
+        .class-bank {
+            display: flex; flex-wrap: wrap; gap: 0.5rem;
+            margin-top: 1rem; padding-top: 1rem; border-top: 1px dashed #334155;
+        }
+        
+        .bank-btn {
+            background-color: #0f172a; border: 1px solid #334155; color: #94a3b8;
+            font-size: 0.8rem; font-weight: 600; padding: 0.35rem 0.75rem; border-radius: 6px;
+            cursor: pointer; transition: all 0.2s;
+        }
+        .bank-btn:hover { background-color: #1e293b; border-color: #475569; color: #f8fafc; }
+        
+        /* Distinction par niveau */
+        .bank-btn.lvl-6 { border-left: 3px solid #3b82f6; }
+        .bank-btn.lvl-5 { border-left: 3px solid #10b981; }
+        .bank-btn.lvl-4 { border-left: 3px solid #f59e0b; }
+        .bank-btn.lvl-3 { border-left: 3px solid #ef4444; }
+        .bank-btn.lvl-club { border-left: 3px solid #a855f7; }
+        
+        /* Bouton grisé */
+        .bank-btn.added {
+            background-color: #0f172a; color: #475569; border-color: #1e293b; cursor: not-allowed;
+            border-left-color: #334155; opacity: 0.5;
+        }
+
+        /* Border left custom pour tableau de settings */
+        .lvl-6-border { border-left-color: #3b82f6 !important; }
+        .lvl-5-border { border-left-color: #10b981 !important; }
+        .lvl-4-border { border-left-color: #f59e0b !important; }
+        .lvl-3-border { border-left-color: #ef4444 !important; }
+        .lvl-club-border { border-left-color: #a855f7 !important; }
+
+        /* Mode impression de remplacement */
+        @media print {
+            .slot-card {
+                background: white !important;
+                border: 2px solid #e2e8f0 !important;
+                box-shadow: none !important;
+            }
+            .slot-header {
+                border-bottom: 2px dashed #cbd5e1 !important;
+            }
+            .time-badge {
+                background-color: #1e293b !important;
+                color: white !important;
+                border: none !important;
+            }
+            .print-black { color: black !important; }
+        }
+
+        /* Input d'ajout caché car remplacé par les boutons */
+        .add-input-container { display: none; }
+        
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: rgba(15, 23, 42, 0.5); 
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #334155; 
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #475569; 
+        }
+    </style>
+</head>
+<body class="text-slate-200 flex flex-col min-h-screen print:min-h-0">
+
+    <!-- Lueur ambiante -->
+    <div class="fixed top-0 right-0 w-[500px] h-[500px] bg-amber-900/10 rounded-full blur-[100px] pointer-events-none -z-10 no-print"></div>
+
+    <header class="w-full no-print z-30 bg-[#05080f]/90 backdrop-blur-sm border-b border-slate-800/50 sticky top-0">
+        <div class="w-full px-6 md:px-12 py-5 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="text-cyan-400">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 2L2 7l10 5 10-5-10-5Z" />
+                        <path d="m2 17 10 5 10-5" />
+                        <path d="m2 12 10 5 10-5" />
+                    </svg>
+                </div>
+                <span class="text-xl font-bold tracking-tight text-white">Viesco<span
+                        class="text-cyan-400">Hub</span></span>
+            </div>
+
+            <nav class="hidden md:flex items-center gap-8 text-xs font-bold tracking-widest uppercase text-slate-400">
+                <a href="../index.html" class="hover:text-amber-500 transition-colors">Accueil</a>
+                <a href="absences.html" class="hover:text-amber-500 transition-colors">Absences</a>
+                <a href="bilan-absences.html" class="hover:text-amber-500 transition-colors">Bilan Abs.</a>
+                <a href="programme-retenues.html" class="hover:text-amber-500 transition-colors">Retenues</a>
+                <a href="bilan-sanctions.html" class="hover:text-amber-500 transition-colors">Bilan Sanc.</a>
+                <a href="createur-devoirs.html" class="hover:text-amber-500 transition-colors">Devoirs</a>
+                <a href="documents.html" class="hover:text-amber-500 transition-colors">Documents</a>
+                <a href="planning.html" class="hover:text-amber-500 transition-colors">Planning</a>
+                <span class="text-slate-600">|</span>
+                <div class="flex items-center gap-2 bg-slate-900 border border-slate-800 px-3 py-1.5 rounded-full">
+                    <div class="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse"></div>
+                    <span id="live-time" class="text-sm font-bold text-cyan-400 font-mono">--:--</span>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main class="flex-grow w-full py-6 print:py-0 flex flex-col items-center">
+    <div class="no-print w-full max-w-4xl mx-auto flex flex-col md:flex-row gap-4 justify-between items-center bg-slate-800/50 backdrop-blur-md border border-slate-700 p-4 rounded-2xl shadow-2xl z-50 sticky top-24 mb-6">
+        <div class="flex items-center gap-3">
+            <div class="p-2.5 bg-amber-500/20 text-amber-500 rounded-xl shadow-inner">
+                <i class="ph ph-fork-knife text-2xl"></i>
+            </div>
+            <div>
+                <h1 class="text-white font-bold text-lg leading-tight tracking-wide">Gestion Passage Self</h1>
+                <p class="text-slate-400 text-xs font-medium">Nouvelle interface par cartes</p>
+            </div>
+        </div>
+        <div class="flex gap-3 items-center">
+            <div class="flex items-center bg-slate-900 rounded-lg px-3 py-1.5 border border-slate-700 shadow-inner">
+                <span class="text-slate-400 text-sm mr-2 font-medium">Semaine :</span>
+                <select id="weekTypeSelector" class="bg-transparent text-white font-bold outline-none cursor-pointer tracking-wider" onchange="updateDayHeader()">
+                    <option value="A" class="text-black">A</option>
+                    <option value="B" class="text-black">B</option>
+                </select>
+            </div>
+            <div class="flex items-center bg-slate-900 rounded-lg px-3 py-1.5 border border-slate-700 shadow-inner">
+                <span class="text-slate-400 text-sm mr-2 font-medium">Jour :</span>
+                <select id="daySelector" class="bg-transparent text-white font-bold outline-none cursor-pointer tracking-wider" onchange="updateDayHeader()">
+                    <option value="LUNDI" class="text-black">LUNDI</option>
+                    <option selected value="MARDI" class="text-black">MARDI</option>
+                    <option value="JEUDI" class="text-black">JEUDI</option>
+                    <option value="VENDREDI" class="text-black">VENDREDI</option>
+                </select>
+            </div>
+            <button onclick="openSettingsModal()" class="p-2 bg-slate-700 hover:bg-slate-600 text-slate-300 hover:text-white rounded-lg transition-colors border border-slate-600" title="Paramétrer les priorités">
+                <i class="ph ph-gear-six text-lg"></i>
+            </button>
+
+            <a href="documents.html" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white text-sm font-bold rounded-lg transition-colors border border-slate-600">
+                Retour
+            </a>
+            <button onclick="window.print()" class="flex items-center gap-2 px-6 py-2 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-white text-sm font-bold rounded-lg transition-all shadow-[0_4px_14px_0_rgba(217,119,6,0.39)] hover:-translate-y-0.5">
+                <i class="ph ph-printer text-lg"></i> Imprimer
+            </button>
+        </div>
+    </div>
+
+    <div class="a4-page">
+        <!-- En-tête -->
+        <div class="flex justify-between items-center border-b-2 border-slate-700 print:border-slate-900 pb-4 mb-6 shrink-0">
+            <div class="flex items-center gap-4">
+                <img src="../logo.png" alt="Logo" class="w-14 h-14 object-contain" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' fill=\'none\' viewBox=\'0 0 24 24\' stroke=\'%239CA3AF\'%3E%3Cpath stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'2\' d=\'M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4\'/%3E%3C/svg%3E'">
+                <div>
+                    <div class="text-xl font-black text-white print:text-slate-900 tracking-tight">Collège des Cordeliers</div>
+                    <div class="font-bold text-slate-400 print:text-slate-500 text-xs uppercase tracking-widest">Oloron-Sainte-Marie</div>
+                </div>
+            </div>
+            <div class="text-right flex flex-col items-end gap-1">
+                <div class="flex items-center gap-4">
+                    <h1 class="text-3xl font-black uppercase tracking-widest text-amber-500 print:text-slate-900 whitespace-nowrap">Passage Self</h1>
+                    <div class="bg-amber-500/20 text-amber-400 print:bg-slate-800 print:text-white px-6 py-1 rounded-full font-black tracking-widest text-lg border border-amber-500/30 print:border-none" id="dayHeader">
+                        MARDI
+                    </div>
+                </div>
+                <div class="text-sm font-bold text-slate-400 print:text-slate-500 uppercase tracking-widest" id="weekHeader">
+                    SEMAINE A
+                </div>
+            </div>
+        </div>
+
+        <!-- Compteur de validation -->
+        <div id="validationBanner" class="no-print mb-6 p-4 rounded-xl flex items-center justify-between border transition-all duration-300">
+            <!-- Injecté via JS -->
+        </div>
+
+        <!-- Conteneur principal -->
+        <div id="slotsContainer" class="flex-1 flex flex-col gap-2 min-h-0">
+            <!-- Injecté via JS -->
+        </div>
+        
+        <!-- Pied de page -->
+        <div class="mt-4 pt-2 border-t border-slate-200 text-center text-xs text-slate-400 italic shrink-0 flex justify-between px-2">
+            <span>Document généré par la Vie Scolaire</span>
+            <span id="printWeekInfo" class="font-bold print:text-slate-500"></span>
+        </div>
+    </div>
+    </main>
+
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] hidden flex-col items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-5xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
+            <div class="p-5 border-b border-slate-800 flex justify-between items-center bg-slate-800/50">
+                <div class="flex justify-between items-center w-full">
+                    <h2 class="text-xl font-black text-amber-500 uppercase tracking-widest"><i class="ph ph-sliders mr-2"></i>Paramètres du Self</h2>
+                    <div class="flex gap-3">
+                        <button onclick="closeSettingsModal()" class="text-slate-400 hover:text-white transition-colors bg-slate-800 p-1.5 rounded-lg border border-slate-700">
+                            <i class="ph ph-x text-xl"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="p-4 overflow-y-auto flex-1 custom-scrollbar">
+                <div class="mb-4 text-sm text-slate-300 bg-slate-800/50 p-4 rounded-xl border border-slate-700 flex flex-col gap-2">
+                    <div class="w-full font-bold text-white mb-1"><i class="ph ph-info mr-2 text-cyan-400"></i>Fonctionnement du tri automatique</div>
+                    <ul class="list-disc pl-5 space-y-1">
+                        <li><strong class="text-indigo-400">Priorité 1:</strong> Les classes qui finissent à <strong>11h00</strong>.</li>
+                        <li><strong class="text-emerald-400">Priorité 2:</strong> Les classes qui finissent à <strong>11h30</strong>.</li>
+                        <li><strong class="text-amber-400">Priorité 3:</strong> Les ateliers et CHAM reprenant à 13h00 (<strong>11h55</strong>) puis les autres classes à 13h00 (<strong>12h00</strong>).</li>
+                        <li><strong class="text-rose-400">Priorité 4:</strong> Les classes qui reprennent <strong>après 13h00</strong> (rotation hebdomadaire).</li>
+                    </ul>
+                </div>
+                
+                <!-- Bloc d'ajout de classe -->
+                <div class="mb-4 text-sm bg-slate-800/30 p-4 rounded-xl border border-slate-700 flex flex-col md:flex-row gap-3 items-center">
+                    <div class="w-full font-bold text-white mb-1 md:mb-0 md:w-auto md:mr-2">
+                        <i class="ph ph-plus-circle mr-2 text-emerald-400"></i>Nouvelle classe :
+                    </div>
+                    <input type="text" id="newClassName" placeholder="Nom (ex: 6°4)" class="bg-slate-900 border border-slate-600 text-white text-sm rounded-lg focus:ring-cyan-500 focus:border-cyan-500 w-full md:w-48 p-2 outline-none">
+                    <select id="newClassLevel" class="bg-slate-900 border border-slate-600 text-white text-sm rounded-lg focus:ring-cyan-500 focus:border-cyan-500 w-full md:w-auto p-2 outline-none cursor-pointer">
+                        <option value="6">Niveau 6ème</option>
+                        <option value="5">Niveau 5ème</option>
+                        <option value="4">Niveau 4ème</option>
+                        <option value="3">Niveau 3ème</option>
+                        <option value="club">Club / Atelier</option>
+                    </select>
+                    <button onclick="addNewClassToSystem()" class="w-full md:w-auto px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-lg transition-colors shadow-[0_4px_14px_0_rgba(16,185,129,0.39)]">
+                        Ajouter
+                    </button>
+                </div>
+                
+                <div class="rounded-xl border border-slate-700 overflow-x-auto">
+                    <table class="w-full text-left text-sm text-slate-300 min-w-[750px]">
+                        <thead class="text-xs uppercase bg-slate-800 text-slate-400 sticky top-0 z-10 shadow-md">
+                            <tr>
+                                <th rowspan="2" class="px-4 py-2 font-bold">Classe</th>
+                                <th colspan="2" class="px-2 py-2 text-center border-l border-slate-700">Lundi</th>
+                                <th colspan="2" class="px-2 py-2 text-center border-l border-slate-700">Mardi</th>
+                                <th colspan="2" class="px-2 py-2 text-center border-l border-slate-700">Jeudi</th>
+                                <th colspan="2" class="px-2 py-2 text-center border-l border-slate-700">Vendredi</th>
+                            </tr>
+                            <tr class="text-[10px]">
+                                <th class="px-1 py-1 text-center bg-slate-700/50 border-l border-slate-700 font-bold text-cyan-400">Sem A</th>
+                                <th class="px-1 py-1 text-center bg-slate-700/50 border-l border-slate-700 font-bold text-slate-300">Sem B</th>
+                                <th class="px-1 py-1 text-center bg-slate-700/50 border-l border-slate-700 font-bold text-cyan-400">Sem A</th>
+                                <th class="px-1 py-1 text-center bg-slate-700/50 border-l border-slate-700 font-bold text-slate-300">Sem B</th>
+                                <th class="px-1 py-1 text-center bg-slate-700/50 border-l border-slate-700 font-bold text-cyan-400">Sem A</th>
+                                <th class="px-1 py-1 text-center bg-slate-700/50 border-l border-slate-700 font-bold text-slate-300">Sem B</th>
+                                <th class="px-1 py-1 text-center bg-slate-700/50 border-l border-slate-700 font-bold text-cyan-400">Sem A</th>
+                                <th class="px-1 py-1 text-center bg-slate-700/50 border-l border-slate-700 font-bold text-slate-300">Sem B</th>
+                            </tr>
+                        </thead>
+                        <tbody id="settingsTableBody" class="divide-y divide-slate-700/50 bg-slate-900/50">
+                            <!-- Injecté via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="p-4 border-t border-slate-800 bg-slate-800/30 flex justify-between items-center gap-3 shrink-0">
+                <div class="flex gap-2">
+                    <button onclick="exportSettings()" class="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-slate-300 hover:text-white rounded-lg transition-colors border border-slate-600 text-sm flex items-center gap-2" title="Sauvegarder en JSON">
+                        <i class="ph ph-download-simple text-lg"></i> Exporter
+                    </button>
+                    <button onclick="document.getElementById('importFile').click()" class="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-slate-300 hover:text-white rounded-lg transition-colors border border-slate-600 text-sm flex items-center gap-2" title="Charger un JSON">
+                        <i class="ph ph-upload-simple text-lg"></i> Importer
+                    </button>
+                    <input type="file" id="importFile" accept=".json" class="hidden" onchange="importSettings(event)">
+                </div>
+                <div class="flex gap-3">
+                    <button onclick="closeSettingsModal()" class="px-5 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg transition-colors border border-slate-600 font-medium">Annuler</button>
+                    <button onclick="saveSettings()" class="px-6 py-2 bg-cyan-600 hover:bg-cyan-500 text-white font-bold rounded-lg transition-colors shadow-[0_4px_14px_0_rgba(8,145,178,0.39)] flex items-center gap-2">
+                        <i class="ph ph-floppy-disk text-lg"></i> Enregistrer
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Données d'exemple initiales
+        let planningData = [
+            { id: "slot1", time: "11h30", classes: [] },
+            { id: "slot2", time: "12h00", classes: [] }
+        ];
+        
+        let dragSourceSlotId = null;
+        let dragSourceIndex = null;
+        let dragSourceClassName = null;
+        
+        // Liste de toutes les classes possibles
+        let allClasses = [
+            // 6èmes
+            { name: "6°1", lvl: "6" }, { name: "6°2", lvl: "6" }, { name: "6°3", lvl: "6" },
+            { name: "6°2 LV1", lvl: "6" }, { name: "6°3 LV1", lvl: "6" },
+            { name: "6° ULIS", lvl: "6" },
+            // 5èmes
+            { name: "5°1", lvl: "5" }, { name: "5°2", lvl: "5" }, { name: "5°3", lvl: "5" },
+            { name: "5°1 Esp LV2", lvl: "5" },
+            { name: "5°1 CHAM", lvl: "5" }, { name: "5° ULIS", lvl: "5" },
+            // 4èmes
+            { name: "4°1", lvl: "4" }, { name: "4°2", lvl: "4" }, { name: "4°2 Ang LV1", lvl: "4" }, { name: "4°3", lvl: "4" },
+            { name: "4°3 Latin", lvl: "4" }, { name: "4°3 Ang LV1", lvl: "4" }, { name: "4°3 Esp LV1", lvl: "4" },
+            { name: "4° ULIS", lvl: "4" },
+            // 3èmes
+            { name: "3°1", lvl: "3" }, { name: "3°2", lvl: "3" }, { name: "3°3", lvl: "3" },
+            { name: "3°2 Ang LV2", lvl: "3" }, { name: "3°2 Ang LV1", lvl: "3" }, { name: "3°3 Ang LV1", lvl: "3" },
+            { name: "3°1 CHAM", lvl: "3" }, { name: "3° ULIS", lvl: "3" },
+            // Ateliers & Groupes
+            { name: "Théâtre", lvl: "club" }, { name: "Atelier Nature", lvl: "club" }, { name: "Chorale", lvl: "club" }
+        ];
+        
+        let scheduleSettings = JSON.parse(localStorage.getItem('viescoHub_selfSettings'));
+        if (!scheduleSettings || Object.keys(scheduleSettings).length === 0) {
+            scheduleSettings = getDefault2026Schedules();
+            localStorage.setItem('viescoHub_selfSettings', JSON.stringify(scheduleSettings));
+        }
+        
+        // S'il y a un tableau de classes spécifique enregistré avec les paramètres, on l'utilise
+        const savedClasses = JSON.parse(localStorage.getItem('viescoHub_allClasses'));
+        if (savedClasses && Array.isArray(savedClasses) && savedClasses.length > 0) {
+            allClasses = savedClasses;
+        } else {
+            // Sinon on initialise avec la liste par défaut et on la sauvegarde
+            localStorage.setItem('viescoHub_allClasses', JSON.stringify(allClasses));
+        }
+        
+        // Migration logic for Week A / B side-by-side
+        let needsMigration = false;
+        for (let cls in scheduleSettings) {
+            for (let day in scheduleSettings[cls]) {
+                if (scheduleSettings[cls][day].fin !== undefined || scheduleSettings[cls][day].reprise !== undefined) {
+                    needsMigration = true;
+                    break;
+                }
+            }
+            if (needsMigration) break;
+        }
+
+        if (needsMigration) {
+            const newSettings = {};
+            for (let cls in scheduleSettings) {
+                newSettings[cls] = {};
+                for (let day in scheduleSettings[cls]) {
+                    const oldFin = scheduleSettings[cls][day].fin || '';
+                    const oldRep = scheduleSettings[cls][day].reprise || '';
+                    
+                    let finA = oldFin.includes('_A') || !oldFin.includes('_') ? oldFin.replace('_A', '') : '';
+                    let finB = oldFin.includes('_B') || !oldFin.includes('_') ? oldFin.replace('_B', '') : '';
+                    let repA = oldRep.includes('_A') || !oldRep.includes('_') ? oldRep.replace('_A', '') : '';
+                    let repB = oldRep.includes('_B') || !oldRep.includes('_') ? oldRep.replace('_B', '') : '';
+                    
+                    newSettings[cls][day] = {
+                        A: { fin: finA, reprise: repA },
+                        B: { fin: finB, reprise: repB }
+                    };
+                }
+            }
+            scheduleSettings = newSettings;
+            localStorage.setItem('viescoHub_selfSettings', JSON.stringify(scheduleSettings));
+        }
+
+        function getWeekNumber(d) {
+            d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+            d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay()||7));
+            const yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1));
+            const weekNo = Math.ceil(( ( (d - yearStart) / 86400000) + 1)/7);
+            return weekNo;
+        }
+
+        function updateDayHeader() {
+            document.getElementById('dayHeader').innerText = document.getElementById('daySelector').value;
+            document.getElementById('weekHeader').innerText = "SEMAINE " + document.getElementById('weekTypeSelector').value;
+            autoGenerate();
+        }
+
+        function renderSlots() {
+            const container = document.getElementById('slotsContainer');
+            container.innerHTML = '';
+            
+            const currentDay = document.getElementById('daySelector').value;
+
+            // --- Calcul de la validation globale ---
+            const validClassesForDay = allClasses.filter(cls => {
+                if (cls.name === "Théâtre" || cls.name === "Atelier Nature" || cls.name === "Chorale") {
+                    return currentDay === "MARDI";
+                }
+                if (cls.name.includes("CHAM")) {
+                    return currentDay === "MARDI" || currentDay === "JEUDI";
+                }
+                return true;
+            });
+
+            const totalClassesCount = validClassesForDay.length;
+            const assignedClassesCount = validClassesForDay.filter(cls => 
+                planningData.some(s => s.classes.includes(cls.name))
+            ).length;
+
+            const banner = document.getElementById('validationBanner');
+            if (assignedClassesCount === totalClassesCount && totalClassesCount > 0) {
+                banner.className = "no-print mb-6 p-4 rounded-xl flex items-center justify-between border transition-all duration-300 bg-emerald-900/30 border-emerald-500/50";
+                banner.innerHTML = `
+                    <div class="flex items-center gap-3 text-emerald-400">
+                        <i class="ph ph-check-circle text-3xl"></i>
+                        <div>
+                            <div class="font-bold text-lg">Validé ! OK super.</div>
+                            <div class="text-xs opacity-80 mt-1">Toutes les classes disponibles (${totalClassesCount}/${totalClassesCount}) ont été placées.</div>
+                        </div>
+                    </div>
+                `;
+            } else {
+                banner.className = "no-print mb-6 p-4 rounded-xl flex items-center justify-between border transition-all duration-300 bg-slate-900/50 border-slate-700";
+                banner.innerHTML = `
+                    <div class="flex items-center gap-3 text-slate-300">
+                        <i class="ph ph-info text-3xl text-amber-500"></i>
+                        <div>
+                            <div class="font-bold text-lg">Classes à assigner</div>
+                            <div class="text-xs text-slate-400 mt-1">Il reste encore ${totalClassesCount - assignedClassesCount} classe(s) à placer pour cette journée.</div>
+                        </div>
+                    </div>
+                    <div class="text-2xl font-black ${assignedClassesCount === 0 ? 'text-slate-500' : 'text-amber-500'}">
+                        ${assignedClassesCount} <span class="text-sm font-bold text-slate-500">/ ${totalClassesCount}</span>
+                    </div>
+                `;
+            }
+            // ---------------------------------------
+
+            planningData.forEach((slot, slotIndex) => {
+                // Création de la carte du créneau
+                const card = document.createElement('div');
+                card.className = "slot-card";
+
+                // En-tête de la carte (Heure)
+                const header = document.createElement('div');
+                header.className = "slot-header print-mode-border-none";
+                header.innerHTML = `
+                    <div class="time-badge">${slot.time}</div>
+                    <div class="text-sm font-bold text-slate-500 print:text-slate-400 uppercase tracking-wider no-print">Créneau ${slotIndex + 1}</div>
+                `;
+                card.appendChild(header);
+
+                // --- Filtrage des sous-groupes implicites ---
+                const baseClassesInSlot = slot.classes.filter(c => /^\d°\d$/.test(c));
+                const displayClasses = slot.classes.filter(c => {
+                    const isBase = baseClassesInSlot.includes(c);
+                    if (isBase) return true;
+                    const baseMatch = baseClassesInSlot.find(b => c.startsWith(b + " "));
+                    if (baseMatch) return false;
+                    return true;
+                });
+
+                // --- MODE ÉCRAN (Édition via Tags) ---
+                const editArea = document.createElement('div');
+                editArea.className = "edit-mode-only flex-wrap gap-2 py-2 min-h-[40px]";
+                
+                editArea.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    e.dataTransfer.dropEffect = 'move';
+                });
+                
+                editArea.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    if (dragSourceSlotId && e.target === editArea) {
+                        moveClass(dragSourceSlotId, dragSourceIndex, slot.id, null);
+                    }
+                });
+                
+                let editItemIndex = 1;
+                let isAfterSeparatorEdit = false;
+                displayClasses.forEach((className) => {
+                    const originalIndex = slot.classes.indexOf(className);
+                    if (className === "SEPARATOR") {
+                        isAfterSeparatorEdit = true;
+                        const sepEdit = document.createElement('div');
+                        sepEdit.className = "w-full h-px bg-slate-700/50 my-2";
+                        editArea.appendChild(sepEdit);
+                        return;
+                    }
+                    
+                    const is13hClass = (slot.time === "12h00" && !isAfterSeparatorEdit);
+                    const tag = document.createElement('div');
+                    tag.className = "class-tag flex items-center";
+                    tag.draggable = true;
+                    tag.style.cursor = 'grab';
+                    
+                    tag.addEventListener('dragstart', (e) => {
+                        dragSourceSlotId = slot.id;
+                        dragSourceIndex = originalIndex;
+                        dragSourceClassName = className;
+                        e.dataTransfer.effectAllowed = 'move';
+                        setTimeout(() => tag.classList.add('opacity-50'), 0);
+                    });
+                    
+                    tag.addEventListener('dragend', (e) => {
+                        tag.classList.remove('opacity-50');
+                        dragSourceSlotId = null;
+                    });
+                    
+                    tag.addEventListener('dragover', (e) => {
+                        e.preventDefault();
+                        e.dataTransfer.dropEffect = 'move';
+                    });
+                    
+                    tag.addEventListener('dragenter', (e) => {
+                        e.preventDefault();
+                        if (dragSourceSlotId) tag.classList.add('ring-2', 'ring-amber-500', 'bg-amber-500/20');
+                    });
+                    
+                    tag.addEventListener('dragleave', (e) => {
+                        tag.classList.remove('ring-2', 'ring-amber-500', 'bg-amber-500/20');
+                    });
+                    
+                    tag.addEventListener('drop', (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        tag.classList.remove('ring-2', 'ring-amber-500', 'bg-amber-500/20');
+                        if (dragSourceSlotId) {
+                            moveClass(dragSourceSlotId, dragSourceIndex, slot.id, originalIndex);
+                        }
+                    });
+
+                    tag.innerHTML = `
+                        <span class="text-[10px] text-slate-400 font-mono mr-1.5 font-bold">${editItemIndex++}.</span>
+                        <span>${className}</span>
+                        ${is13hClass ? '<span class="text-[9px] bg-amber-500/20 text-amber-500 border border-amber-500/30 px-1.5 py-0.5 rounded ml-2 font-bold uppercase tracking-wider">13h</span>' : ''}
+                        <i class="ph ph-x-circle tag-remove ml-2" onclick="removeClass('${slot.id}', ${originalIndex})" title="Supprimer"></i>
+                    `;
+                    editArea.appendChild(tag);
+                });
+                card.appendChild(editArea);
+                
+                // --- BANQUE DE BOUTONS (Nouvelle interface d'ajout) ---
+                const bankArea = document.createElement('div');
+                bankArea.className = "class-bank no-print";
+                
+                allClasses.forEach(cls => {
+                    // --- Logique de filtrage par jour ---
+                    if (cls.lvl === "club") {
+                        if (!scheduleSettings[cls.name]?.[currentDay]) return; // Si pas actif ce jour-là
+                    }
+                    if (cls.name.includes("CHAM")) {
+                        if (currentDay !== "MARDI" && currentDay !== "JEUDI") return; // Seulement mardi et jeudi
+                    }
+
+                    const btn = document.createElement('button');
+                    
+                    // On vérifie si la classe est dans N'IMPORTE QUEL créneau
+                    const isAddedAnywhere = planningData.some(s => s.classes.includes(cls.name));
+                    
+                    btn.className = `bank-btn lvl-${cls.lvl} ${isAddedAnywhere ? 'added' : ''}`;
+                    btn.innerText = cls.name;
+                    btn.disabled = isAddedAnywhere; // Désactive le clic si déjà présent ailleurs
+                    
+                    if(!isAddedAnywhere) {
+                        btn.onclick = () => addClass(slot.id, cls.name);
+                    }
+                    
+                    bankArea.appendChild(btn);
+                });
+                
+                card.appendChild(bankArea);
+
+                // --- MODE IMPRESSION (Grille claire) ---
+                const printArea = document.createElement('div');
+                printArea.className = "print-mode-only print-grid";
+                let printItemIndex = 1;
+                let isAfterSeparatorPrint = false;
+                displayClasses.forEach((className) => {
+                    if (className === "SEPARATOR") {
+                        isAfterSeparatorPrint = true;
+                        const sepPrint = document.createElement('div');
+                        sepPrint.className = "col-span-3 h-[2px] bg-slate-300 print:bg-slate-300 my-1 rounded-full";
+                        printArea.appendChild(sepPrint);
+                        return;
+                    }
+                    
+                    const is13hClass = (slot.time === "12h00" && !isAfterSeparatorPrint);
+                    const printTag = document.createElement('div');
+                    printTag.className = "print-tag text-center flex justify-center items-center gap-1.5";
+                    printTag.innerHTML = `
+                        <span class="text-[10px] text-slate-400">${printItemIndex++}.</span>
+                        <span class="font-bold flex items-center">${className}</span>
+                        ${is13hClass ? '<span class="text-[10px] font-bold border border-slate-400 text-slate-600 px-1 rounded-sm ml-1">13h</span>' : ''}
+                    `;
+                    printArea.appendChild(printTag);
+                });
+                card.appendChild(printArea);
+
+                container.appendChild(card);
+            });
+        }
+
+        function addClass(slotId, className) {
+            const slot = planningData.find(s => s.id === slotId);
+            if (slot) {
+                slot.classes.push(className);
+                renderSlots();
+            }
+        }
+
+        function removeClass(slotId, classIndex) {
+            const slot = planningData.find(s => s.id === slotId);
+            if (slot) {
+                slot.classes.splice(classIndex, 1);
+                renderSlots();
+            }
+        }
+        
+        function moveClass(sourceSlotId, sourceIndex, targetSlotId, targetIndex) {
+            const sourceSlot = planningData.find(s => s.id === sourceSlotId);
+            const targetSlot = planningData.find(s => s.id === targetSlotId);
+            
+            if (sourceSlot && targetSlot) {
+                const className = sourceSlot.classes[sourceIndex];
+                sourceSlot.classes.splice(sourceIndex, 1);
+                
+                let insertIndex = targetIndex;
+                if (targetIndex !== null) {
+                    if (sourceSlotId === targetSlotId && sourceIndex < targetIndex) {
+                        insertIndex = targetIndex - 1;
+                    }
+                } else {
+                    insertIndex = targetSlot.classes.length;
+                }
+                
+                targetSlot.classes.splice(insertIndex, 0, className);
+                renderSlots();
+            }
+        }
+        
+        // --- LOGIQUE DE PARAMÉTRAGE ---
+        function openSettingsModal() {
+            renderSettingsTable();
+            document.getElementById('settingsModal').classList.remove('hidden');
+            document.getElementById('settingsModal').classList.add('flex');
+        }
+
+        function closeSettingsModal() {
+            document.getElementById('settingsModal').classList.add('hidden');
+            document.getElementById('settingsModal').classList.remove('flex');
+        }
+
+        function renderSettingsTable() {
+            const tbody = document.getElementById('settingsTableBody');
+            tbody.innerHTML = '';
+            const days = ['LUNDI', 'MARDI', 'JEUDI', 'VENDREDI'];
+            
+            allClasses.forEach(cls => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-800/80 transition-colors";
+                
+                let rowHtml = `
+                    <td class="px-4 py-2 font-bold text-slate-200 border-l-4 lvl-${cls.lvl}-border border-transparent bg-slate-900/30 whitespace-nowrap group">
+                        <div class="flex items-center justify-between">
+                            <span>${cls.name}</span>
+                            <button onclick="deleteClassFromSystem('${cls.name}')" class="text-slate-600 hover:text-rose-500 opacity-0 group-hover:opacity-100 transition-all p-1 rounded hover:bg-slate-800" title="Supprimer la classe">
+                                <i class="ph ph-trash text-lg"></i>
+                            </button>
+                        </div>
+                    </td>
+                `;
+                
+                days.forEach(day => {
+                    let isClub = cls.lvl === 'club';
+                    let isCHAM = cls.name.includes("CHAM");
+                    
+                    let shouldShow = true;
+                    if (isCHAM) {
+                        if (day !== "MARDI" && day !== "JEUDI") shouldShow = false;
+                    }
+
+                    if (isCHAM && !shouldShow) {
+                        rowHtml += `
+                            <td colspan="2" class="px-1 py-1.5 text-center border-l border-slate-700/50 bg-slate-900/10 text-slate-600 text-xs italic align-middle">
+                                <div class="flex items-center justify-center h-full opacity-50"><i class="ph ph-prohibit mr-1"></i> N/A</div>
+                            </td>
+                        `;
+                        return; // passe au jour suivant
+                    }
+
+                    let settings = scheduleSettings[cls.name]?.[day];
+                    let isActive = !!settings;
+
+                    if (isClub && !isActive) {
+                        rowHtml += `
+                            <td colspan="2" class="px-1 py-1.5 text-center border-l border-slate-700/50 bg-slate-900/10 align-middle">
+                                <button onclick="toggleClubDay('${cls.name}', '${day}')" class="w-full h-full flex flex-col items-center justify-center opacity-50 hover:opacity-100 hover:text-emerald-400 transition-colors text-slate-500 py-1" title="Activer pour ce jour">
+                                    <i class="ph ph-plus-circle text-lg mb-0.5"></i>
+                                    <span class="text-[10px] font-bold">Activer</span>
+                                </button>
+                            </td>
+                        `;
+                        return; // passe au jour suivant
+                    }
+                    
+                    settings = settings || {};
+                    let finA = settings.A?.fin || '';
+                    let repA = settings.A?.reprise || '';
+                    let finB = settings.B?.fin || '';
+                    let repB = settings.B?.reprise || '';
+                    
+                    rowHtml += `
+                        <td class="px-1 py-1.5 text-center border-l border-slate-700/50 relative">
+                            ${isClub ? `<button onclick="toggleClubDay('${cls.name}', '${day}')" class="absolute top-1 right-1 text-rose-500 hover:text-rose-400 bg-slate-900 rounded flex items-center justify-center border border-rose-500/50 p-0.5" title="Désactiver ce jour"><i class="ph ph-x text-[10px]"></i></button>` : ''}
+                            <div class="flex flex-col gap-1.5 mt-2">
+                                ${isClub ? '' : `
+                                <select class="bg-slate-900/80 border border-slate-700 text-slate-300 text-[10px] font-medium rounded focus:ring-cyan-500 focus:border-cyan-500 w-full p-1 outline-none transition-colors hover:border-slate-500" data-class="${cls.name}" data-day="${day}" data-week="A" data-type="fin" onchange="handleSelectChange(this)" id="sel_${cls.name}_${day}_fin_A">
+                                    <option value="">Fin...</option>
+                                    <option value="11h00_ALL">11h00 (Toutes)</option>
+                                    <option value="11h00" ${finA === '11h00' ? 'selected' : ''}>11h00</option>
+                                    <option value="11h30_ALL">11h30 (Toutes)</option>
+                                    <option value="11h30" ${finA === '11h30' ? 'selected' : ''}>11h30</option>
+                                    <option value="12h00_ALL">12h00 (Toutes)</option>
+                                    <option value="12h00" ${finA === '12h00' ? 'selected' : ''}>12h00</option>
+                                </select>`}
+                                <select class="bg-slate-900/80 border border-slate-700 text-slate-300 text-[10px] font-medium rounded focus:ring-cyan-500 focus:border-cyan-500 w-full p-1 outline-none transition-colors hover:border-slate-500" data-class="${cls.name}" data-day="${day}" data-week="A" data-type="reprise" onchange="handleSelectChange(this)" id="sel_${cls.name}_${day}_reprise_A">
+                                    <option value="">Reprise...</option>
+                                    <option value="13h00_ALL">13h00 (Toutes)</option>
+                                    <option value="13h00" ${(repA === '13h00' || (isClub && !repA)) ? 'selected' : ''}>13h00</option>
+                                    <option value="13h30_ALL">13h30 (Toutes)</option>
+                                    <option value="13h30" ${repA === '13h30' ? 'selected' : ''}>13h30</option>
+                                    <option value="14h00_ALL">14h00 (Toutes)</option>
+                                    <option value="14h00" ${repA === '14h00' ? 'selected' : ''}>14h00</option>
+                                    <option value="14h30_ALL">14h30 (Toutes)</option>
+                                    <option value="14h30" ${repA === '14h30' ? 'selected' : ''}>14h30</option>
+                                    <option value="15h00_ALL">15h00 (Toutes)</option>
+                                    <option value="15h00" ${repA === '15h00' ? 'selected' : ''}>15h00</option>
+                                </select>
+                            </div>
+                        </td>
+                        <td class="px-1 py-1.5 text-center border-l border-slate-700/50 bg-slate-800/20">
+                            <div class="flex flex-col gap-1.5">
+                                ${isClub ? '' : `
+                                <select class="bg-slate-900/80 border border-slate-700 text-slate-300 text-[10px] font-medium rounded focus:ring-cyan-500 focus:border-cyan-500 w-full p-1 outline-none transition-colors hover:border-slate-500" data-class="${cls.name}" data-day="${day}" data-week="B" data-type="fin" onchange="handleSelectChange(this)" id="sel_${cls.name}_${day}_fin_B">
+                                    <option value="">Fin...</option>
+                                    <option value="11h00" ${finB === '11h00' ? 'selected' : ''}>11h00</option>
+                                    <option value="11h30" ${finB === '11h30' ? 'selected' : ''}>11h30</option>
+                                    <option value="12h00" ${finB === '12h00' ? 'selected' : ''}>12h00</option>
+                                </select>`}
+                                <select class="bg-slate-900/80 border border-slate-700 text-slate-300 text-[10px] font-medium rounded focus:ring-cyan-500 focus:border-cyan-500 w-full p-1 outline-none transition-colors hover:border-slate-500" data-class="${cls.name}" data-day="${day}" data-week="B" data-type="reprise" onchange="handleSelectChange(this)" id="sel_${cls.name}_${day}_reprise_B">
+                                    <option value="">Reprise...</option>
+                                    <option value="13h00" ${(repB === '13h00' || (isClub && !repB)) ? 'selected' : ''}>13h00</option>
+                                    <option value="13h30" ${repB === '13h30' ? 'selected' : ''}>13h30</option>
+                                    <option value="14h00" ${repB === '14h00' ? 'selected' : ''}>14h00</option>
+                                    <option value="14h30" ${repB === '14h30' ? 'selected' : ''}>14h30</option>
+                                    <option value="15h00" ${repB === '15h00' ? 'selected' : ''}>15h00</option>
+                                </select>
+                            </div>
+                        </td>
+                    `;
+                });
+                
+                tr.innerHTML = rowHtml;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function toggleClubDay(className, day) {
+            if (!scheduleSettings[className]) scheduleSettings[className] = {};
+            if (scheduleSettings[className][day]) {
+                delete scheduleSettings[className][day]; // Désactiver
+            } else {
+                scheduleSettings[className][day] = {
+                    A: { reprise: '13h00' },
+                    B: { reprise: '13h00' }
+                }; // Activer par défaut à 13h00
+            }
+            localStorage.setItem('viescoHub_selfSettings', JSON.stringify(scheduleSettings));
+            renderSettingsTable();
+        }
+
+        function handleSelectChange(select) {
+            if (select.value.endsWith('_ALL')) {
+                const baseValue = select.value.replace('_ALL', '');
+                const cls = select.getAttribute('data-class');
+                const day = select.getAttribute('data-day');
+                const type = select.getAttribute('data-type');
+                
+                // Set Semaine A back to baseValue
+                select.value = baseValue;
+                
+                // Set Semaine B to baseValue
+                const selectB = document.getElementById(`sel_${cls}_${day}_${type}_B`);
+                if (selectB) {
+                    selectB.value = baseValue;
+                }
+            }
+        }
+
+        function saveSettings() {
+            const selects = document.querySelectorAll('#settingsTableBody select');
+            scheduleSettings = {};
+            
+            selects.forEach(select => {
+                const cls = select.getAttribute('data-class');
+                const day = select.getAttribute('data-day');
+                const week = select.getAttribute('data-week');
+                const type = select.getAttribute('data-type');
+                const val = select.value.replace('_ALL', '');
+                
+                if (!scheduleSettings[cls]) scheduleSettings[cls] = {};
+                if (!scheduleSettings[cls][day]) scheduleSettings[cls][day] = { A: {}, B: {} };
+                
+                if (val) {
+                    scheduleSettings[cls][day][week][type] = val;
+                }
+            });
+            
+            localStorage.setItem('viescoHub_selfSettings', JSON.stringify(scheduleSettings));
+            // On sauvegarde aussi la liste des classes modifiées
+            localStorage.setItem('viescoHub_allClasses', JSON.stringify(allClasses));
+            closeSettingsModal();
+        }
+
+        function getDefault2026Schedules() {
+            return {
+                "6°1": {
+                    "LUNDI": { A: { fin: "12h00", reprise: "15h00" }, B: { fin: "12h00", reprise: "15h00" } },
+                    "MARDI": { A: { fin: "12h00", reprise: "14h30" }, B: { fin: "12h00", reprise: "14h30" } },
+                    "JEUDI": { A: { fin: "12h00", reprise: "15h00" }, B: { fin: "12h00", reprise: "15h00" } },
+                    "VENDREDI": { A: { fin: "12h00", reprise: "14h00" }, B: { fin: "12h00", reprise: "14h00" } }
+                },
+                "6°2": {
+                    "LUNDI": { A: { fin: "12h00", reprise: "14h00" }, B: { fin: "12h00", reprise: "14h00" } },
+                    "MARDI": { A: { fin: "12h00", reprise: "14h00" }, B: { fin: "12h00", reprise: "14h00" } },
+                    "JEUDI": { A: { fin: "12h00", reprise: "14h00" }, B: { fin: "12h00", reprise: "14h00" } },
+                    "VENDREDI": { A: { fin: "11h00", reprise: "14h00" }, B: { fin: "11h00", reprise: "14h00" } }
+                },
+                "6°2 LV1": {
+                    "LUNDI": { A: { fin: "12h00", reprise: "14h00" }, B: { fin: "12h00", reprise: "14h00" } },
+                    "MARDI": { A: { fin: "12h00", reprise: "14h00" }, B: { fin: "12h00", reprise: "14h00" } },
+                    "JEUDI": { A: { fin: "12h00", reprise: "14h00" }, B: { fin: "12h00", reprise: "14h00" } },
+                    "VENDREDI": { A: { fin: "12h00", reprise: "14h00" }, B: { fin: "12h00", reprise: "14h00" } }
+                },
+                "6°3": {
+                    "LUNDI": { A: { fin: "11h00", reprise: "14h00" }, B: { fin: "12h00", reprise: "14h00" } },
+                    "MARDI": { A: { fin: "12h00", reprise: "14h00" }, B: { fin: "11h00", reprise: "14h00" } },
+                    "JEUDI": { A: { fin: "12h00", reprise: "14h00" }, B: { fin: "12h00", reprise: "14h00" } },
+                    "VENDREDI": { A: { fin: "11h00", reprise: "14h00" }, B: { fin: "11h00", reprise: "14h00" } }
+                },
+                "6°3 LV1": {
+                    "LUNDI": { A: { fin: "11h00", reprise: "14h00" }, B: { fin: "12h00", reprise: "14h00" } },
+                    "MARDI": { A: { fin: "12h00", reprise: "14h00" }, B: { fin: "11h00", reprise: "14h00" } },
+                    "JEUDI": { A: { fin: "12h00", reprise: "14h00" }, B: { fin: "12h00", reprise: "14h00" } },
+                    "VENDREDI": { A: { fin: "12h00", reprise: "14h00" }, B: { fin: "12h00", reprise: "14h00" } }
+                },
+                "5°1": {
+                    "LUNDI": { A: { fin: "11h00", reprise: "14h00" }, B: { fin: "11h00", reprise: "14h00" } },
+                    "MARDI": { A: { fin: "12h00", reprise: "14h00" }, B: { fin: "12h00", reprise: "14h00" } },
+                    "JEUDI": { A: { fin: "11h00", reprise: "13h00" }, B: { fin: "11h00", reprise: "13h00" } },
+                    "VENDREDI": { A: { fin: "12h00", reprise: "13h00" }, B: { fin: "12h00", reprise: "13h00" } }
+                },
+                "5°1 Esp LV2": {
+                    "LUNDI": { A: { fin: "12h00", reprise: "14h00" }, B: { fin: "11h00", reprise: "14h00" } },
+                    "MARDI": { A: { fin: "12h00", reprise: "14h00" }, B: { fin: "12h00", reprise: "14h00" } },
+                    "JEUDI": { A: { fin: "11h00", reprise: "13h00" }, B: { fin: "11h00", reprise: "13h00" } },
+                    "VENDREDI": { A: { fin: "12h00", reprise: "13h00" }, B: { fin: "12h00", reprise: "13h00" } }
+                },
+                "5°1 CHAM": {
+                    "LUNDI": { A: { fin: "11h00", reprise: "14h00" }, B: { fin: "11h00", reprise: "14h00" } },
+                    "MARDI": { A: { fin: "12h00", reprise: "14h00" }, B: { fin: "12h00", reprise: "14h00" } },
+                    "JEUDI": { A: { fin: "12h00", reprise: "13h00" }, B: { fin: "12h00", reprise: "13h00" } },
+                    "VENDREDI": { A: { fin: "12h00", reprise: "13h00" }, B: { fin: "12h00", reprise: "13h00" } }
+                },
+                "5°2": {
+                    "LUNDI": { A: { fin: "11h00", reprise: "14h00" }, B: { fin: "11h00", reprise: "14h00" } },
+                    "MARDI": { A: { fin: "12h00", reprise: "14h30" }, B: { fin: "12h00", reprise: "14h30" } },
+                    "JEUDI": { A: { fin: "11h30", reprise: "13h00" }, B: { fin: "11h30", reprise: "13h00" } },
+                    "VENDREDI": { A: { fin: "12h00", reprise: "13h00" }, B: { fin: "12h00", reprise: "13h00" } }
+                },
+                "5°3": {
+                    "LUNDI": { A: { fin: "11h00", reprise: "14h00" }, B: { fin: "11h00", reprise: "14h00" } },
+                    "MARDI": { A: { fin: "11h00", reprise: "14h00" }, B: { fin: "11h00", reprise: "14h00" } },
+                    "JEUDI": { A: { fin: "12h00", reprise: "13h00" }, B: { fin: "12h00", reprise: "13h00" } },
+                    "VENDREDI": { A: { fin: "11h30", reprise: "13h00" }, B: { fin: "11h30", reprise: "13h00" } }
+                },
+                "4°1": {
+                    "LUNDI": { A: { fin: "12h00", reprise: "14h00" }, B: { fin: "12h00", reprise: "14h00" } },
+                    "MARDI": { A: { fin: "11h30", reprise: "14h00" }, B: { fin: "11h30", reprise: "14h00" } },
+                    "JEUDI": { A: { fin: "12h00", reprise: "14h00" }, B: { fin: "12h00", reprise: "14h00" } },
+                    "VENDREDI": { A: { fin: "12h00", reprise: "13h00" }, B: { fin: "12h00", reprise: "13h00" } }
+                },
+                "4°2": {
+                    "LUNDI": { A: { fin: "12h00", reprise: "14h00" }, B: { fin: "12h00", reprise: "14h00" } },
+                    "MARDI": { A: { fin: "11h30", reprise: "14h00" }, B: { fin: "11h30", reprise: "14h00" } },
+                    "JEUDI": { A: { fin: "12h00", reprise: "13h00" }, B: { fin: "12h00", reprise: "13h00" } },
+                    "VENDREDI": { A: { fin: "12h00", reprise: "13h00" }, B: { fin: "12h00", reprise: "13h00" } }
+                },
+                "4°2 Ang LV1": {
+                    "LUNDI": { A: { fin: "12h00", reprise: "14h00" }, B: { fin: "12h00", reprise: "14h00" } },
+                    "MARDI": { A: { fin: "11h30", reprise: "14h00" }, B: { fin: "11h30", reprise: "14h00" } },
+                    "JEUDI": { A: { fin: "12h00", reprise: "13h00" }, B: { fin: "12h00", reprise: "13h00" } },
+                    "VENDREDI": { A: { fin: "12h00", reprise: "13h00" }, B: { fin: "12h00", reprise: "13h00" } }
+                },
+                "4°3": {
+                    "LUNDI": { A: { fin: "11h00", reprise: "14h00" }, B: { fin: "11h00", reprise: "14h00" } },
+                    "MARDI": { A: { fin: "12h00", reprise: "14h00" }, B: { fin: "11h00", reprise: "14h00" } },
+                    "JEUDI": { A: { fin: "11h00", reprise: "13h00" }, B: { fin: "11h00", reprise: "13h00" } },
+                    "VENDREDI": { A: { fin: "12h00", reprise: "13h00" }, B: { fin: "12h00", reprise: "13h00" } }
+                },
+                "4°3 Latin": {
+                    "LUNDI": { A: { fin: "12h00", reprise: "14h00" }, B: { fin: "12h00", reprise: "14h00" } },
+                    "MARDI": { A: { fin: "12h00", reprise: "14h00" }, B: { fin: "11h00", reprise: "14h00" } },
+                    "JEUDI": { A: { fin: "11h00", reprise: "13h00" }, B: { fin: "11h00", reprise: "13h00" } },
+                    "VENDREDI": { A: { fin: "12h00", reprise: "13h00" }, B: { fin: "12h00", reprise: "13h00" } }
+                },
+                "4°3 Ang LV1": {
+                    "LUNDI": { A: { fin: "11h00", reprise: "14h00" }, B: { fin: "11h00", reprise: "14h00" } },
+                    "MARDI": { A: { fin: "12h00", reprise: "14h00" }, B: { fin: "12h00", reprise: "14h00" } },
+                    "JEUDI": { A: { fin: "11h00", reprise: "13h00" }, B: { fin: "11h00", reprise: "13h00" } },
+                    "VENDREDI": { A: { fin: "12h00", reprise: "13h00" }, B: { fin: "12h00", reprise: "13h00" } }
+                },
+                "4°3 Esp LV1": {
+                    "LUNDI": { A: { fin: "11h00", reprise: "14h00" }, B: { fin: "11h00", reprise: "14h00" } },
+                    "MARDI": { A: { fin: "12h00", reprise: "14h00" }, B: { fin: "11h00", reprise: "14h00" } },
+                    "JEUDI": { A: { fin: "12h00", reprise: "13h00" }, B: { fin: "12h00", reprise: "13h00" } },
+                    "VENDREDI": { A: { fin: "12h00", reprise: "13h00" }, B: { fin: "12h00", reprise: "13h00" } }
+                },
+                "3°1": {
+                    "LUNDI": { A: { fin: "12h00", reprise: "14h00" }, B: { fin: "12h00", reprise: "14h00" } },
+                    "MARDI": { A: { fin: "12h00", reprise: "14h00" }, B: { fin: "12h00", reprise: "14h00" } },
+                    "JEUDI": { A: { fin: "12h00", reprise: "13h00" }, B: { fin: "12h00", reprise: "13h00" } },
+                    "VENDREDI": { A: { fin: "11h30", reprise: "13h00" }, B: { fin: "11h30", reprise: "13h00" } }
+                },
+                "3°1 CHAM": {
+                    "LUNDI": { A: { fin: "12h00", reprise: "14h00" }, B: { fin: "12h00", reprise: "14h00" } },
+                    "MARDI": { A: { fin: "12h00", reprise: "14h00" }, B: { fin: "12h00", reprise: "14h00" } },
+                    "JEUDI": { A: { fin: "12h00", reprise: "13h00" }, B: { fin: "12h00", reprise: "13h00" } },
+                    "VENDREDI": { A: { fin: "11h30", reprise: "13h00" }, B: { fin: "11h30", reprise: "13h00" } }
+                },
+                "3°2": {
+                    "LUNDI": { A: { fin: "12h00", reprise: "13h00" }, B: { fin: "12h00", reprise: "13h00" } },
+                    "MARDI": { A: { fin: "12h00", reprise: "14h00" }, B: { fin: "12h00", reprise: "14h00" } },
+                    "JEUDI": { A: { fin: "11h30", reprise: "13h00" }, B: { fin: "11h30", reprise: "13h00" } },
+                    "VENDREDI": { A: { fin: "12h00", reprise: "14h00" }, B: { fin: "12h00", reprise: "14h00" } }
+                },
+                "3°2 Ang LV2": {
+                    "LUNDI": { A: { fin: "12h00", reprise: "13h00" }, B: { fin: "12h00", reprise: "13h00" } },
+                    "MARDI": { A: { fin: "12h00", reprise: "13h00" }, B: { fin: "12h00", reprise: "13h00" } },
+                    "JEUDI": { A: { fin: "11h30", reprise: "13h00" }, B: { fin: "11h30", reprise: "13h00" } },
+                    "VENDREDI": { A: { fin: "12h00", reprise: "14h00" }, B: { fin: "12h00", reprise: "14h00" } }
+                },
+                "3°2 Ang LV1": {
+                    "LUNDI": { A: { fin: "12h00", reprise: "13h00" }, B: { fin: "12h00", reprise: "13h00" } },
+                    "MARDI": { A: { fin: "12h00", reprise: "14h00" }, B: { fin: "12h00", reprise: "14h00" } },
+                    "JEUDI": { A: { fin: "11h30", reprise: "13h00" }, B: { fin: "11h30", reprise: "13h00" } },
+                    "VENDREDI": { A: { fin: "12h00", reprise: "13h00" }, B: { fin: "12h00", reprise: "13h00" } }
+                },
+                "3°3": {
+                    "LUNDI": { A: { fin: "12h00", reprise: "14h00" }, B: { fin: "12h00", reprise: "14h00" } },
+                    "MARDI": { A: { fin: "12h00", reprise: "14h00" }, B: { fin: "12h00", reprise: "14h00" } },
+                    "JEUDI": { A: { fin: "12h00", reprise: "13h00" }, B: { fin: "12h00", reprise: "13h00" } },
+                    "VENDREDI": { A: { fin: "12h00", reprise: "14h30" }, B: { fin: "12h00", reprise: "14h30" } }
+                },
+                "3°3 Ang LV1": {
+                    "LUNDI": { A: { fin: "12h00", reprise: "14h00" }, B: { fin: "12h00", reprise: "14h00" } },
+                    "MARDI": { A: { fin: "12h00", reprise: "14h00" }, B: { fin: "12h00", reprise: "14h00" } },
+                    "JEUDI": { A: { fin: "12h00", reprise: "13h00" }, B: { fin: "12h00", reprise: "13h00" } },
+                    "VENDREDI": { A: { fin: "12h00", reprise: "13h00" }, B: { fin: "12h00", reprise: "13h00" } }
+                },
+                "Théâtre": {
+                    "MARDI": { A: { reprise: "13h00" }, B: { reprise: "13h00" } }
+                },
+                "Atelier Nature": {
+                    "MARDI": { A: { reprise: "13h00" }, B: { reprise: "13h00" } }
+                },
+                "Chorale": {
+                    "MARDI": { A: { reprise: "13h00" }, B: { reprise: "13h00" } }
+                }
+            };
+        }
+
+        // --- GÉNÉRATION AUTOMATIQUE ---
+        function autoGenerate() {
+            const currentDay = document.getElementById('daySelector').value;
+            const weekType = document.getElementById('weekTypeSelector').value;
+            const weekNum = getWeekNumber(new Date());
+            
+            const p1 = [];
+            const p2 = [];
+            const p3_ateliers = [];
+            const p3 = [];
+            const p4_levels = { '6': [], '5': [], '4': [], '3': [] };
+            const p4_others = [];
+            
+            allClasses.forEach(cls => {
+                if (cls.lvl === "club") {
+                    if (!scheduleSettings[cls.name]?.[currentDay]) return;
+                }
+                if (cls.name.includes("CHAM")) {
+                    if (currentDay !== "MARDI" && currentDay !== "JEUDI") return;
+                }
+                const settings = scheduleSettings[cls.name]?.[currentDay]?.[weekType] || {};
+                
+                const fin = settings.fin || '';
+                const reprise = settings.reprise || '';
+                
+                let priority = null;
+                if (fin === '11h00') priority = '1';
+                else if (fin === '11h30') priority = '2';
+                else if (reprise === '13h00') priority = '3';
+                else if (reprise === '13h30' || reprise === '14h00' || reprise === '14h30' || reprise === '15h00') priority = '4';
+                
+                if (priority === '1') p1.push(cls.name);
+                else if (priority === '2') p2.push(cls.name);
+                else if (priority === '3') {
+                    if (cls.name === "Théâtre" || cls.name === "Atelier Nature" || cls.name === "Chorale" || cls.name.includes("CHAM")) {
+                        p3_ateliers.push(cls.name);
+                    } else {
+                        p3.push(cls.name);
+                    }
+                }
+                else if (priority === '4') {
+                    if (p4_levels[cls.lvl]) p4_levels[cls.lvl].push(cls.name);
+                    else p4_others.push(cls.name);
+                }
+            });
+            
+            // Rotation pour les classes P4 (reprennent après 13h)
+            const baseOrder = ['6', '5', '4', '3'];
+            const rotationOffset = weekNum % 4;
+            const rotatedOrder = [...baseOrder.slice(rotationOffset), ...baseOrder.slice(0, rotationOffset)];
+            
+            let slot1Classes = [];
+            if (p1.length > 0) slot1Classes.push(...p1);
+            if (p2.length > 0) slot1Classes.push(...p2);
+            
+            let slot2Classes = [];
+            if (p3_ateliers.length > 0) slot2Classes.push(...p3_ateliers);
+            if (p3.length > 0) slot2Classes.push(...p3);
+            
+            let p4Classes = [];
+            rotatedOrder.forEach((lvl) => {
+                if (p4_levels[lvl].length > 0) {
+                    p4Classes.push(...p4_levels[lvl]);
+                }
+            });
+            if (p4_others.length > 0) {
+                p4Classes.push(...p4_others);
+            }
+            
+            if (slot2Classes.length > 0 && p4Classes.length > 0) {
+                slot2Classes.push("SEPARATOR");
+            }
+            if (p4Classes.length > 0) {
+                slot2Classes.push(...p4Classes);
+            }
+            
+            planningData = [
+                { id: "slot1", time: "11h30", classes: slot1Classes },
+                { id: "slot2", time: "12h00", classes: slot2Classes }
+            ];
+            
+            // Met à jour l'info de rotation imprimée
+            const lvlMap = {'6': '6èmes', '5': '5èmes', '4': '4èmes', '3': '3èmes'};
+            const rotationText = rotatedOrder.map(lvl => lvlMap[lvl]).join(' → ');
+            document.getElementById('printWeekInfo').innerText = `Semaine ${weekNum}`;
+            
+            renderSlots();
+        }
+
+        // --- FONCTION POUR AJOUTER UNE NOUVELLE CLASSE ---
+        function addNewClassToSystem() {
+            const nameInput = document.getElementById('newClassName');
+            const lvlInput = document.getElementById('newClassLevel');
+            const className = nameInput.value.trim();
+            const classLvl = lvlInput.value;
+
+            if (!className) {
+                alert("Veuillez entrer un nom de classe.");
+                return;
+            }
+            
+            // Vérifier si la classe existe déjà
+            if (allClasses.some(c => c.name.toLowerCase() === className.toLowerCase())) {
+                alert("Cette classe existe déjà dans la liste.");
+                return;
+            }
+
+            // 1. Ajouter à la liste globale
+            allClasses.push({ name: className, lvl: classLvl });
+
+            // Tri automatique de la liste
+            const lvlOrder = { "6": 1, "5": 2, "4": 3, "3": 4, "club": 5 };
+            allClasses.sort((a, b) => {
+                if (lvlOrder[a.lvl] !== lvlOrder[b.lvl]) {
+                    return lvlOrder[a.lvl] - lvlOrder[b.lvl];
+                }
+                return a.name.localeCompare(b.name, 'fr', { numeric: true });
+            });
+
+            // 2. Initialiser ses paramètres horaires (vides par défaut)
+            if (!scheduleSettings[className]) {
+                if (classLvl === 'club') {
+                    scheduleSettings[className] = {};
+                } else {
+                    scheduleSettings[className] = {
+                        "LUNDI": { A: { fin: "", reprise: "" }, B: { fin: "", reprise: "" } },
+                        "MARDI": { A: { fin: "", reprise: "" }, B: { fin: "", reprise: "" } },
+                        "JEUDI": { A: { fin: "", reprise: "" }, B: { fin: "", reprise: "" } },
+                        "VENDREDI": { A: { fin: "", reprise: "" }, B: { fin: "", reprise: "" } }
+                    };
+                }
+            }
+
+            // 3. Sauvegarder dans le navigateur
+            localStorage.setItem('viescoHub_allClasses', JSON.stringify(allClasses));
+            localStorage.setItem('viescoHub_selfSettings', JSON.stringify(scheduleSettings));
+
+            // 4. Mettre à jour l'interface
+            nameInput.value = '';
+            renderSettingsTable();
+            autoGenerate();
+        }
+
+        // --- FONCTION POUR SUPPRIMER UNE CLASSE ---
+        function deleteClassFromSystem(className) {
+            if (!confirm(`Êtes-vous sûr de vouloir supprimer définitivement la classe "${className}" du système ?\nCette action va la retirer des paramètres et du planning actuel.`)) {
+                return;
+            }
+
+            // 1. La retirer de la liste des classes
+            allClasses = allClasses.filter(c => c.name !== className);
+
+            // 2. Supprimer ses horaires
+            if (scheduleSettings[className]) {
+                delete scheduleSettings[className];
+            }
+
+            // 3. La supprimer des créneaux actifs (planningData)
+            planningData.forEach(slot => {
+                slot.classes = slot.classes.filter(c => c !== className);
+            });
+
+            // 4. Mettre à jour la mémoire du navigateur
+            localStorage.setItem('viescoHub_allClasses', JSON.stringify(allClasses));
+            localStorage.setItem('viescoHub_selfSettings', JSON.stringify(scheduleSettings));
+
+            // 5. Recharger l'affichage
+            renderSettingsTable();
+            autoGenerate();
+        }
+
+        // --- EXPORTATION ET IMPORTATION JSON ---
+        function exportSettings() {
+            const dataToExport = {
+                classes: allClasses,
+                settings: scheduleSettings
+            };
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(dataToExport, null, 2));
+            const downloadAnchorNode = document.createElement('a');
+            downloadAnchorNode.setAttribute("href", dataStr);
+            downloadAnchorNode.setAttribute("download", "passage_self_config.json");
+            document.body.appendChild(downloadAnchorNode);
+            downloadAnchorNode.click();
+            downloadAnchorNode.remove();
+        }
+
+        function importSettings(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const importedData = JSON.parse(e.target.result);
+                    if (importedData.classes && importedData.settings) {
+                        // Remplacer proprement le contenu du tableau des classes
+                        allClasses.length = 0;
+                        allClasses.push(...importedData.classes);
+                        
+                        // Remplacer les paramètres
+                        scheduleSettings = importedData.settings;
+                        
+                        // Enregistrer dans le cache
+                        localStorage.setItem('viescoHub_allClasses', JSON.stringify(allClasses));
+                        localStorage.setItem('viescoHub_selfSettings', JSON.stringify(scheduleSettings));
+                        
+                        renderSettingsTable();
+                        autoGenerate();
+                        alert("Configuration ViescoHub importée avec succès !");
+                    } else {
+                        alert("Ce fichier JSON n'a pas le bon format pour ViescoHub.");
+                    }
+                } catch (error) {
+                    alert("Erreur lors de la lecture du fichier : " + error.message);
+                }
+                // Réinitialise l'input file pour permettre un nouvel import du même fichier si besoin
+                event.target.value = '';
+            };
+            reader.readAsText(file);
+        }
+
+        window.onload = () => {
+            const todayIndex = new Date().getDay();
+            // 1: Lundi, 2: Mardi, 4: Jeudi, 5: Vendredi
+            const daysMap = {
+                1: "LUNDI",
+                2: "MARDI",
+                4: "JEUDI",
+                5: "VENDREDI"
+            };
+            
+            const todayName = daysMap[todayIndex];
+            if (todayName) {
+                document.getElementById('daySelector').value = todayName;
+            }
+            
+            const weekNum = getWeekNumber(new Date());
+            const weekType = (weekNum % 2 === 0) ? 'A' : 'B';
+            document.getElementById('weekTypeSelector').value = weekType;
+            document.getElementById('printWeekInfo').innerText = `Semaine ${weekNum}`;
+            
+            updateDayHeader();
+        };
+
+        function updateClock() {
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+            const dateStr = now.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
+            const clockEl = document.getElementById('live-time');
+            if (clockEl) clockEl.textContent = dateStr.charAt(0).toUpperCase() + dateStr.slice(1) + ' • ' + timeStr;
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+    </script>
+</body>
+</html>

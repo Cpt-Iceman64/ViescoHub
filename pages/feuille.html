@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Impression - Autorisations de Sortie</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <style>
+        @media screen {
+            body {
+                background-color: #080c16;
+                background-image: 
+                    linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px),
+                    linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px);
+                background-size: 50px 50px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                padding: 2rem;
+                min-height: 100vh;
+                font-family: system-ui, -apple-system, sans-serif;
+            }
+
+            .a4-preview {
+                background: white;
+                /* Dimensions strictes A4 Portrait */
+                width: 210mm;
+                height: 297mm;
+                box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+                margin-top: 1.5rem;
+                padding: 15mm;
+                box-sizing: border-box;
+                position: relative;
+            }
+        }
+
+        @media print {
+            @page {
+                size: A4 portrait;
+                margin: 10mm;
+            }
+            body {
+                margin: 0;
+                padding: 0;
+                background: white;
+            }
+            .no-print {
+                display: none !important;
+            }
+            .a4-preview {
+                width: 100% !important;
+                height: 100% !important;
+                box-shadow: none !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+        }
+
+        .doc-container {
+            color: black;
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        /* En-tête de l'établissement */
+        .header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-bottom: 15px; 
+            border-bottom: 2px solid black;
+            padding-bottom: 12px;
+        }
+        
+        .logo-box { 
+            width: 55px; 
+            height: 55px; 
+            flex-shrink: 0; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+        }
+        
+        .title-container { text-align: center; flex-grow: 1; }
+        .doc-title { font-size: 15pt; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;}
+        .doc-subtitle { font-size: 10pt; color: #444; margin-top: 2px; font-weight: bold; }
+
+        /* Ligne de Date unique en haut de page */
+        .date-header-line {
+            font-size: 11.5pt;
+            font-weight: bold;
+            margin-bottom: 15px;
+            padding: 10px 14px;
+            border: 1px solid #000;
+            background-color: #f8fafc;
+            display: flex;
+            align-items: center;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        /* Styles du Tableau de Registre */
+        .register-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 9.5pt;
+        }
+        
+        .register-table th, .register-table td {
+            border: 1px solid #000;
+            padding: 8px;
+            vertical-align: middle;
+        }
+
+        .register-table th {
+            background-color: #f1f5f9;
+            font-weight: bold;
+            font-size: 9pt;
+            text-transform: uppercase;
+            text-align: center;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        /* Hauteur de ligne augmentée à 54px pour un confort d'écriture manuscrite optimal */
+        .register-table tbody tr {
+            height: 54px;
+        }
+
+        /* Largeurs fixes des colonnes */
+        .col-nom { width: 34%; text-align: left; }
+        .col-classe { width: 12%; text-align: center; }
+        .col-heure { width: 13%; text-align: center; }
+        .col-signature { width: 28%; text-align: left; font-size: 8pt; }
+    </style>
+</head>
+<body>
+
+    <div class="no-print w-full max-w-4xl mx-auto flex flex-col md:flex-row gap-4 justify-between items-center bg-slate-900/90 backdrop-blur-md border border-slate-700 p-4 rounded-2xl shadow-xl z-50 sticky top-4 mb-4">
+        <div class="flex items-center gap-3">
+            <div class="p-2.5 bg-pink-500/20 text-pink-500 rounded-xl">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+            </div>
+            <div>
+                <h1 class="text-white font-bold text-base leading-tight">Registre d'Autorisations de Sortie</h1>
+                <p class="text-slate-400 text-xs font-medium">Format A4 Portrait • Cases agrandies pour l'écriture</p>
+            </div>
+        </div>
+
+        <div class="flex gap-3">
+            <a href="documents.html" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white text-sm font-bold rounded-lg transition-colors">
+                Retour
+            </a>
+            <button onclick="window.print()" class="flex items-center gap-2 px-5 py-2 bg-pink-600 hover:bg-pink-500 text-white text-sm font-bold rounded-lg transition-all shadow-[0_0_15px_rgba(236,72,153,0.3)] hover:shadow-[0_0_25px_rgba(236,72,153,0.5)]">
+                Imprimer le PDF
+            </button>
+        </div>
+    </div>
+
+    <div class="a4-preview">
+        <div class="doc-container">
+            
+            <!-- En-tête de l'établissement -->
+            <div class="header">
+                <div class="logo-box">
+                    <img src="../logo.png" alt="Logo" onerror="this.onerror=null; this.outerHTML='<svg class=\'w-10 h-10 text-slate-700\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'2\'><path d=\'M22 10v6M2 10l10-5 10 5-10 5z\'/><path d=\'M6 12v5c0 2 2 3 6 3s6-1 6-3v-5\'/></svg>'">
+                </div>
+                <div class="title-container">
+                    <div class="doc-title">Autorisations de Sortie</div>
+                    <div class="doc-subtitle">Registre d'Émargement - Vie Scolaire</div>
+                </div>
+            </div>
+
+            <!-- Ligne de date unique en haut de la page -->
+            <div class="date-header-line">
+                Date du jour : &nbsp;&nbsp;.................... / .................... / 2026
+            </div>
+
+            <!-- Tableau d'émargement -->
+            <table class="register-table">
+                <thead>
+                    <tr>
+                        <th class="col-nom">Élève (Nom & Prénom)</th>
+                        <th class="col-classe">Classe</th>
+                        <th class="col-heure">Heure Sortie</th>
+                        <th class="col-heure">Heure Retour</th>
+                        <th class="col-signature">Nom & Signature (AED / Responsable)</th>
+                    </tr>
+                </thead>
+                <tbody id="table-body">
+                    <!-- Généré dynamiquement en JS pour garder le code propre et lisible -->
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+
+    <script>
+        window.onload = () => {
+            const tableBody = document.getElementById('table-body');
+            let rowsHTML = '';
+            
+            // Augmenté à 15 lignes de 54px pour remplir parfaitement la hauteur A4 utile
+            for (let i = 0; i < 15; i++) {
+                rowsHTML += `
+                    <tr>
+                        <td class="col-nom"></td>
+                        <td class="col-classe"></td>
+                        <td class="col-heure"></td>
+                        <td class="col-heure"></td>
+                        <td class="col-signature"></td>
+                    </tr>
+                `;
+            }
+            
+            tableBody.innerHTML = rowsHTML;
+        };
+    </script>
+</body>
+</html>

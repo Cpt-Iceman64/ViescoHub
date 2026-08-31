@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Impression - Feuille de Rédaction Pleine Page</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --line-color-main: rgba(100, 116, 139, 0.45);
+            --line-color-sub: rgba(148, 163, 184, 0.25);
+            --margin-color: rgba(239, 68, 68, 0.65);
+            --spacing: 8mm;
+        }
+
+        @media screen {
+            body {
+                background-color: #080c16;
+                background-image: 
+                    linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px),
+                    linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px);
+                background-size: 50px 50px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                padding: 2rem;
+                min-height: 100vh;
+                font-family: system-ui, -apple-system, sans-serif;
+            }
+
+            .a4-preview {
+                background: white;
+                /* Dimensions strictes A4 Portrait */
+                width: 210mm;
+                height: 297mm;
+                box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+                margin-top: 1.5rem;
+                padding: 0; 
+                box-sizing: border-box;
+                position: relative;
+                overflow: hidden;
+            }
+        }
+
+        @media print {
+            @page {
+                size: A4 portrait;
+                margin: 0; /* Impression bord à bord absolue pour le pleine page */
+            }
+            body {
+                margin: 0;
+                padding: 0;
+                background: white;
+            }
+            .no-print {
+                display: none !important;
+            }
+            .a4-preview {
+                width: 210mm !important;
+                height: 297mm !important;
+                box-shadow: none !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                box-sizing: border-box !important;
+                position: relative !important;
+                page-break-after: always; /* Force l'imprimante à changer de page */
+                break-after: page;
+                overflow: hidden !important;
+                background: white !important;
+            }
+            /* Évite une feuille blanche à la toute fin */
+            .a4-preview:last-child {
+                page-break-after: avoid !important;
+                break-after: avoid !important;
+            }
+        }
+
+        /* Force l'impression des fonds de quadrillage et dégradés CSS */
+        * {
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+        }
+
+        .sheet-container {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            background: #fff;
+            overflow: hidden;
+            box-sizing: border-box;
+        }
+
+        /* Ligne de marge scolaire rouge */
+        .margin-line {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 32mm; /* Alignement standard français */
+            width: 1.5px;
+            background-color: var(--margin-color);
+            z-index: 10;
+        }
+
+        /* Mode : Lignes simples horizontales */
+        .grid-lines {
+            background-image: linear-gradient(to bottom, var(--line-color-main) 1px, transparent 1px);
+            background-size: 100% var(--spacing);
+        }
+
+        /* Mode : Grands carreaux Seyes officiels français */
+        .grid-seyes {
+            background-image:
+                /* Principale horizontale violette/grise tous les 8mm */
+                linear-gradient(to bottom, var(--line-color-main) 1.5px, transparent 1.5px),
+                /* Interlignes fines bleues de 2mm */
+                linear-gradient(to bottom, transparent 1.5px, var(--line-color-sub) 1px, transparent 1px, transparent 3.5px, var(--line-color-sub) 1px, transparent 1px, transparent 5.5px, var(--line-color-sub) 1px, transparent 1px),
+                /* Ligne verticale d'écriture tous les 8mm */
+                linear-gradient(to right, var(--line-color-sub) 1px, transparent 1px);
+            background-size: 8mm 8mm, 8mm 8mm, 8mm 8mm;
+        }
+
+        /* Mode : Petits carreaux 5x5mm */
+        .grid-petits {
+            background-image:
+                linear-gradient(to right, var(--line-color-sub) 1px, transparent 1px),
+                linear-gradient(to bottom, var(--line-color-sub) 1px, transparent 1px);
+            background-size: 5mm 5mm, 5mm 5mm;
+        }
+
+        /* Mode : Points / Dotted Bullet Grid (5x5mm) */
+        .grid-dots {
+            background-image: radial-gradient(var(--line-color-main) 1.5px, transparent 1.5px);
+            background-size: 5mm 5mm;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="no-print w-full max-w-4xl mx-auto bg-slate-900/95 backdrop-blur-md border border-slate-700/80 p-5 rounded-2xl shadow-2xl z-50 sticky top-4 mb-4 flex flex-col gap-4">
+        
+        <!-- En-tête du menu -->
+        <div class="flex justify-between items-start border-b border-slate-800 pb-3">
+            <div class="flex items-center gap-3">
+                <div class="p-2.5 bg-pink-500/20 text-pink-500 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M6 6h10M6 10h10"/></svg>
+                </div>
+                <div>
+                    <h1 class="text-white font-bold text-base leading-tight">Configurateur de Pages d'Écriture</h1>
+                    <p class="text-slate-400 text-xs font-medium font-sans">Créez et imprimez des feuilles de devoir vierges au format A4</p>
+                </div>
+            </div>
+            <div class="flex gap-2">
+                <a href="documents.html" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white text-xs font-bold rounded-lg transition-colors">
+                    Retour
+                </a>
+                <button onclick="window.print()" class="flex items-center gap-2 px-5 py-2 bg-pink-600 hover:bg-pink-500 text-white text-xs font-bold rounded-lg transition-all shadow-[0_0_15px_rgba(236,72,153,0.3)] hover:shadow-[0_0_25px_rgba(236,72,153,0.5)]">
+                    Imprimer la page
+                </button>
+            </div>
+        </div>
+
+        <!-- Paramètres -->
+        <div class="grid grid-cols-1 md:grid-cols-5 gap-4 text-xs text-white">
+            
+            <!-- Type de tracé -->
+            <div class="flex flex-col gap-1.5">
+                <label class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Tracé de la page</label>
+                <select id="grid-type" onchange="updatePageStyle()" class="bg-slate-950 border border-slate-700/80 px-3 py-2 rounded-lg text-white focus:outline-none focus:border-pink-500 font-medium">
+                    <option value="lines" selected>Lignes Simples (Ligné)</option>
+                    <option value="seyes">Grands Carreaux (Seyes)</option>
+                    <option value="petits">Petits Carreaux (5x5 mm)</option>
+                    <option value="dots">Pointillés (Bullet Grid)</option>
+                </select>
+            </div>
+
+            <!-- Espacement des lignes (Uniquement visible si "Lignes" est sélectionné) -->
+            <div class="flex flex-col gap-1.5" id="spacing-wrapper">
+                <label class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Écartement des lignes</label>
+                <select id="line-spacing" onchange="updatePageStyle()" class="bg-slate-950 border border-slate-700/80 px-3 py-2 rounded-lg text-white focus:outline-none focus:border-pink-500 font-medium">
+                    <option value="6">Serré (6 mm)</option>
+                    <option value="8" selected>Moyen (8 mm)</option>
+                    <option value="10">Large (10 mm)</option>
+                    <option value="12">DYS (12 mm)</option>
+                </select>
+            </div>
+
+            <!-- Marge de correction -->
+            <div class="flex flex-col gap-1.5">
+                <label class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Marge rouge correction</label>
+                <select id="margin-toggle" onchange="updatePageStyle()" class="bg-slate-950 border border-slate-700/80 px-3 py-2 rounded-lg text-white focus:outline-none focus:border-pink-500 font-medium">
+                    <option value="yes" selected>Oui (Standard gauche)</option>
+                    <option value="no">Sans marge</option>
+                </select>
+            </div>
+
+            <!-- Couleur & Intensité du tracé -->
+            <div class="flex flex-col gap-1.5">
+                <label class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Intensité des lignes</label>
+                <select id="line-color" onchange="updatePageStyle()" class="bg-slate-950 border border-slate-700/80 px-3 py-2 rounded-lg text-white focus:outline-none focus:border-pink-500 font-medium">
+                    <option value="light" selected>Standard (Économique / Bleu-gris)</option>
+                    <option value="medium">Moyen (Contrasté)</option>
+                    <option value="dark">Foncé (Noir de haute visibilité)</option>
+                </select>
+            </div>
+
+            <!-- Mode de mise en page (Recto / Verso) -->
+            <div class="flex flex-col gap-1.5">
+                <label class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Pages à générer</label>
+                <select id="print-mode" onchange="updatePageStyle()" class="bg-slate-950 border border-slate-700/80 px-3 py-2 rounded-lg text-white focus:outline-none focus:border-pink-500 font-medium">
+                    <option value="duplex" selected>Recto / Verso (2 pages)</option>
+                    <option value="recto">Recto Seul (1 page)</option>
+                </select>
+            </div>
+
+        </div>
+
+        <!-- Aide-mémoire d'impression (Invisible à l'impression) -->
+        <div class="bg-pink-950/30 border border-pink-900/40 rounded-xl p-3 flex gap-3 items-start text-xs text-pink-300">
+            <span class="text-lg">💡</span>
+            <div>
+                <span class="font-bold">Pour une impression double-face réussie :</span>
+                <p class="text-pink-400/90 mt-0.5">Après avoir cliqué sur "Imprimer la page", pensez à activer l'option <span class="font-bold underline text-white">"Recto-Verso"</span> (ou <span class="font-bold underline text-white">"Imprimer sur les deux faces"</span>) dans les paramètres avancés de la fenêtre qui s'ouvre.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Conteneur des pages A4 générées -->
+    <div id="pages-container" class="flex flex-col gap-6 items-center w-full">
+        <!-- Généré dynamiquement en Javascript -->
+    </div>
+
+    <script>
+        function updatePageStyle() {
+            const gridType = document.getElementById('grid-type').value;
+            const spacingMm = parseFloat(document.getElementById('line-spacing').value);
+            const marginToggle = document.getElementById('margin-toggle').value;
+            const lineColor = document.getElementById('line-color').value;
+            const printMode = document.getElementById('print-mode').value;
+            
+            const pagesContainer = document.getElementById('pages-container');
+
+            // 1. Gérer l'affichage du menu "espacement" (uniquement utile sur les lignes simples)
+            const spacingWrapper = document.getElementById('spacing-wrapper');
+            if (gridType === 'lines') {
+                spacingWrapper.style.opacity = '1';
+                spacingWrapper.style.pointerEvents = 'auto';
+            } else {
+                spacingWrapper.style.opacity = '0.3';
+                spacingWrapper.style.pointerEvents = 'none';
+            }
+
+            // 2. Définir les variables de couleurs d'écriture et de marge
+            let colorMain, colorSub, colorMargin;
+            if (lineColor === 'light') {
+                colorMain = 'rgba(100, 116, 139, 0.45)';
+                colorSub = 'rgba(148, 163, 184, 0.25)';
+                colorMargin = 'rgba(239, 68, 68, 0.65)';
+            } else if (lineColor === 'medium') {
+                colorMain = 'rgba(71, 85, 105, 0.7)';
+                colorSub = 'rgba(100, 116, 139, 0.45)';
+                colorMargin = 'rgba(220, 38, 38, 0.85)';
+            } else { // Dark / Fort
+                colorMain = 'rgba(15, 23, 42, 0.9)';
+                colorSub = 'rgba(71, 85, 105, 0.6)';
+                colorMargin = 'rgba(185, 28, 28, 1)';
+            }
+
+            // Injecter les variables CSS globales
+            document.documentElement.style.setProperty('--line-color-main', colorMain);
+            document.documentElement.style.setProperty('--line-color-sub', colorSub);
+            document.documentElement.style.setProperty('--margin-color', colorMargin);
+            document.documentElement.style.setProperty('--spacing', `${spacingMm}mm`);
+
+            // 3. Dessiner le nombre de pages adéquat
+            pagesContainer.innerHTML = ''; // Nettoyer
+            const totalPages = (printMode === 'duplex') ? 2 : 1;
+
+            for (let i = 1; i <= totalPages; i++) {
+                // Créer le label d'en-tête pour l'écran
+                if (totalPages > 1) {
+                    const label = document.createElement('div');
+                    label.className = 'no-print text-center text-xs font-bold text-slate-400 mt-2 select-none uppercase tracking-widest';
+                    label.innerText = `PAGE ${i} — ${i === 1 ? 'RECTO' : 'VERSO'}`;
+                    pagesContainer.appendChild(label);
+                }
+
+                // Créer la feuille de prévisualisation A4
+                const pageElement = document.createElement('div');
+                pageElement.className = 'a4-preview';
+
+                // Créer le conteneur interne de motif
+                const containerElement = document.createElement('div');
+                containerElement.className = `sheet-container grid-${gridType}`;
+
+                // Injecter la marge rouge si l'option est active
+                if (marginToggle === 'yes') {
+                    const marginLine = document.createElement('div');
+                    marginLine.className = 'margin-line';
+                    containerElement.appendChild(marginLine);
+                }
+
+                pageElement.appendChild(containerElement);
+                pagesContainer.appendChild(pageElement);
+            }
+        }
+
+        // Lancement initial au chargement de la fenêtre
+        window.onload = () => {
+            updatePageStyle();
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,42 @@
+Classes	Élèves	"Né(e) le"	Régimes	Absences					"Absences Repas"	"Absences Internat"	Retards		"Retards Internat"
+				"Nb Abs"	"Total ½ journées"	"Taux d'absence"	Justifiées				Retards	"Retards en minutes"	
+							Oui	Non					
+"3 1"	"26 élèves"			159	428	"13,17 %"	401	27	-	-	105	"742 min"	-
+"3 2"	"27 élèves"			149	331	"9,81 %"	280	51	-	-	53	"361 min"	-
+"3 3"	"27 élèves"			176	455	"13,48 %"	325	130	-	-	46	"376 min"	-
+"4 1"	"26 élèves"			101	166	"5,11 %"	163	3	1	-	80	"470 min"	-
+"4 1"	"AFFANI AFFANI Inasse"	27/12/2012	"DEMI-PENSIONNAIRE DANS L'ETABLISSEMENT 4"	3	4	"3,20 %"	4	-	-	-	1	"5 min"	-
+"4 1"	"ALAYRAC Valentin"	12/01/2012	"DEMI-PENSIONNAIRE DANS L'ETABLISSEMENT 4"	1	1	"0,80 %"	1	-	-	-	-	-	-
+"4 1"	"BIELSA GARCES Baptiste"	16/04/2012	"DEMI-PENSIONNAIRE DANS L'ETABLISSEMENT 4"	3	3	"2,40 %"	3	-	-	-	2	"10 min"	-
+"4 1"	"BOUILLAC Aliénor"	11/10/2012	"DEMI-PENSIONNAIRE DANS L'ETABLISSEMENT 4"	3	6	"4,80 %"	6	-	-	-	-	-	-
+"4 1"	"CHEVROLAT Emilie"	21/12/2012	"DEMI-PENSIONNAIRE DANS L'ETABLISSEMENT 4"	5	7	"5,60 %"	7	-	-	-	2	"14 min"	-
+"4 1"	"DAVEZAC Lyanna"	13/09/2012	"DEMI-PENSIONNAIRE DANS L'ETABLISSEMENT 4"	1	2	"1,60 %"	2	-	-	-	2	"14 min"	-
+"4 1"	"DERNONCOURT Clémentine"	07/09/2012	"DEMI-PENSIONNAIRE DANS L'ETABLISSEMENT 4"	2	3	"2,40 %"	2	1	-	-	1	"5 min"	-
+"4 1"	"DIAS Maxens"	05/11/2012	"DEMI-PENSIONNAIRE DANS L'ETABLISSEMENT 4"	5	6	"4,80 %"	6	-	-	-	7	"47 min"	-
+"4 1"	"ETCHEGOYHEN Thibault"	29/04/2012	"DEMI-PENSIONNAIRE DANS L'ETABLISSEMENT 4"	2	3	"2,40 %"	3	-	-	-	2	"12 min"	-
+"4 1"	"GERARD Késia"	21/09/2012	"DEMI-PENSIONNAIRE DANS L'ETABLISSEMENT 4"	1	1	"0,80 %"	1	-	-	-	9	"50 min"	-
+"4 1"	"HELIEZ Elina"	10/06/2012	"DEMI-PENSIONNAIRE DANS L'ETABLISSEMENT 4"	1	2	"1,60 %"	2	-	-	-	2	"10 min"	-
+"4 1"	"HILSZ Albin"	18/03/2012	"DEMI-PENSIONNAIRE DANS L'ETABLISSEMENT 4"	-	-	"0,00 %"	-	-	-	-	1	"5 min"	-
+"4 1"	"HOSPITALIER Brune"	08/04/2014	"DEMI-PENSIONNAIRE DANS L'ETABLISSEMENT 4"	3	3	"2,40 %"	3	-	-	-	4	"20 min"	-
+"4 1"	"JEAN Timothée"	18/10/2012	"DEMI-PENSIONNAIRE DANS L'ETABLISSEMENT 4"	14	21	"16,80 %"	21	-	-	-	2	"10 min"	-
+"4 1"	"KAWALA DEMEURE Sandro"	07/07/2012	"DEMI-PENSIONNAIRE DANS L'ETABLISSEMENT 4"	2	4	"3,20 %"	2	2	-	-	2	"10 min"	-
+"4 1"	"LOPEZ DURAN Merlin"	22/11/2012	"DEMI-PENSIONNAIRE DANS L'ETABLISSEMENT 4"	3	5	"4,00 %"	5	-	-	-	2	"10 min"	-
+"4 1"	"MARGOT Charline"	14/04/2012	"DEMI-PENSIONNAIRE DANS L'ETABLISSEMENT 4"	10	16	"12,80 %"	16	-	-	-	-	-	-
+"4 1"	"MARTIN Margot"	02/03/2012	"DEMI-PENSIONNAIRE DANS L'ETABLISSEMENT 4"	2	5	"4,00 %"	5	-	-	-	1	"5 min"	-
+"4 1"	"MAUDOU Gabin"	01/07/2012	"DEMI-PENSIONNAIRE DANS L'ETABLISSEMENT 4"	3	2	"1,60 %"	2	-	-	-	2	"20 min"	-
+"4 1"	"MILITAO DUMAULIE Maylïs"	12/12/2011	"EXTERNE LIBRE"	1	2	"1,60 %"	2	-	-	-	3	"17 min"	-
+"4 1"	"MOLINA Rafael"	10/01/2012	"DEMI-PENSIONNAIRE DANS L'ETABLISSEMENT 4"	3	8	"6,40 %"	8	-	-	-	1	"5 min"	-
+"4 1"	"NAYA Diego"	13/12/2012	"DEMI-PENSIONNAIRE DANS L'ETABLISSEMENT 4"	4	5	"4,00 %"	5	-	1	-	5	"25 min"	-
+"4 1"	"PENEN Alicia"	14/06/2012	"DEMI-PENSIONNAIRE DANS L'ETABLISSEMENT 4"	-	-	"0,00 %"	-	-	-	-	1	"5 min"	-
+"4 1"	"RODRIGUEZ Clara"	29/06/2012	"DEMI-PENSIONNAIRE DANS L'ETABLISSEMENT 4"	5	10	"8,00 %"	10	-	-	-	1	"5 min"	-
+"4 1"	"STAWUJAK Natan"	19/06/2012	"DEMI-PENSIONNAIRE DANS L'ETABLISSEMENT 4"	10	13	"10,40 %"	13	-	-	-	18	"117 min"	-
+"4 1"	"TESTA-ROMEO Lanna"	18/02/2012	"DEMI-PENSIONNAIRE DANS L'ETABLISSEMENT 4"	14	34	"27,20 %"	34	-	-	-	9	"49 min"	-
+"4 2"	"20 élèves"			117	195	"6,50 %"	170	25	-	-	41	"293 min"	-
+"4 3"	"27 élèves"			112	250	"7,14 %"	233	17	-	-	56	"385 min"	-
+"5 1"	"28 élèves"			141	230	"6,13 %"	228	2	-	-	94	"553 min"	-
+"5 2"	"28 élèves"			95	196	"5,23 %"	187	9	-	-	47	"285 min"	-
+"5 3"	"25 élèves"			111	171	"4,56 %"	168	3	-	-	77	"459 min"	-
+"6 1"	"26 élèves"			88	177	"5,24 %"	160	17	-	-	63	"396 min"	-
+"6 2"	"27 élèves"			169	257	"7,34 %"	251	6	-	-	29	"239 min"	-
+"6 3"	"25 élèves"			160	336	"9,60 %"	233	103	-	-	27	"153 min"	-
+"12 classes"	"312 élèves"			"1 578"	"3 192"	"7,71 %"	"2 799"	393	1	-	718	"4 712"	-

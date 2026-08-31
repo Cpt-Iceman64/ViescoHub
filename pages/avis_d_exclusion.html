@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Avis d'Exclusion de Cours</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @page {
+            size: A4 portrait;
+            margin: 0;
+        }
+
+        body {
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        /* 1. Structure globale (écran + impression) */
+        .a4-page {
+            width: 210mm;
+            height: 297mm;
+            display: flex;
+            flex-direction: column;
+            box-sizing: border-box;
+        }
+
+        @media screen {
+            body {
+                background-color: #080c16;
+                background-image:
+                    linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+                background-size: 50px 50px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                padding: 2rem;
+                min-height: 100vh;
+                font-family: 'Segoe UI', sans-serif;
+            }
+
+            .a4-page {
+                margin-top: 1rem;
+                background: white;
+                padding: 5mm;
+                box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+                position: relative;
+            }
+        }
+
+        @media print {
+            body {
+                margin: 0;
+                padding: 0;
+                background: white;
+            }
+
+            .a4-page {
+                margin: 0;
+                padding: 5mm;
+                box-shadow: none;
+                overflow: hidden;
+                page-break-after: avoid;
+                page-break-before: avoid;
+            }
+
+            .no-print {
+                display: none !important;
+            }
+        }
+
+        .half-page {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 2mm 0;
+            min-height: 0;
+        }
+
+        .cut-line {
+            display: flex;
+            align-items: center;
+            margin: 4mm 0;
+        }
+
+        .cut-line::after {
+            content: '';
+            flex-grow: 1;
+            border-top: 2px dashed #9ca3af;
+        }
+
+        .cut-icon {
+            color: #6b7280;
+            margin-right: 8px;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .field-label {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        .dotted-line {
+            flex-grow: 1;
+            border-bottom: 1.5px dotted #9ca3af;
+            min-width: 40px;
+            margin-left: 0.25rem;
+        }
+
+        .section-box {
+            border: 1px solid #cbd5e1;
+            border-radius: 0.25rem;
+            padding: 0.4rem;
+            margin-top: 0.3rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .section-title {
+            font-size: 0.70rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            color: #475569;
+            margin-bottom: 0.25rem;
+        }
+
+        .lined-box {
+            width: 100%;
+            background-image: linear-gradient(transparent calc(100% - 1px), #cbd5e1 calc(100% - 1px));
+            background-size: 100% 1.6rem;
+            flex-grow: 1;
+            min-height: 2rem;
+        }
+    </style>
+</head>
+
+<body class="text-gray-900">
+
+    <!-- Barre d'outils (Invisible à l'impression) -->
+    <div
+        class="no-print w-full max-w-4xl mx-auto flex justify-between items-center bg-slate-900/80 backdrop-blur-md border border-slate-700 p-4 rounded-2xl shadow-xl z-50 sticky top-4">
+        <div class="flex items-center gap-3">
+            <div class="p-2 bg-slate-500/20 text-slate-400 rounded-lg">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10" />
+                    <line x1="15" y1="9" x2="9" y2="15" />
+                    <line x1="9" y1="9" x2="15" y2="15" />
+                </svg>
+            </div>
+            <div>
+                <h1 class="text-white font-bold text-lg leading-tight">Impression Avis d'Exclusion</h1>
+                <p class="text-slate-400 text-xs font-medium">A4 (210x297) • 2 par page</p>
+            </div>
+        </div>
+        <div class="flex gap-3">
+            <a href="documents.html"
+                class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white text-sm font-bold rounded-lg transition-colors">
+                Retour
+            </a>
+            <button onclick="window.print()"
+                class="flex items-center gap-2 px-5 py-2 bg-slate-700 hover:bg-slate-600 text-white text-sm font-bold rounded-lg transition-all shadow-[0_0_15px_rgba(51,65,85,0.3)] hover:shadow-[0_0_25px_rgba(51,65,85,0.5)]">
+                Imprimer
+            </button>
+        </div>
+    </div>
+
+    <div class="a4-page">
+        <!-- Billet 1 -->
+        <div class="half-page">
+            <div class="flex justify-between items-start border-b-2 border-slate-800 pb-2 mb-2">
+                <div class="flex items-center gap-2">
+                    <img src="../logo.png" alt="Logo" class="w-10 h-10 object-contain">
+                    <div class="text-xs font-bold">Collège des Cordeliers<br><span
+                            class="text-gray-500 font-normal">Oloron-Sainte-Marie</span></div>
+                </div>
+                <h1 class="text-lg font-black uppercase text-slate-800">Avis d'Exclusion</h1>
+            </div>
+
+            <div class="text-[0.7rem] font-medium text-gray-700 italic mb-1">Madame, Monsieur, nous vous informons de
+                l'exclusion de cours de l'élève :</div>
+            <div class="flex flex-col gap-2 px-1 shrink-0 mb-1">
+                <div class="flex items-end w-full"><span class="field-label">Nom, Prénom :</span><span
+                        class="dotted-line"></span><span class="field-label ml-3">Classe :</span><span
+                        class="dotted-line max-w-[60px]"></span></div>
+                <div class="flex items-end w-full">
+                    <span class="field-label">Exclu(e) le :</span><span class="dotted-line max-w-[80px]"></span>
+                    <span class="field-label ml-2">à :</span><span class="dotted-line max-w-[30px]"></span><span
+                        class="font-bold ml-1 text-sm">h</span>
+                    <span class="field-label ml-3">Par M./Mme :</span><span class="dotted-line"></span>
+                </div>
+            </div>
+
+            <div class="section-box flex-[4]">
+                <span class="section-title">Pour le motif suivant :</span>
+                <div class="lined-box"></div>
+            </div>
+
+            <div class="section-box flex-[2]">
+                <div class="flex justify-between items-center text-xs">
+                    <span class="section-title mb-0">Devoir à faire :</span>
+                    <div class="flex gap-4 font-bold text-gray-600">
+                        <label class="flex items-center gap-1">
+                            <div class="w-3 h-3 border border-gray-500 rounded-sm"></div> OUI
+                        </label>
+                        <label class="flex items-center gap-1">
+                            <div class="w-3 h-3 border border-gray-500 rounded-sm"></div> NON
+                        </label>
+                    </div>
+                </div>
+                <div class="lined-box" style="min-height: 2rem;"></div>
+            </div>
+
+
+            <div class="mt-auto pt-2 flex justify-between text-xs text-center border-t border-gray-200 h-20">
+                <div class="w-1/2 font-bold p-1">Signature Professeur</div>
+                <div class="w-1/2 border-l font-bold p-1">Visa Vie Scolaire</div>
+            </div>
+        </div>
+
+        <div class="cut-line">
+            <div class="cut-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="6" cy="6" r="3"></circle>
+                    <circle cx="6" cy="18" r="3"></circle>
+                    <line x1="20" y1="4" x2="8.12" y2="15.88"></line>
+                    <line x1="14.47" y1="14.48" x2="20" y2="20"></line>
+                    <line x1="8.12" y1="8.12" x2="12" y2="12"></line>
+                </svg>
+            </div>
+        </div>
+
+        <!-- Billet 2 (Identique) -->
+        <div class="half-page">
+            <div class="flex justify-between items-start border-b-2 border-slate-800 pb-2 mb-2">
+                <div class="flex items-center gap-2">
+                    <img src="../logo.png" alt="Logo" class="w-10 h-10 object-contain">
+                    <div class="text-xs font-bold">Collège des Cordeliers<br><span
+                            class="text-gray-500 font-normal">Oloron-Sainte-Marie</span></div>
+                </div>
+                <h1 class="text-lg font-black uppercase text-slate-800">Avis d'Exclusion</h1>
+            </div>
+
+            <div class="text-[0.7rem] font-medium text-gray-700 italic mb-1">Madame, Monsieur, nous vous informons de
+                l'exclusion de cours de l'élève :</div>
+            <div class="flex flex-col gap-2 px-1 shrink-0 mb-1">
+                <div class="flex items-end w-full"><span class="field-label">Nom, Prénom :</span><span
+                        class="dotted-line"></span><span class="field-label ml-3">Classe :</span><span
+                        class="dotted-line max-w-[60px]"></span></div>
+                <div class="flex items-end w-full">
+                    <span class="field-label">Exclu(e) le :</span><span class="dotted-line max-w-[80px]"></span>
+                    <span class="field-label ml-2">à :</span><span class="dotted-line max-w-[30px]"></span><span
+                        class="font-bold ml-1 text-sm">h</span>
+                    <span class="field-label ml-3">Par M./Mme :</span><span class="dotted-line"></span>
+                </div>
+            </div>
+
+            <div class="section-box flex-[4]">
+                <span class="section-title">Pour le motif suivant :</span>
+                <div class="lined-box"></div>
+            </div>
+
+            <div class="section-box flex-[2]">
+                <div class="flex justify-between items-center text-xs">
+                    <span class="section-title mb-0">Devoir à faire :</span>
+                    <div class="flex gap-4 font-bold text-gray-600">
+                        <label class="flex items-center gap-1">
+                            <div class="w-3 h-3 border border-gray-500 rounded-sm"></div> OUI
+                        </label>
+                        <label class="flex items-center gap-1">
+                            <div class="w-3 h-3 border border-gray-500 rounded-sm"></div> NON
+                        </label>
+                    </div>
+                </div>
+                <div class="lined-box" style="min-height: 2rem;"></div>
+            </div>
+
+            <div class="mt-auto pt-2 flex justify-between text-xs text-center border-t border-gray-200 h-20">
+                <div class="w-1/2 font-bold p-1">Signature Professeur</div>
+                <div class="w-1/2 border-l font-bold p-1">Visa Vie Scolaire</div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

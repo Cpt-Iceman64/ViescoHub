@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bilan Absences - ViescoHub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #080c16;
+            color: #f8fafc;
+            background-image:
+                linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            background-position: center top;
+            min-height: 100vh;
+        }
+
+        .btn-glow {
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .btn-glow:hover {
+            box-shadow: 0 0 25px rgba(16, 185, 129, 0.6);
+            transform: translateY(-1px);
+        }
+
+        .stat-card {
+            background: linear-gradient(145deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.9) 100%);
+            border: 1px solid rgba(51, 65, 85, 0.5);
+            backdrop-filter: blur(10px);
+            transition: transform 0.2s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-2px);
+            border-color: rgba(52, 211, 153, 0.4);
+        }
+
+        /* Classes utilitaires pour l'impression */
+        @media print {
+            @page { size: A4 portrait; margin: 1cm; }
+            .no-print { display: none !important; }
+            .page-break-before { break-before: page; } /* Force la nouvelle page */
+            
+            body { 
+                background: white !important; 
+                color: #0f172a !important; 
+                background-image: none !important;
+                font-size: 11px !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            main { padding: 0 !important; margin: 0 !important; }
+            #dashboard-container { max-width: 100% !important; margin: 0 !important; }
+            
+            .stat-card {
+                background: #f8fafc !important;
+                border: 1px solid #cbd5e1 !important;
+                break-inside: avoid;
+                box-shadow: none !important;
+                padding: 12px !important;
+                color: black !important;
+                margin-bottom: 16px !important;
+            }
+            .text-white, .text-slate-300 { color: #0f172a !important; }
+            .text-slate-400, .text-slate-500 { color: #475569 !important; }
+            .text-emerald-400, .text-emerald-500 { color: #059669 !important; }
+            .text-red-400 { color: #dc2626 !important; }
+            .text-orange-400 { color: #ea580c !important; }
+            
+            .border-slate-800, .border-slate-700 { border-color: #cbd5e1 !important; }
+            .border-b { border-bottom-color: #cbd5e1 !important; }
+            
+            .bg-slate-800 { background-color: #e2e8f0 !important; }
+            
+            .print-grid-2 { 
+                display: grid !important; 
+                grid-template-columns: repeat(2, 1fr) !important; 
+                gap: 16px !important;
+            }
+            .print-grid-4 {
+                display: grid !important; 
+                grid-template-columns: repeat(4, 1fr) !important; 
+                gap: 12px !important;
+            }
+            
+            table { width: 100% !important; border-collapse: collapse !important; }
+            thead { display: table-header-group; } /* Répète l'en-tête sur plusieurs pages si besoin */
+            tr { page-break-inside: avoid; border-bottom: 1px solid #e2e8f0 !important; }
+            th { border-bottom: 2px solid #cbd5e1 !important; color: #475569 !important; text-transform: uppercase; font-size: 10px; }
+            td { padding: 4px 2px !important; }
+            
+            h2, h3 { color: #0f172a !important; }
+        }
+    </style>
+</head>
+
+<body class="flex flex-col min-h-screen">
+    <div class="fixed top-1/4 right-0 w-[500px] h-[500px] bg-emerald-900/10 rounded-full blur-[120px] pointer-events-none -z-10 no-print"></div>
+
+    <header class="w-full no-print z-30 bg-[#05080f]/90 backdrop-blur-sm border-b border-slate-800/50 sticky top-0">
+        <div class="w-full px-6 md:px-12 py-5 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="text-emerald-400">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 2L2 7l10 5 10-5-10-5Z" />
+                        <path d="m2 17 10 5 10-5" />
+                        <path d="m2 12 10 5 10-5" />
+                    </svg>
+                </div>
+                <span class="text-xl font-bold tracking-tight text-white">Viesco<span
+                        class="text-emerald-400">Hub</span></span>
+            </div>
+
+            <nav class="hidden md:flex items-center gap-8 text-xs font-bold tracking-widest uppercase text-slate-400">
+                <a href="../index.html" class="hover:text-emerald-400 transition-colors">Accueil</a>
+                <a href="absences.html" class="hover:text-emerald-400 transition-colors">Absences</a>
+                <a href="#" class="text-white hover:text-emerald-400 transition-colors">Bilan Abs.</a>
+                <a href="programme-retenues.html" class="hover:text-emerald-400 transition-colors">Retenues</a>
+                <a href="bilan-sanctions.html" class="hover:text-emerald-400 transition-colors">Bilan Sanc.</a>
+                <a href="createur-devoirs.html" class="hover:text-emerald-400 transition-colors">Devoirs</a>
+                <a href="documents.html" class="hover:text-emerald-400 transition-colors">Documents</a>
+                <a href="planning.html" class="hover:text-emerald-400 transition-colors">Planning</a>
+                <span class="text-slate-600">|</span>
+                <div class="flex items-center gap-2 bg-slate-900 border border-slate-800 px-3 py-1.5 rounded-full">
+                    <div class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></div>
+                    <span id="live-time" class="text-sm font-bold text-emerald-400 font-mono">--:--</span>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main class="flex-grow w-full px-6 py-12 md:py-20 flex flex-col">
+        <div class="max-w-7xl mx-auto w-full mb-8 no-print grid grid-cols-1 lg:grid-cols-12 gap-8 z-10">
+            
+            <!-- Colonne de gauche : Contexte -->
+            <div class="lg:col-span-5 flex flex-col justify-between py-0">
+                <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-900/30 border border-emerald-800/50 mb-6 w-fit">
+                    <div class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></div>
+                    <span class="text-[10px] font-bold tracking-widest text-emerald-300 uppercase">Outil Analytique</span>
+                </div>
+                
+                <h1 class="text-4xl md:text-5xl font-black text-white tracking-tight leading-[1.1] mb-4">
+                    Bilan<br><span class="text-emerald-500">Absences</span>
+                </h1>
+                
+                <p class="text-sm font-medium text-slate-400 mb-8 leading-relaxed max-w-sm">
+                    Collez l'export CSV Pronote "Récapitulatif des absences" pour analyser l'absentéisme et les retards.
+                </p>
+                
+                <div class="space-y-4">
+                    <div class="flex items-start gap-4 bg-slate-900/40 p-4 rounded-2xl border border-slate-800/60">
+                        <div class="bg-emerald-500/10 p-2.5 rounded-xl text-emerald-400">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+                        </div>
+                        <div>
+                            <h4 class="text-white font-bold text-sm">Vue Globale & Liste</h4>
+                            <p class="text-xs text-slate-500 mt-1">Taux d'absence moyen et liste complète de tous les élèves avec leurs statistiques individuelles.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-start gap-4 bg-slate-900/40 p-4 rounded-2xl border border-slate-800/60">
+                        <div class="bg-emerald-500/10 p-2.5 rounded-xl text-emerald-400">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="10"/></svg>
+                        </div>
+                        <div>
+                            <h4 class="text-white font-bold text-sm">Gestion des Retards</h4>
+                            <p class="text-xs text-slate-500 mt-1">Identification des élèves avec le plus gros cumul de temps de retard.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Colonne de droite : Zone d'action -->
+            <div class="lg:col-span-7 bg-[#0d1326] p-6 md:p-8 rounded-3xl border border-slate-800 shadow-2xl relative overflow-hidden flex flex-col min-h-[500px]">
+                <div class="absolute top-0 left-0 w-1 h-full bg-emerald-500 shadow-[0_0_15px_#10b981]"></div>
+                
+                <div class="flex items-center justify-between mb-4 pl-2">
+                    <div class="flex items-center gap-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-emerald-400"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                        <h2 class="text-sm font-bold text-white uppercase tracking-widest">Zone d'importation</h2>
+                    </div>
+                </div>
+                
+                <div class="relative flex-grow flex flex-col mb-6">
+                    <div class="absolute top-3 left-3 flex gap-1.5 z-10">
+                        <div class="w-2.5 h-2.5 rounded-full bg-slate-800"></div>
+                        <div class="w-2.5 h-2.5 rounded-full bg-slate-800"></div>
+                        <div class="w-2.5 h-2.5 rounded-full bg-slate-800"></div>
+                    </div>
+                    <textarea id="input"
+                        class="w-full flex-grow p-4 pt-10 bg-slate-950/50 border border-slate-800/80 rounded-2xl font-mono text-xs text-emerald-100 placeholder-slate-600 focus:bg-[#0a0f1c] focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all resize-none shadow-inner"
+                        placeholder="> Collez le tableau Pronote récapitulatif des absences et retards (format CSV)..."></textarea>
+                </div>
+
+                <div class="flex justify-end items-center gap-3 mt-auto">
+                    <button onclick="document.getElementById('input').value = ''" class="text-slate-400 hover:text-white px-4 py-2 text-sm font-bold transition-colors w-full sm:w-auto text-center">
+                        Effacer
+                    </button>
+                    <button onclick="analyzeClasses()" class="btn-glow bg-white text-slate-950 px-8 py-2.5 rounded-full text-sm font-bold transition-all flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+                        Analyser les données
+                    </button>
+                </div>
+
+                <!-- Zone de sélection de classe -->
+                <div id="class-selection-container" class="hidden mt-6 bg-slate-900/50 p-5 rounded-2xl border border-slate-700/50 shadow-inner">
+                    <div class="flex items-center gap-2 mb-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-emerald-400"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                        <h3 class="text-sm font-bold text-white uppercase tracking-wider">Sélectionnez la vue à générer</h3>
+                    </div>
+                    <div id="class-buttons" class="flex flex-wrap gap-2">
+                        <!-- Boutons générés via JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Container du Tableau de bord -->
+        <div id="dashboard-container" class="w-full max-w-6xl mx-auto hidden">
+            <!-- En-tête du rapport -->
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-8 border-b border-slate-800 pb-4 gap-4">
+                <div>
+                    <h2 id="report-title" class="text-2xl font-black text-white uppercase tracking-tight">Bilan Trimestriel</h2>
+                    <p class="text-sm text-emerald-400 font-medium mt-1">Analyse des Absences et Retards</p>
+                </div>
+                <button onclick="window.print()" class="no-print bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 rounded-lg text-sm font-bold transition-colors border border-slate-700 flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect width="12" height="8" x="6" y="14"/></svg>
+                    Imprimer PDF (inclut la liste sur une 2ème page)
+                </button>
+            </div>
+
+            <!-- KPI Cards -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8 print-grid-4">
+                <div class="stat-card p-5 rounded-xl">
+                    <div class="text-slate-400 text-xs font-bold uppercase tracking-wider mb-1">Total ½ Journées</div>
+                    <div id="kpi-total-abs" class="text-3xl font-black text-white">0</div>
+                    <div class="text-[10px] text-slate-500 mt-2">D'absences cumulées</div>
+                </div>
+                <div class="stat-card p-5 rounded-xl">
+                    <div class="text-slate-400 text-xs font-bold uppercase tracking-wider mb-1">Non Justifiées</div>
+                    <div id="kpi-non-justif" class="text-3xl font-black text-red-400">0</div>
+                    <div class="text-[10px] text-slate-500 mt-2">Absences inexpliquées</div>
+                </div>
+                <div class="stat-card p-5 rounded-xl">
+                    <div class="text-slate-400 text-xs font-bold uppercase tracking-wider mb-1">Taux Moyen</div>
+                    <div id="kpi-taux" class="text-3xl font-black text-emerald-400">0%</div>
+                    <div class="text-[10px] text-slate-500 mt-2">D'absentéisme</div>
+                </div>
+                <div class="stat-card p-5 rounded-xl">
+                    <div class="text-slate-400 text-xs font-bold uppercase tracking-wider mb-1">Total Retards</div>
+                    <div id="kpi-retards" class="text-3xl font-black text-orange-400">0 min</div>
+                    <div class="text-[10px] text-slate-500 mt-2">Temps d'enseignement perdu</div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 print-grid-2">
+                <!-- Top Classes (Élargi sur toute la largeur) -->
+                <div id="top-classes-container" class="stat-card p-5 rounded-xl lg:col-span-2 print:col-span-2">
+                    <h3 class="text-sm font-bold text-white uppercase tracking-wider mb-4 border-b border-slate-700/50 pb-2">Top Classes - Taux d'absence (%)</h3>
+                    <!-- Grid horizontale de 5 colonnes pour les classes -->
+                    <div id="list-classes" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
+                        <!-- Généré via JS -->
+                    </div>
+                </div>
+
+                <!-- Top Élèves Absences -->
+                <div class="stat-card p-5 rounded-xl">
+                    <h3 class="text-sm font-bold text-white uppercase tracking-wider mb-4 border-b border-slate-700/50 pb-2">Profils à risque (½ journées manquées)</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm">
+                            <thead>
+                                <tr class="text-slate-500 text-xs uppercase border-b border-slate-800">
+                                    <th class="pb-2 font-medium">Élève</th>
+                                    <th id="th-classe-1" class="pb-2 font-medium">Classe</th>
+                                    <th class="pb-2 font-medium text-right">Taux</th>
+                                    <th class="pb-2 font-medium text-right">Non Just.</th>
+                                </tr>
+                            </thead>
+                            <tbody id="list-top-students" class="text-slate-300">
+                                <!-- Généré via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Top Élèves Retards -->
+                <div class="stat-card p-5 rounded-xl">
+                    <h3 class="text-sm font-bold text-white uppercase tracking-wider mb-4 border-b border-slate-700/50 pb-2">Retards Chroniques (Temps perdu)</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm">
+                            <thead>
+                                <tr class="text-slate-500 text-xs uppercase border-b border-slate-800">
+                                    <th class="pb-2 font-medium">Élève</th>
+                                    <th id="th-classe-2" class="pb-2 font-medium">Classe</th>
+                                    <th class="pb-2 font-medium text-right">Nb Retards</th>
+                                    <th class="pb-2 font-medium text-right">Minutes</th>
+                                </tr>
+                            </thead>
+                            <tbody id="list-top-retards" class="text-slate-300">
+                                <!-- Généré via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- NOUVELLE SECTION : Liste de tous les élèves (Deuxième page à l'impression) -->
+            <div class="mt-8 page-break-before">
+                <div class="stat-card p-5 rounded-xl">
+                    <h3 class="text-lg font-bold text-white uppercase tracking-wider mb-2 border-b border-slate-700/50 pb-2 flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-emerald-400"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                        Liste Détaillée des Élèves
+                    </h3>
+                    <p class="text-xs text-slate-400 mb-4">Statistiques complètes pour la sélection actuelle.</p>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm">
+                            <thead>
+                                <tr class="text-slate-500 text-[11px] uppercase tracking-wider border-b border-slate-800">
+                                    <th class="pb-2 pt-2 font-medium">Nom de l'élève</th>
+                                    <th id="th-classe-3" class="pb-2 pt-2 font-medium">Classe</th>
+                                    <th class="pb-2 pt-2 font-medium text-center">½ Journées<br><span class="text-[9px] lowercase font-normal">(total abs)</span></th>
+                                    <th class="pb-2 pt-2 font-medium text-center text-red-400/80">Non Justif.<br><span class="text-[9px] text-slate-500 lowercase font-normal">(demi-journées)</span></th>
+                                    <th class="pb-2 pt-2 font-medium text-center">Taux<br><span class="text-[9px] lowercase font-normal">(absentéisme)</span></th>
+                                    <th class="pb-2 pt-2 font-medium text-center">Retards<br><span class="text-[9px] lowercase font-normal">(nombre)</span></th>
+                                    <th class="pb-2 pt-2 font-medium text-right">Durée<br><span class="text-[9px] lowercase font-normal">(cumul retards)</span></th>
+                                </tr>
+                            </thead>
+                            <tbody id="list-all-students" class="text-slate-300">
+                                <!-- Généré via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-8 text-center text-xs text-slate-600 print:mt-4 print:text-[10px]">
+                Généré via ViescoHub - Outil d'analyse locale. Aucune donnée n'est envoyée sur des serveurs externes.
+            </div>
+
+        </div>
+
+    </main>
+
+    <script>
+        // --- HORLOGE ---
+        function updateClock() {
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+            const dateStr = now.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
+            const clockEl = document.getElementById('live-time');
+            if (clockEl) clockEl.textContent = dateStr.charAt(0).toUpperCase() + dateStr.slice(1) + ' • ' + timeStr;
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // --- UTILITAIRES ---
+        function escapeHTML(str) {
+            if (!str) return "";
+            return str.replace(/[&<>'"]/g, tag => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
+            }[tag]));
+        }
+
+        function normalizeStr(str) {
+            return str ? str.trim().replace(/^"|"$/g, '') : '';
+        }
+
+        // --- VARIABLES GLOBALES ---
+        let globalStudentsData = [];
+        let globalClassesData = [];
+
+        // --- FONCTION PRINCIPALE : ANALYSER ---
+        function analyzeClasses() {
+            const rawData = document.getElementById('input').value;
+            if (!rawData.trim()) {
+                alert("Veuillez coller des données avant de générer l'analyse.");
+                return;
+            }
+
+            const parsed = parseData(rawData);
+            globalStudentsData = parsed.students;
+            globalClassesData = parsed.classes;
+            
+            if (globalStudentsData.length === 0) {
+                alert("Aucune donnée exploitable trouvée. Vérifiez le format de votre export Pronote.");
+                return;
+            }
+
+            // Extraction des classes uniques
+            const classes = [...new Set(globalStudentsData.map(d => d.classe))].sort();
+            
+            const btnContainer = document.getElementById('class-buttons');
+            btnContainer.innerHTML = '';
+            
+            // Bouton Toutes les classes
+            const allBtn = document.createElement('button');
+            allBtn.className = 'px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-xl transition-colors shadow-lg';
+            allBtn.textContent = 'Toutes les classes';
+            allBtn.onclick = () => generateDashboard('Toutes les classes');
+            btnContainer.appendChild(allBtn);
+
+            // Boutons individuels par classe
+            classes.forEach(c => {
+                const btn = document.createElement('button');
+                btn.className = 'px-3 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-600 hover:border-emerald-500 text-slate-300 hover:text-white text-xs font-bold rounded-xl transition-colors';
+                btn.textContent = c;
+                btn.onclick = () => generateDashboard(c);
+                btnContainer.appendChild(btn);
+            });
+
+            document.getElementById('class-selection-container').classList.remove('hidden');
+            document.getElementById('class-selection-container').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        // --- GENERER LE TABLEAU DE BORD ---
+        function generateDashboard(targetClass) {
+            let dataToRender = globalStudentsData;
+            
+            if (targetClass !== 'Toutes les classes') {
+                dataToRender = globalStudentsData.filter(d => d.classe === targetClass);
+                document.getElementById('report-title').textContent = `Rapport Analytique - ${targetClass}`;
+            } else {
+                document.getElementById('report-title').textContent = `Rapport Analytique - Vue Globale`;
+            }
+
+            document.getElementById('dashboard-container').classList.remove('hidden');
+            renderDashboard(dataToRender, globalClassesData, targetClass);
+            
+            // Scroll doux vers le résultat
+            document.getElementById('dashboard-container').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        // --- PARSER LES DONNÉES CSV ---
+        function parseData(rawStr) {
+            const lines = rawStr.split('\n');
+            const students = [];
+            const classesMap = new Map();
+
+            lines.forEach(line => {
+                if (!line.trim()) return;
+                const cols = line.split('\t').map(c => normalizeStr(c));
+
+                if (cols.length >= 13) {
+                    const col1 = escapeHTML(cols[0]);
+                    const col2 = escapeHTML(cols[1]);
+
+                    // Si c'est une ligne Résumé de Classe
+                    if (col2.toLowerCase().includes("élèves") && !col1.toLowerCase().includes("classes")) {
+                        const classeNom = col1;
+                        const tauxAbs = parseFloat(cols[6].replace(',', '.').replace('%', '')) || 0;
+                        classesMap.set(classeNom, tauxAbs);
+                    }
+                    
+                    // Si c'est une ligne Élève (col 2 = date de naissance JJ/MM/AAAA)
+                    if (cols[2].match(/^[0-9]{2}\/[0-9]{2}\/[0-9]{4}$/)) {
+                        const nom = col2;
+                        const classe = col1;
+                        const nbAbs = parseInt(cols[4]) || 0;
+                        const demiJournees = parseInt(cols[5]) || 0;
+                        const tauxAbs = parseFloat(cols[6].replace(',', '.').replace('%', '')) || 0;
+                        const justifiees = parseInt(cols[7]) || 0;
+                        const nonJustifiees = parseInt(cols[8]) || 0;
+                        const retards = parseInt(cols[11]) || 0;
+                        const retardsMinStr = cols[12] || "";
+                        const retardsMin = parseInt(retardsMinStr.replace(/\s*min/, '')) || 0;
+
+                        students.push({
+                            nom, classe, nbAbs, demiJournees, tauxAbs, justifiees, nonJustifiees, retards, retardsMin
+                        });
+                    }
+                }
+            });
+
+            const classes = Array.from(classesMap, ([nom, taux]) => ({ nom, taux }));
+
+            return { students, classes };
+        }
+
+        // --- AFFICHER LES DONNÉES DANS LE DOM ---
+        function renderDashboard(students, classes, targetClass) {
+            const showClass = targetClass === 'Toutes les classes';
+            
+            // Gérer la visibilité des colonnes "Classe" dans les tableaux
+            document.getElementById('th-classe-1').style.display = showClass ? '' : 'none';
+            document.getElementById('th-classe-2').style.display = showClass ? '' : 'none';
+            document.getElementById('th-classe-3').style.display = showClass ? '' : 'none';
+            
+            // Gérer la visibilité de la carte "Top Classes"
+            const topClassesContainer = document.getElementById('top-classes-container');
+            if(showClass) {
+                topClassesContainer.style.display = '';
+            } else {
+                topClassesContainer.style.display = 'none';
+            }
+
+            // Calcul des KPIs
+            let totalAbs = 0;
+            let totalNonJustif = 0;
+            let totalRetardsMin = 0;
+            let totalTaux = 0;
+
+            students.forEach(s => {
+                totalAbs += s.demiJournees;
+                totalNonJustif += s.nonJustifiees;
+                totalRetardsMin += s.retardsMin;
+                totalTaux += s.tauxAbs;
+            });
+
+            const avgTaux = students.length > 0 ? (totalTaux / students.length).toFixed(2) : 0;
+
+            document.getElementById('kpi-total-abs').textContent = totalAbs.toLocaleString('fr-FR');
+            document.getElementById('kpi-non-justif').textContent = totalNonJustif.toLocaleString('fr-FR');
+            document.getElementById('kpi-taux').textContent = avgTaux + "%";
+            
+            const hours = Math.floor(totalRetardsMin / 60);
+            const minutes = totalRetardsMin % 60;
+            document.getElementById('kpi-retards').textContent = hours > 0 ? `${hours}h${minutes.toString().padStart(2, '0')}` : `${minutes} min`;
+
+            // --- Top 5 Classes ---
+            if (showClass) {
+                const sortedClasses = classes.sort((a, b) => b.taux - a.taux).slice(0, 5);
+                const classContainer = document.getElementById('list-classes');
+                classContainer.innerHTML = '';
+                
+                if (sortedClasses.length > 0) {
+                    const maxTauxClass = sortedClasses[0].taux || 1;
+                    sortedClasses.forEach(c => {
+                        const percentageWidth = Math.min((c.taux / maxTauxClass) * 100, 100);
+                        classContainer.innerHTML += `
+                            <div class="bg-slate-800/40 border border-slate-700/50 p-3 rounded-lg">
+                                <div class="flex justify-between text-xs mb-2">
+                                    <span class="text-slate-300 font-bold">${c.nom}</span>
+                                    <span class="text-emerald-400 font-bold">${c.taux}%</span>
+                                </div>
+                                <div class="w-full bg-slate-900 rounded-full h-1.5">
+                                    <div class="bg-emerald-500 h-1.5 rounded-full" style="width: ${percentageWidth}%"></div>
+                                </div>
+                            </div>
+                        `;
+                    });
+                } else {
+                    classContainer.innerHTML = '<div class="col-span-full text-xs text-slate-500 text-center py-2">Données de classes indisponibles</div>';
+                }
+            }
+
+            // --- Top 8 Élèves Absences ---
+            const sortedStudentsAbs = [...students].sort((a, b) => b.demiJournees - a.demiJournees).slice(0, 8);
+            const studentAbsContainer = document.getElementById('list-top-students');
+            studentAbsContainer.innerHTML = '';
+
+            sortedStudentsAbs.forEach(s => {
+                studentAbsContainer.innerHTML += `
+                    <tr class="border-b border-slate-800/50 hover:bg-slate-800/30 transition-colors">
+                        <td class="py-2.5 font-bold text-white text-xs truncate max-w-[150px]">${s.nom} <span class="text-emerald-500 ml-1">(${s.demiJournees})</span></td>
+                        ${showClass ? `<td class="py-2.5 text-xs text-slate-400"><span class="bg-slate-800 px-1.5 py-0.5 rounded border border-slate-700">${s.classe}</span></td>` : ''}
+                        <td class="py-2.5 text-right font-black text-emerald-400 text-sm">${s.tauxAbs}%</td>
+                        <td class="py-2.5 text-right font-black text-red-400 text-sm">${s.nonJustifiees}</td>
+                    </tr>
+                `;
+            });
+
+            // --- Top 8 Élèves Retards ---
+            const sortedStudentsRetards = [...students].sort((a, b) => b.retardsMin - a.retardsMin).slice(0, 8);
+            const studentRetardsContainer = document.getElementById('list-top-retards');
+            studentRetardsContainer.innerHTML = '';
+
+            sortedStudentsRetards.forEach(s => {
+                if (s.retardsMin > 0) {
+                    const h = Math.floor(s.retardsMin / 60);
+                    const m = s.retardsMin % 60;
+                    const timeStr = h > 0 ? `${h}h${m.toString().padStart(2, '0')}` : `${m} min`;
+                    
+                    studentRetardsContainer.innerHTML += `
+                        <tr class="border-b border-slate-800/50 hover:bg-slate-800/30 transition-colors">
+                            <td class="py-2.5 font-bold text-white text-xs truncate max-w-[200px]">${s.nom}</td>
+                            ${showClass ? `<td class="py-2.5 text-xs text-slate-400"><span class="bg-slate-800 px-1.5 py-0.5 rounded border border-slate-700">${s.classe}</span></td>` : ''}
+                            <td class="py-2.5 text-right text-emerald-400 text-sm">${s.retards}</td>
+                            <td class="py-2.5 text-right font-black text-orange-400 text-sm">${timeStr}</td>
+                        </tr>
+                    `;
+                }
+            });
+            
+            if(studentRetardsContainer.innerHTML === '') {
+                 studentRetardsContainer.innerHTML = '<tr><td colspan="4" class="text-center py-4 text-xs text-slate-500">Aucun retard enregistré</td></tr>';
+            }
+
+            // --- NOUVEAU : Liste complète de tous les élèves ---
+            const allStudentsContainer = document.getElementById('list-all-students');
+            allStudentsContainer.innerHTML = '';
+            
+            // Trier la liste complète par ordre alphabétique des noms
+            const sortedAllStudents = [...students].sort((a, b) => a.nom.localeCompare(b.nom));
+
+            sortedAllStudents.forEach(s => {
+                const h = Math.floor(s.retardsMin / 60);
+                const m = s.retardsMin % 60;
+                const timeStr = s.retardsMin > 0 ? (h > 0 ? `${h}h${m.toString().padStart(2, '0')}` : `${m} min`) : '-';
+
+                // Styles conditionnels pour mettre en évidence les profils à risque
+                const unexcusedStyle = s.nonJustifiees > 0 ? 'text-red-400 font-bold' : '';
+                const rateStyle = s.tauxAbs > 10 ? 'text-orange-400 font-bold' : (s.tauxAbs > 5 ? 'text-yellow-400' : 'text-emerald-400');
+
+                allStudentsContainer.innerHTML += `
+                    <tr class="border-b border-slate-800/50 hover:bg-slate-800/30 transition-colors">
+                        <td class="py-2 font-bold text-white text-xs">${s.nom}</td>
+                        ${showClass ? `<td class="py-2 text-xs text-slate-400">${s.classe}</td>` : ''}
+                        <td class="py-2 text-center text-sm">${s.demiJournees}</td>
+                        <td class="py-2 text-center text-sm ${unexcusedStyle}">${s.nonJustifiees}</td>
+                        <td class="py-2 text-center text-sm ${rateStyle}">${s.tauxAbs}%</td>
+                        <td class="py-2 text-center text-sm">${s.retards > 0 ? s.retards : '-'}</td>
+                        <td class="py-2 text-right text-sm text-slate-400">${timeStr}</td>
+                    </tr>
+                `;
+            });
+            
+            if(allStudentsContainer.innerHTML === '') {
+                 allStudentsContainer.innerHTML = '<tr><td colspan="7" class="text-center py-4 text-xs text-slate-500">Aucune donnée élève disponible</td></tr>';
+            }
+        }
+    </script>
+
+    <!-- Script de l'assistant virtuel -->
+    <script src="../js/assistant.js"></script>
+</body>
+</html>

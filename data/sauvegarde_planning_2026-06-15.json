@@ -1,0 +1,385 @@
+{
+  "eventsData": {
+    "lundi": [
+      {
+        "id": "evt_1781556752045_911",
+        "aedIdx": 0,
+        "zoneId": "repas",
+        "start": "11:00",
+        "end": "11:30"
+      },
+      {
+        "id": "evt_1781556787998_879",
+        "aedIdx": 1,
+        "zoneId": "renfort",
+        "start": "09:30",
+        "end": "09:50"
+      },
+      {
+        "id": "evt_1781556819090_791",
+        "aedIdx": 1,
+        "zoneId": "viesco",
+        "start": "11:00",
+        "end": "11:30"
+      },
+      {
+        "id": "evt_1781556820870_505",
+        "aedIdx": 1,
+        "zoneId": "repas",
+        "start": "11:30",
+        "end": "12:00"
+      },
+      {
+        "id": "evt_1781556823570_650",
+        "aedIdx": 1,
+        "zoneId": "cour",
+        "start": "12:00",
+        "end": "14:00"
+      },
+      {
+        "id": "evt_1781557035674_478",
+        "aedIdx": 1,
+        "zoneId": "permanence",
+        "start": "10:05",
+        "end": "11:00"
+      },
+      {
+        "id": "evt_1781557042458_425",
+        "aedIdx": 0,
+        "zoneId": "viesco",
+        "start": "07:30",
+        "end": "11:00"
+      },
+      {
+        "id": "evt_1781557049013_805",
+        "aedIdx": 0,
+        "zoneId": "cantine",
+        "start": "11:30",
+        "end": "13:00"
+      },
+      {
+        "id": "evt_1781557052740_657",
+        "aedIdx": 0,
+        "zoneId": "cour",
+        "start": "13:00",
+        "end": "14:00"
+      },
+      {
+        "id": "evt_1781557077519_124",
+        "aedIdx": 2,
+        "zoneId": "renfort",
+        "start": "09:00",
+        "end": "09:50"
+      },
+      {
+        "id": "evt_1781557101467_642",
+        "aedIdx": 1,
+        "zoneId": "cour",
+        "start": "09:55",
+        "end": "10:05"
+      },
+      {
+        "id": "evt_1781557313013_561",
+        "aedIdx": 2,
+        "zoneId": "cour",
+        "start": "09:50",
+        "end": "10:05"
+      },
+      {
+        "id": "evt_1781557319905_329",
+        "aedIdx": 2,
+        "zoneId": "renfort",
+        "start": "10:05",
+        "end": "11:00"
+      },
+      {
+        "id": "evt_1781557335931_312",
+        "aedIdx": 2,
+        "zoneId": "permanence",
+        "start": "11:00",
+        "end": "11:30"
+      },
+      {
+        "id": "evt_1781557346501_156",
+        "aedIdx": 2,
+        "zoneId": "repas",
+        "start": "11:30",
+        "end": "12:00"
+      },
+      {
+        "id": "evt_1781557981822_455",
+        "aedIdx": 2,
+        "zoneId": "cour",
+        "start": "12:00",
+        "end": "13:00"
+      },
+      {
+        "id": "evt_1781559058390_90",
+        "aedIdx": 1,
+        "zoneId": "permanence",
+        "start": "14:00",
+        "end": "17:00"
+      },
+      {
+        "id": "evt_1781559086025_632",
+        "aedIdx": 2,
+        "zoneId": "viesco",
+        "start": "13:00",
+        "end": "16:20"
+      },
+      {
+        "id": "evt_1781559840100_303",
+        "aedIdx": 3,
+        "zoneId": "renfort",
+        "start": "10:05",
+        "end": "11:00"
+      },
+      {
+        "id": "evt_1781559851208_578",
+        "aedIdx": 3,
+        "zoneId": "cour",
+        "start": "09:50",
+        "end": "10:05"
+      },
+      {
+        "id": "evt_1781559861930_612",
+        "aedIdx": 3,
+        "zoneId": "renfort",
+        "start": "09:00",
+        "end": "09:50"
+      },
+      {
+        "id": "evt_1781559870986_882",
+        "aedIdx": 3,
+        "zoneId": "renfort",
+        "start": "11:00",
+        "end": "11:30"
+      },
+      {
+        "id": "evt_1781559877663_760",
+        "aedIdx": 3,
+        "zoneId": "repas",
+        "start": "11:30",
+        "end": "12:00"
+      },
+      {
+        "id": "evt_1781559882537_855",
+        "aedIdx": 3,
+        "zoneId": "cour",
+        "start": "12:00",
+        "end": "14:00"
+      },
+      {
+        "id": "evt_1781560323197_675",
+        "aedIdx": 1,
+        "zoneId": "porte",
+        "start": "09:50",
+        "end": "09:55"
+      }
+    ],
+    "mardi": [
+      {
+        "id": "evt_1781559259762_452",
+        "aedIdx": 1,
+        "zoneId": "renfort",
+        "start": "09:30",
+        "end": "09:50"
+      },
+      {
+        "id": "evt_1781559274020_683",
+        "aedIdx": 1,
+        "zoneId": "porte",
+        "start": "09:50",
+        "end": "09:55"
+      },
+      {
+        "id": "evt_1781559278791_762",
+        "aedIdx": 1,
+        "zoneId": "cour",
+        "start": "09:55",
+        "end": "10:05"
+      },
+      {
+        "id": "evt_1781559290792_792",
+        "aedIdx": 1,
+        "zoneId": "permanence",
+        "start": "10:05",
+        "end": "11:00"
+      },
+      {
+        "id": "evt_1781559298891_718",
+        "aedIdx": 1,
+        "zoneId": "repas",
+        "start": "11:00",
+        "end": "11:30"
+      },
+      {
+        "id": "evt_1781559304659_886",
+        "aedIdx": 1,
+        "zoneId": "cartes",
+        "start": "11:30",
+        "end": "12:30"
+      },
+      {
+        "id": "evt_1781559316835_168",
+        "aedIdx": 1,
+        "zoneId": "cour",
+        "start": "12:30",
+        "end": "14:00"
+      },
+      {
+        "id": "evt_1781559336949_42",
+        "aedIdx": 1,
+        "zoneId": "permanence",
+        "start": "14:00",
+        "end": "14:55"
+      },
+      {
+        "id": "evt_1781559341573_209",
+        "aedIdx": 1,
+        "zoneId": "renfort",
+        "start": "14:55",
+        "end": "15:50"
+      },
+      {
+        "id": "evt_1781559354697_153",
+        "aedIdx": 1,
+        "zoneId": "viesco",
+        "start": "15:50",
+        "end": "16:05"
+      },
+      {
+        "id": "evt_1781559364238_339",
+        "aedIdx": 1,
+        "zoneId": "permanence",
+        "start": "16:05",
+        "end": "17:00"
+      }
+    ],
+    "mercredi": [
+      {
+        "id": "evt_1781559404306_909",
+        "aedIdx": 1,
+        "zoneId": "viesco",
+        "start": "07:30",
+        "end": "12:00"
+      }
+    ],
+    "jeudi": [
+      {
+        "id": "evt_1781559419978_51",
+        "aedIdx": 1,
+        "zoneId": "renfort",
+        "start": "09:30",
+        "end": "09:50"
+      },
+      {
+        "id": "evt_1781559431256_372",
+        "aedIdx": 1,
+        "zoneId": "porte",
+        "start": "09:50",
+        "end": "09:55"
+      },
+      {
+        "id": "evt_1781559434740_222",
+        "aedIdx": 1,
+        "zoneId": "cour",
+        "start": "09:55",
+        "end": "10:05"
+      },
+      {
+        "id": "evt_1781559450776_77",
+        "aedIdx": 1,
+        "zoneId": "permanence",
+        "start": "10:05",
+        "end": "11:00"
+      },
+      {
+        "id": "evt_1781559457920_32",
+        "aedIdx": 1,
+        "zoneId": "repas",
+        "start": "11:00",
+        "end": "11:30"
+      },
+      {
+        "id": "evt_1781559464352_338",
+        "aedIdx": 1,
+        "zoneId": "cantine",
+        "start": "11:30",
+        "end": "13:00"
+      },
+      {
+        "id": "evt_1781559495687_780",
+        "aedIdx": 1,
+        "zoneId": "viesco",
+        "start": "13:00",
+        "end": "17:00"
+      }
+    ],
+    "vendredi": [
+      {
+        "id": "evt_1781559515915_294",
+        "aedIdx": 1,
+        "zoneId": "renfort",
+        "start": "09:30",
+        "end": "09:50"
+      },
+      {
+        "id": "evt_1781559526355_779",
+        "aedIdx": 1,
+        "zoneId": "porte",
+        "start": "09:50",
+        "end": "10:00"
+      },
+      {
+        "id": "evt_1781559534359_881",
+        "aedIdx": 1,
+        "zoneId": "cour",
+        "start": "10:00",
+        "end": "10:05"
+      },
+      {
+        "id": "evt_1781559546687_987",
+        "aedIdx": 1,
+        "zoneId": "permanence",
+        "start": "10:05",
+        "end": "11:00"
+      },
+      {
+        "id": "evt_1781559552040_690",
+        "aedIdx": 1,
+        "zoneId": "viesco",
+        "start": "11:00",
+        "end": "11:30"
+      },
+      {
+        "id": "evt_1781559558317_987",
+        "aedIdx": 1,
+        "zoneId": "repas",
+        "start": "11:30",
+        "end": "12:00"
+      },
+      {
+        "id": "evt_1781559563470_411",
+        "aedIdx": 1,
+        "zoneId": "cour",
+        "start": "12:00",
+        "end": "13:00"
+      },
+      {
+        "id": "evt_1781559568312_554",
+        "aedIdx": 1,
+        "zoneId": "viesco",
+        "start": "13:00",
+        "end": "17:00"
+      }
+    ]
+  },
+  "aedNames": [
+    "Myriam",
+    "Guillaume",
+    "J-B",
+    "Amélie",
+    "stéphanie"
+  ]
+}

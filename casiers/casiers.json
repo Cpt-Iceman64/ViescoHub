@@ -1,0 +1,1602 @@
+[
+  {
+    "numero": 1,
+    "classe": "6e1",
+    "eleve1": "test",
+    "eleve2": "test deux",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 2,
+    "classe": "6e1",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 3,
+    "classe": "6e1",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 4,
+    "classe": "6e1",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 5,
+    "classe": "6e1",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 6,
+    "classe": "6e1",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 7,
+    "classe": "6e1",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 8,
+    "classe": "6e1",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 9,
+    "classe": "6e1",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 10,
+    "classe": "6e1",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 11,
+    "classe": "6e1",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 12,
+    "classe": "6e1",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 13,
+    "classe": "6e1",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 14,
+    "classe": "6e1",
+    "eleve1": "",
+    "eleve2": "X (Casier solo)",
+    "estSolo": true,
+    "estMarge": false
+  },
+  {
+    "numero": 15,
+    "classe": "6e1",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": true
+  },
+  {
+    "numero": 16,
+    "classe": "6e1",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": true
+  },
+  {
+    "numero": 17,
+    "classe": "6e1",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": true
+  },
+  {
+    "numero": 18,
+    "classe": "6e2",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 19,
+    "classe": "6e2",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 20,
+    "classe": "6e2",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 21,
+    "classe": "6e2",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 22,
+    "classe": "6e2",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 23,
+    "classe": "6e2",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 24,
+    "classe": "6e2",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 25,
+    "classe": "6e2",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 26,
+    "classe": "6e2",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 27,
+    "classe": "6e2",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 28,
+    "classe": "6e2",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 29,
+    "classe": "6e2",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 30,
+    "classe": "6e2",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 31,
+    "classe": "6e2",
+    "eleve1": "",
+    "eleve2": "X (Casier solo)",
+    "estSolo": true,
+    "estMarge": false
+  },
+  {
+    "numero": 32,
+    "classe": "6e2",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": true
+  },
+  {
+    "numero": 33,
+    "classe": "6e2",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": true
+  },
+  {
+    "numero": 34,
+    "classe": "6e2",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": true
+  },
+  {
+    "numero": 35,
+    "classe": "6e3",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 36,
+    "classe": "6e3",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 37,
+    "classe": "6e3",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 38,
+    "classe": "6e3",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 39,
+    "classe": "6e3",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 40,
+    "classe": "6e3",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 41,
+    "classe": "6e3",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 42,
+    "classe": "6e3",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 43,
+    "classe": "6e3",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 44,
+    "classe": "6e3",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 45,
+    "classe": "6e3",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 46,
+    "classe": "6e3",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 47,
+    "classe": "6e3",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 48,
+    "classe": "6e3",
+    "eleve1": "",
+    "eleve2": "X (Casier solo)",
+    "estSolo": true,
+    "estMarge": false
+  },
+  {
+    "numero": 49,
+    "classe": "6e3",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": true
+  },
+  {
+    "numero": 50,
+    "classe": "6e3",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": true
+  },
+  {
+    "numero": 51,
+    "classe": "6e3",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": true
+  },
+  {
+    "numero": 52,
+    "classe": "5e1",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 53,
+    "classe": "5e1",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 54,
+    "classe": "5e1",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 55,
+    "classe": "5e1",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 56,
+    "classe": "5e1",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 57,
+    "classe": "5e1",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 58,
+    "classe": "5e1",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 59,
+    "classe": "5e1",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 60,
+    "classe": "5e1",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 61,
+    "classe": "5e1",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 62,
+    "classe": "5e1",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 63,
+    "classe": "5e1",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 64,
+    "classe": "5e1",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 65,
+    "classe": "5e1",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 66,
+    "classe": "5e1",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": true
+  },
+  {
+    "numero": 67,
+    "classe": "5e1",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": true
+  },
+  {
+    "numero": 68,
+    "classe": "5e1",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": true
+  },
+  {
+    "numero": 69,
+    "classe": "5e2",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 70,
+    "classe": "5e2",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 71,
+    "classe": "5e2",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 72,
+    "classe": "5e2",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 73,
+    "classe": "5e2",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 74,
+    "classe": "5e2",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 75,
+    "classe": "5e2",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 76,
+    "classe": "5e2",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 77,
+    "classe": "5e2",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 78,
+    "classe": "5e2",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 79,
+    "classe": "5e2",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 80,
+    "classe": "5e2",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 81,
+    "classe": "5e2",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 82,
+    "classe": "5e2",
+    "eleve1": "",
+    "eleve2": "X (Casier solo)",
+    "estSolo": true,
+    "estMarge": false
+  },
+  {
+    "numero": 83,
+    "classe": "5e2",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": true
+  },
+  {
+    "numero": 84,
+    "classe": "5e2",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": true
+  },
+  {
+    "numero": 85,
+    "classe": "5e2",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": true
+  },
+  {
+    "numero": 86,
+    "classe": "5e3",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 87,
+    "classe": "5e3",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 88,
+    "classe": "5e3",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 89,
+    "classe": "5e3",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 90,
+    "classe": "5e3",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 91,
+    "classe": "5e3",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 92,
+    "classe": "5e3",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 93,
+    "classe": "5e3",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 94,
+    "classe": "5e3",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 95,
+    "classe": "5e3",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 96,
+    "classe": "5e3",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 97,
+    "classe": "5e3",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 98,
+    "classe": "5e3",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 99,
+    "classe": "5e3",
+    "eleve1": "",
+    "eleve2": "X (Casier solo)",
+    "estSolo": true,
+    "estMarge": false
+  },
+  {
+    "numero": 100,
+    "classe": "5e3",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": true
+  },
+  {
+    "numero": 101,
+    "classe": "5e3",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": true
+  },
+  {
+    "numero": 102,
+    "classe": "5e3",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": true
+  },
+  {
+    "numero": 103,
+    "classe": "4e1",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 104,
+    "classe": "4e1",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 105,
+    "classe": "4e1",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 106,
+    "classe": "4e1",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 107,
+    "classe": "4e1",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 108,
+    "classe": "4e1",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 109,
+    "classe": "4e1",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 110,
+    "classe": "4e1",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 111,
+    "classe": "4e1",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 112,
+    "classe": "4e1",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 113,
+    "classe": "4e1",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 114,
+    "classe": "4e1",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 115,
+    "classe": "4e1",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 116,
+    "classe": "4e1",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 117,
+    "classe": "4e1",
+    "eleve1": "",
+    "eleve2": "X (Casier solo)",
+    "estSolo": true,
+    "estMarge": false
+  },
+  {
+    "numero": 118,
+    "classe": "4e1",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": true
+  },
+  {
+    "numero": 119,
+    "classe": "4e1",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": true
+  },
+  {
+    "numero": 120,
+    "classe": "4e1",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": true
+  },
+  {
+    "numero": 121,
+    "classe": "4e2",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 122,
+    "classe": "4e2",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 123,
+    "classe": "4e2",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 124,
+    "classe": "4e2",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 125,
+    "classe": "4e2",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 126,
+    "classe": "4e2",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 127,
+    "classe": "4e2",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 128,
+    "classe": "4e2",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 129,
+    "classe": "4e2",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 130,
+    "classe": "4e2",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 131,
+    "classe": "4e2",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 132,
+    "classe": "4e2",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 133,
+    "classe": "4e2",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 134,
+    "classe": "4e2",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 135,
+    "classe": "4e2",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 136,
+    "classe": "4e2",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": true
+  },
+  {
+    "numero": 137,
+    "classe": "4e2",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": true
+  },
+  {
+    "numero": 138,
+    "classe": "4e2",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": true
+  },
+  {
+    "numero": 139,
+    "classe": "4e3",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 140,
+    "classe": "4e3",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 141,
+    "classe": "4e3",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 142,
+    "classe": "4e3",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 143,
+    "classe": "4e3",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 144,
+    "classe": "4e3",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 145,
+    "classe": "4e3",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 146,
+    "classe": "4e3",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 147,
+    "classe": "4e3",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 148,
+    "classe": "4e3",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 149,
+    "classe": "4e3",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 150,
+    "classe": "4e3",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 151,
+    "classe": "4e3",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 152,
+    "classe": "4e3",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 153,
+    "classe": "4e3",
+    "eleve1": "",
+    "eleve2": "X (Casier solo)",
+    "estSolo": true,
+    "estMarge": false
+  },
+  {
+    "numero": 154,
+    "classe": "4e3",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": true
+  },
+  {
+    "numero": 155,
+    "classe": "4e3",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": true
+  },
+  {
+    "numero": 156,
+    "classe": "4e3",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": true
+  },
+  {
+    "numero": 157,
+    "classe": "3e1",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 158,
+    "classe": "3e1",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 159,
+    "classe": "3e1",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 160,
+    "classe": "3e1",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 161,
+    "classe": "3e1",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 162,
+    "classe": "3e1",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 163,
+    "classe": "3e1",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 164,
+    "classe": "3e1",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 165,
+    "classe": "3e1",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 166,
+    "classe": "3e1",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 167,
+    "classe": "3e1",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 168,
+    "classe": "3e1",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 169,
+    "classe": "3e1",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": true
+  },
+  {
+    "numero": 170,
+    "classe": "3e1",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": true
+  },
+  {
+    "numero": 171,
+    "classe": "3e1",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": true
+  },
+  {
+    "numero": 172,
+    "classe": "3e2",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 173,
+    "classe": "3e2",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 174,
+    "classe": "3e2",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 175,
+    "classe": "3e2",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 176,
+    "classe": "3e2",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 177,
+    "classe": "3e2",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 178,
+    "classe": "3e2",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 179,
+    "classe": "3e2",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 180,
+    "classe": "3e2",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 181,
+    "classe": "3e2",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 182,
+    "classe": "3e2",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 183,
+    "classe": "3e2",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 184,
+    "classe": "3e2",
+    "eleve1": "",
+    "eleve2": "X (Casier solo)",
+    "estSolo": true,
+    "estMarge": false
+  },
+  {
+    "numero": 185,
+    "classe": "3e2",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": true
+  },
+  {
+    "numero": 186,
+    "classe": "3e2",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": true
+  },
+  {
+    "numero": 187,
+    "classe": "3e2",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": true
+  },
+  {
+    "numero": 188,
+    "classe": "3e3",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 189,
+    "classe": "3e3",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 190,
+    "classe": "3e3",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 191,
+    "classe": "3e3",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 192,
+    "classe": "3e3",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 193,
+    "classe": "3e3",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 194,
+    "classe": "3e3",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 195,
+    "classe": "3e3",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 196,
+    "classe": "3e3",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 197,
+    "classe": "3e3",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 198,
+    "classe": "3e3",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 199,
+    "classe": "3e3",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": false
+  },
+  {
+    "numero": 200,
+    "classe": "3e3",
+    "eleve1": "",
+    "eleve2": "",
+    "estSolo": false,
+    "estMarge": true
+  }
+]

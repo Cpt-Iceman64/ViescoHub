@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bilan Disciplinaire - ViescoHub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #080c16; color: #f8fafc; background-image: linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px), linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px); background-size: 50px 50px; min-height: 100vh; }
+        .btn-glow { box-shadow: 0 0 15px rgba(139, 92, 246, 0.3); transition: all 0.3s ease; }
+        .stat-card { background: linear-gradient(145deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.9) 100%); border: 1px solid rgba(51, 65, 85, 0.5); backdrop-filter: blur(10px); }
+        @media print {
+            .no-print { display: none !important; }
+            body { background: white !important; color: black !important; }
+            .stat-card { background: white !important; border: 1px solid #ccc !important; }
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen">
+
+    <header class="w-full no-print z-30 bg-[#05080f]/90 backdrop-blur-sm border-b border-slate-800/50 sticky top-0">
+        <div class="w-full px-6 py-5 flex justify-between items-center">
+            <span class="text-xl font-bold text-white">Viesco<span class="text-violet-400">Hub</span></span>
+            <div id="live-time" class="text-xs font-mono text-violet-400">--:--</div>
+        </div>
+    </header>
+
+    <main class="flex-grow w-full px-6 py-12 flex flex-col">
+        <div class="max-w-7xl mx-auto w-full mb-8 no-print grid grid-cols-1 lg:grid-cols-12 gap-8 z-10">
+            <div class="lg:col-span-5 flex flex-col justify-center">
+                <h1 class="text-4xl font-black text-white mb-4">Analyse des <span class="text-violet-500">Exclusions</span></h1>
+                <p class="text-sm text-slate-400">Importez le journal des exclusions Pronote. L'outil calculera les durées cumulées par élève.</p>
+            </div>
+            <div class="lg:col-span-7 bg-[#0d1326] p-6 rounded-3xl border border-slate-800 shadow-2xl flex flex-col min-h-[400px]">
+                <textarea id="input" class="w-full flex-grow p-4 bg-slate-950/50 border border-slate-800 rounded-2xl font-mono text-xs text-violet-100 outline-none" placeholder="> Collez le journal des exclusions Pronote ici (Tab-separated)..."></textarea>
+                <button onclick="analyzeData()" class="mt-4 w-full bg-violet-600 hover:bg-violet-500 text-white py-3 rounded-xl font-bold transition-all">Générer le rapport</button>
+            </div>
+        </div>
+
+        <div id="dashboard-container" class="w-full max-w-6xl mx-auto hidden">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="stat-card p-5 rounded-xl border-t-2 border-violet-500">
+                    <div class="text-slate-400 text-xs font-bold uppercase">Total Exclusions</div>
+                    <div id="kpi-total" class="text-4xl font-black text-white">0</div>
+                </div>
+                <div class="stat-card p-5 rounded-xl border-t-2 border-pink-500">
+                    <div class="text-slate-400 text-xs font-bold uppercase">Élèves concernés</div>
+                    <div id="kpi-eleves" class="text-4xl font-black text-pink-400">0</div>
+                </div>
+                <div class="stat-card p-5 rounded-xl border-t-2 border-emerald-500">
+                    <div class="text-slate-400 text-xs font-bold uppercase">Jours perdus (cumul)</div>
+                    <div id="kpi-jours" class="text-4xl font-black text-emerald-400">0</div>
+                </div>
+            </div>
+
+            <div class="stat-card p-6 rounded-xl">
+                <h3 class="text-lg font-bold text-white mb-4 uppercase tracking-wider">Top Perturbateurs (Durée cumulée)</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm">
+                        <thead class="text-slate-500 border-b border-slate-700 uppercase text-xs">
+                            <tr><th class="pb-2">Élève</th><th class="pb-2">Classe</th><th class="pb-2 text-right">Nb Incidents</th><th class="pb-2 text-right">Total Jours</th></tr>
+                        </thead>
+                        <tbody id="table-body" class="text-slate-300"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        function analyzeData() {
+            const rawData = document.getElementById('input').value;
+            const lines = rawData.split('\n');
+            const studentMap = {};
+
+            // Ignorer l'entête (col 0 est Classe)
+            for(let i=1; i < lines.length; i++) {
+                if(!lines[i].trim()) continue;
+                const cols = lines[i].split('\t').map(c => c.replace(/^"|"$/g, ''));
+                
+                if(cols.length < 12) continue;
+
+                const classe = cols[0];
+                const nom = cols[1];
+                const dureeStr = cols[11].toLowerCase();
+                
+                let jours = 0;
+                if(dureeStr.includes("1/2")) jours = 0.5;
+                else if(dureeStr.includes("jour")) jours = parseFloat(dureeStr) || 1;
+
+                if(!studentMap[nom]) studentMap[nom] = { classe, nb: 0, totalJours: 0 };
+                studentMap[nom].nb += 1;
+                studentMap[nom].totalJours += jours;
+            }
+
+            // Affichage
+            const sorted = Object.entries(studentMap).sort((a,b) => b[1].totalJours - a[1].totalJours);
+            
+            // KPI
+            document.getElementById('kpi-total').textContent = lines.length - 1;
+            document.getElementById('kpi-eleves').textContent = sorted.length;
+            document.getElementById('kpi-jours').textContent = sorted.reduce((acc, curr) => acc + curr[1].totalJours, 0);
+
+            // Table
+            document.getElementById('table-body').innerHTML = sorted.map(([nom, data]) => `
+                <tr class="border-b border-slate-800">
+                    <td class="py-3 font-bold text-white">${nom}</td>
+                    <td class="py-3">${data.classe}</td>
+                    <td class="py-3 text-right">${data.nb}</td>
+                    <td class="py-3 text-right font-black text-emerald-400">${data.totalJours}</td>
+                </tr>
+            `).join('');
+
+            document.getElementById('dashboard-container').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
