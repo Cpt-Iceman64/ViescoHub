@@ -340,9 +340,9 @@
         <div class="cup-hand">☝️</div>
     `;
 
-    wrapper.appendChild(avatar);
+    // wrapper.appendChild(avatar);
     container.appendChild(bubble);
-    container.appendChild(wrapper);
+    // container.appendChild(wrapper);
     document.body.appendChild(container);
 
     // --- Logique d'interaction ---
