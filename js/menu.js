@@ -36,10 +36,10 @@ function initMenu() {
                     <!-- Wrapper transparent pour le hover -->
                     <div class="absolute left-0 top-full pt-2 hidden group-hover:block z-50 w-56">
                         <div class="flex flex-col bg-[#0f172a] border border-slate-700/80 rounded-xl shadow-2xl overflow-hidden">
-                            <a href="${basePath}pages/absences.html" class="px-5 py-3.5 hover:bg-slate-800 hover:text-cyan-400 transition-colors flex items-center gap-3">
+                            <a href="${basePath}outils/absences-traitement.html" class="px-5 py-3.5 hover:bg-slate-800 hover:text-cyan-400 transition-colors flex items-center gap-3">
                                 <span class="w-1.5 h-1.5 rounded-full bg-cyan-400"></span> Traitement Absences
                             </a>
-                            <a href="${basePath}pages/bilan-absences.html" class="px-5 py-3.5 border-t border-slate-800/50 hover:bg-slate-800 hover:text-emerald-500 transition-colors flex items-center gap-3">
+                            <a href="${basePath}outils/absences-bilan.html" class="px-5 py-3.5 border-t border-slate-800/50 hover:bg-slate-800 hover:text-emerald-500 transition-colors flex items-center gap-3">
                                 <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Bilan Journalier
                             </a>
                         </div>
@@ -54,10 +54,10 @@ function initMenu() {
                     <!-- Wrapper transparent pour le hover -->
                     <div class="absolute left-0 top-full pt-2 hidden group-hover:block z-50 w-56">
                         <div class="flex flex-col bg-[#0f172a] border border-slate-700/80 rounded-xl shadow-2xl overflow-hidden">
-                            <a href="${basePath}pages/programme-retenues.html" class="px-5 py-3.5 hover:bg-slate-800 hover:text-orange-500 transition-colors flex items-center gap-3">
+                            <a href="${basePath}outils/sanctions-retenues.html" class="px-5 py-3.5 hover:bg-slate-800 hover:text-orange-500 transition-colors flex items-center gap-3">
                                 <span class="w-1.5 h-1.5 rounded-full bg-orange-500"></span> Retenues
                             </a>
-                            <a href="${basePath}pages/bilan-sanctions.html" class="px-5 py-3.5 border-t border-slate-800/50 hover:bg-slate-800 hover:text-violet-400 transition-colors flex items-center gap-3">
+                            <a href="${basePath}outils/sanctions-bilan.html" class="px-5 py-3.5 border-t border-slate-800/50 hover:bg-slate-800 hover:text-violet-400 transition-colors flex items-center gap-3">
                                 <span class="w-1.5 h-1.5 rounded-full bg-violet-400"></span> Bilan Global
                             </a>
                         </div>
@@ -72,19 +72,19 @@ function initMenu() {
                     <!-- Wrapper transparent pour le hover -->
                     <div class="absolute right-0 top-full pt-2 hidden group-hover:block z-50 w-64">
                         <div class="flex flex-col bg-[#0f172a] border border-slate-700/80 rounded-xl shadow-2xl overflow-hidden">
-                            <a href="${basePath}pages/planning.html" class="px-5 py-3.5 hover:bg-slate-800 hover:text-yellow-400 transition-colors flex items-center gap-3">
+                            <a href="${basePath}outils/planning.html" class="px-5 py-3.5 hover:bg-slate-800 hover:text-yellow-400 transition-colors flex items-center gap-3">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-slate-500"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> Planning Journalier
                             </a>
-                            <a href="${basePath}casiers/utilitaire_casiers.html" class="px-5 py-3.5 border-t border-slate-800/50 hover:bg-slate-800 hover:text-blue-400 transition-colors flex items-center gap-3">
+                            <a href="${basePath}outils/casiers.html" class="px-5 py-3.5 border-t border-slate-800/50 hover:bg-slate-800 hover:text-blue-400 transition-colors flex items-center gap-3">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-slate-500"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg> Gestion des Casiers
                             </a>
-                            <a href="${basePath}pages/passage_self.html" class="px-5 py-3.5 border-t border-slate-800/50 hover:bg-slate-800 hover:text-amber-500 transition-colors flex items-center gap-3">
+                            <a href="${basePath}outils/passage-self.html" class="px-5 py-3.5 border-t border-slate-800/50 hover:bg-slate-800 hover:text-amber-500 transition-colors flex items-center gap-3">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-slate-500"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"></path><path d="M7 2v20"></path><path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"></path></svg> Passage Self
                             </a>
-                            <a href="${basePath}pages/createur-devoirs.html" class="px-5 py-3.5 border-t border-slate-800/50 hover:bg-slate-800 hover:text-indigo-400 transition-colors flex items-center gap-3">
+                            <a href="${basePath}outils/createur-devoirs.html" class="px-5 py-3.5 border-t border-slate-800/50 hover:bg-slate-800 hover:text-indigo-400 transition-colors flex items-center gap-3">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-slate-500"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg> Créateur Devoirs
                             </a>
-                            <a href="${basePath}pages/documents.html" class="px-5 py-3.5 border-t border-slate-800/50 hover:bg-slate-800 hover:text-pink-400 transition-colors flex items-center gap-3">
+                            <a href="${basePath}documents/index.html" class="px-5 py-3.5 border-t border-slate-800/50 hover:bg-slate-800 hover:text-pink-400 transition-colors flex items-center gap-3">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-slate-500"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg> Bibliothèque
                             </a>
                         </div>
@@ -106,17 +106,17 @@ function initMenu() {
             <nav class="flex flex-col gap-4 text-sm font-bold tracking-wider uppercase text-slate-300">
                 <a href="${basePath}index.html" class="hover:text-cyan-400 border-b border-slate-800 pb-2">Accueil</a>
                 <span class="text-xs text-slate-500 mt-2 mb-1">Absences</span>
-                <a href="${basePath}pages/absences.html" class="hover:text-cyan-400 ml-4">Traitement</a>
-                <a href="${basePath}pages/bilan-absences.html" class="hover:text-emerald-500 ml-4 border-b border-slate-800 pb-2">Bilan</a>
+                <a href="${basePath}outils/absences-traitement.html" class="hover:text-cyan-400 ml-4">Traitement</a>
+                <a href="${basePath}outils/absences-bilan.html" class="hover:text-emerald-500 ml-4 border-b border-slate-800 pb-2">Bilan</a>
                 <span class="text-xs text-slate-500 mt-2 mb-1">Sanctions</span>
-                <a href="${basePath}pages/programme-retenues.html" class="hover:text-orange-500 ml-4">Retenues</a>
-                <a href="${basePath}pages/bilan-sanctions.html" class="hover:text-violet-400 ml-4 border-b border-slate-800 pb-2">Bilan</a>
+                <a href="${basePath}outils/sanctions-retenues.html" class="hover:text-orange-500 ml-4">Retenues</a>
+                <a href="${basePath}outils/sanctions-bilan.html" class="hover:text-violet-400 ml-4 border-b border-slate-800 pb-2">Bilan</a>
                 <span class="text-xs text-slate-500 mt-2 mb-1">Outils</span>
-                <a href="${basePath}pages/planning.html" class="hover:text-yellow-400 ml-4">Planning</a>
-                <a href="${basePath}casiers/utilitaire_casiers.html" class="hover:text-blue-400 ml-4">Casiers</a>
-                <a href="${basePath}pages/passage_self.html" class="hover:text-amber-500 ml-4">Passage Self</a>
-                <a href="${basePath}pages/createur-devoirs.html" class="hover:text-indigo-400 ml-4">Devoirs</a>
-                <a href="${basePath}pages/documents.html" class="hover:text-pink-400 ml-4">Documents</a>
+                <a href="${basePath}outils/planning.html" class="hover:text-yellow-400 ml-4">Planning</a>
+                <a href="${basePath}outils/casiers.html" class="hover:text-blue-400 ml-4">Casiers</a>
+                <a href="${basePath}outils/passage-self.html" class="hover:text-amber-500 ml-4">Passage Self</a>
+                <a href="${basePath}outils/createur-devoirs.html" class="hover:text-indigo-400 ml-4">Devoirs</a>
+                <a href="${basePath}documents/index.html" class="hover:text-pink-400 ml-4">Documents</a>
             </nav>
         </div>
     </header>`;
