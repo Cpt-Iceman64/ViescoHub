@@ -6,15 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portail Vie Scolaire</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Inter', sans-serif;
             background-color: #080c16;
-            /* Fond très sombre inspiré de l'image */
             color: #f8fafc;
-            /* Grille subtile en arrière-plan */
             background-image:
                 linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
                 linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
@@ -25,7 +22,6 @@
             flex-direction: column;
         }
 
-        /* Lueur cyan derrière le texte principal */
         .glow-text {
             position: relative;
         }
@@ -44,178 +40,161 @@
             z-index: -1;
         }
 
-        /* Effet de lueur sur le bouton principal */
-        .btn-glow {
-            box-shadow: 0 0 20px rgba(6, 182, 212, 0.4);
-            transition: all 0.3s ease;
+        /* Animations d'apparition */
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-
-        .btn-glow:hover {
-            box-shadow: 0 0 30px rgba(6, 182, 212, 0.6);
-            transform: translateY(-2px);
+        .animate-slide-up {
+            animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            opacity: 0;
         }
+        .delay-100 { animation-delay: 100ms; }
+        .delay-200 { animation-delay: 200ms; }
+        .delay-300 { animation-delay: 300ms; }
     </style>
 </head>
 
 <body class="overflow-x-hidden">
 
-    <!-- Lueur ambiante en haut de page -->
-    <div
-        class="absolute top-[-20%] left-[20%] w-[60%] h-[500px] bg-cyan-900/20 rounded-full blur-[120px] pointer-events-none -z-10">
-    </div>
+    <!-- Lueur ambiante -->
+    <div class="absolute top-[-20%] left-[20%] w-[60%] h-[500px] bg-cyan-900/20 rounded-full blur-[120px] pointer-events-none -z-10"></div>
 
-    <header class="w-full z-30 bg-[#05080f]/90 backdrop-blur-sm border-b border-slate-800/50 sticky top-0">
-        <div class="w-full px-4 md:px-12 py-4 md:py-5 flex justify-between items-center relative">
-            <div class="flex items-center gap-3">
-                <div class="text-cyan-400">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M12 2L2 7l10 5 10-5-10-5Z" />
-                        <path d="m2 17 10 5 10-5" />
-                        <path d="m2 12 10 5 10-5" />
-                    </svg>
-                </div>
-                <span class="text-xl font-bold tracking-tight text-white">Viesco<span class="text-cyan-400">Hub</span></span>
-            </div>
+    <!-- En-tête injecté par menu.js -->
+    <header></header>
 
-            <!-- Bouton Hamburger (Mobile) -->
-            <button id="mobile-menu-btn" class="lg:hidden text-slate-400 hover:text-white transition-colors p-2">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
-            </button>
+    <main class="flex-grow w-full max-w-7xl mx-auto px-6 py-10 md:py-16 flex flex-col items-center justify-start z-10">
 
-            <!-- Navigation Bureau -->
-            <nav class="hidden lg:flex items-center gap-4 xl:gap-6 text-[10px] xl:text-xs font-bold tracking-widest uppercase text-slate-400">
-                <a href="#" class="text-white hover:text-cyan-400 transition-colors">Accueil</a>
-                <a href="pages/absences.html" class="hover:text-cyan-400 transition-colors">Absences</a>
-                <a href="pages/bilan-absences.html" class="hover:text-emerald-500 transition-colors">Bilan Abs.</a>
-                <a href="pages/programme-retenues.html" class="hover:text-orange-500 transition-colors">Retenues</a>
-                <a href="pages/bilan-sanctions.html" class="hover:text-violet-400 transition-colors">Bilan Sanc.</a>
-                <a href="pages/createur-devoirs.html" class="hover:text-indigo-400 transition-colors">Devoirs</a>
-                <a href="pages/documents.html" class="text-pink-500 hover:text-pink-400 transition-colors">Documents</a>
-                <a href="pages/planning.html" class="text-yellow-400 hover:text-yellow-300 transition-colors">Planning</a>
-                <a href="casiers/utilitaire_casiers.html" class="hover:text-blue-400 transition-colors">Casiers</a>
-                <span class="text-slate-600 hidden xl:inline">|</span>
-                <div class="flex items-center gap-2 bg-slate-900 border border-slate-800 px-3 py-1.5 rounded-full">
-                    <div class="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse"></div>
-                    <span id="live-time" class="text-sm font-bold text-cyan-400 font-mono">--:--</span>
-                </div>
-            </nav>
-        </div>
-
-        <!-- Menu Mobile -->
-        <div id="mobile-menu" class="hidden lg:hidden border-t border-slate-800/50 bg-[#05080f] w-full px-6 py-4">
-            <nav class="flex flex-col gap-4 text-sm font-bold tracking-wider uppercase text-slate-400">
-                <a href="#" class="text-white hover:text-cyan-400">Accueil</a>
-                <a href="pages/absences.html" class="hover:text-cyan-400">Absences</a>
-                <a href="pages/bilan-absences.html" class="hover:text-emerald-500">Bilan Absences</a>
-                <a href="pages/programme-retenues.html" class="hover:text-orange-500">Retenues</a>
-                <a href="pages/bilan-sanctions.html" class="hover:text-violet-400">Bilan Sanctions</a>
-                <a href="pages/createur-devoirs.html" class="hover:text-indigo-400">Créateur Devoirs</a>
-                <a href="pages/documents.html" class="text-pink-500 hover:text-pink-400">Documents</a>
-                <a href="pages/planning.html" class="text-yellow-400 hover:text-yellow-300">Planning</a>
-                <a href="casiers/utilitaire_casiers.html" class="hover:text-blue-400">Casiers</a>
-            </nav>
-        </div>
-    </header>
-
-    <main class="flex-grow w-full max-w-7xl mx-auto px-6 py-12 md:py-20 flex flex-col items-center justify-center z-10">
-
-        <!-- Contenu Centré : Textes et Boutons -->
-        <div class="flex flex-col items-center text-center max-w-4xl mx-auto">
-
+        <!-- Contenu Centré : Textes -->
+        <div class="flex flex-col items-center text-center max-w-4xl mx-auto mb-16 animate-slide-up">
             <!-- Badge supérieur -->
-            <div
-                class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-800/50 border border-slate-700 mb-8">
-                <div class="w-1.5 h-1.5 rounded-full bg-cyan-400 shadow-[0_0_8px_#06b6d4]"></div>
-                <span class="text-[10px] font-bold tracking-widest text-slate-300 uppercase">Outils Pronote • Traitement
-                    Rapide</span>
+            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-slate-800/50 border border-slate-700 mb-8 backdrop-blur-sm">
+                <div class="w-1.5 h-1.5 rounded-full bg-cyan-400 shadow-[0_0_8px_#06b6d4] animate-pulse"></div>
+                <span class="text-xs font-bold tracking-widest text-slate-300 uppercase">Portail Central • Vie Scolaire</span>
             </div>
 
             <h1 class="text-5xl md:text-7xl font-black text-white tracking-tighter leading-[1.05] mb-6">
                 Le portail Viesco<span class="text-white glow-text inline-block">Hub</span>
-
             </h1>
 
-            <p class="text-lg text-slate-400 leading-relaxed mb-10 max-w-xl font-medium">
-                Outils internes conçus pour simplifier la gestion quotidienne.
+            <p class="text-lg text-slate-400 leading-relaxed max-w-2xl font-medium">
+                Accès rapide à l'ensemble des outils internes de gestion. 
+                <br class="hidden sm:block">Sélectionnez un pôle ci-dessous pour démarrer.
             </p>
+        </div>
 
-            <div class="flex flex-col sm:flex-row flex-wrap justify-center gap-4 w-full sm:w-auto">
-                <a href="pages/absences.html"
-                    class="flex items-center justify-center gap-2 bg-slate-900/50 border border-slate-700 text-cyan-400 hover:bg-slate-800 hover:text-cyan-300 font-bold px-8 py-4 rounded-full text-sm transition-all hover:border-cyan-400 hover:shadow-[0_0_15px_rgba(6,182,212,0.3)]">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M5 12h14" />
-                        <path d="m12 5 7 7-7 7" />
-                    </svg>
-                    Traitement Absences
+        <!-- GRILLE DE TABLEAU DE BORD -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 w-full max-w-6xl">
+            
+            <!-- COLONNE 1 : ABSENCES -->
+            <div class="flex flex-col gap-4 animate-slide-up delay-100">
+                <h2 class="text-lg font-bold text-slate-200 mb-2 flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-lg bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center">
+                        <span class="w-2 h-2 rounded-full bg-cyan-400 shadow-[0_0_8px_rgba(6,182,212,0.8)]"></span>
+                    </div>
+                    Pôle Absences
+                </h2>
+                
+                <a href="pages/absences.html" class="group flex flex-col bg-[#0b1120] border border-slate-800/80 hover:bg-slate-800/60 hover:border-cyan-500/50 rounded-2xl p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_8px_30px_rgba(6,182,212,0.15)] relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-cyan-500/5 rounded-full blur-2xl -mr-16 -mt-16 transition-all group-hover:bg-cyan-500/20"></div>
+                    <div class="flex items-center gap-3 text-cyan-400 font-bold text-lg mb-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14" /><path d="m12 5 7 7-7 7" /></svg>
+                        Traitement Rapide
+                    </div>
+                    <p class="text-slate-400 text-sm font-medium leading-relaxed relative z-10">Saisie des billets, appels et gestion des retards au fil de l'eau.</p>
                 </a>
-                <a href="pages/bilan-absences.html"
-                    class="flex items-center justify-center gap-2 bg-slate-900/50 border border-slate-700 text-emerald-500 hover:bg-slate-800 hover:text-emerald-400 font-bold px-8 py-4 rounded-full text-sm transition-all hover:border-emerald-500 hover:shadow-[0_0_15px_rgba(16,185,129,0.3)]">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
-                    Bilan Absences
-                </a>
-                <a href="pages/programme-retenues.html"
-                    class="flex items-center justify-center gap-2 bg-slate-900/50 border border-slate-700 text-orange-500 hover:bg-slate-800 hover:text-orange-400 font-bold px-8 py-4 rounded-full text-sm transition-all hover:border-orange-500 hover:shadow-[0_0_15px_rgba(249,115,22,0.3)]">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <rect width="18" height="18" x="3" y="4" rx="2" ry="2" />
-                        <line x1="16" x2="16" y1="2" y2="6" />
-                        <line x1="8" x2="8" y1="2" y2="6" />
-                        <line x1="3" x2="21" y1="10" y2="10" />
-                    </svg>
-                    Programme Retenues
-                </a>
-                <a href="pages/bilan-sanctions.html"
-                    class="flex items-center justify-center gap-2 bg-slate-900/50 border border-slate-700 text-violet-400 hover:bg-slate-800 hover:text-violet-300 font-bold px-8 py-4 rounded-full text-sm transition-all hover:border-violet-400 hover:shadow-[0_0_15px_rgba(139,92,246,0.3)]">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M21.21 15.89A10 10 0 1 1 8 2.83" />
-                        <path d="M22 12A10 10 0 0 0 12 2v10z" />
-                    </svg>
-                    Bilan Sanctions
-                </a>
-                <a href="pages/documents.html"
-                    class="flex items-center justify-center gap-2 bg-slate-900/50 border border-slate-700 text-pink-500 hover:bg-slate-800 hover:text-pink-400 font-bold px-8 py-4 rounded-full text-sm transition-all hover:border-pink-500 hover:shadow-[0_0_15px_rgba(236,72,153,0.3)]">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
-                    Bibliothèque Docs
-                </a>
-                <a href="pages/planning.html"
-                    class="flex items-center justify-center gap-2 bg-slate-900/50 border border-slate-700 text-yellow-400 hover:bg-slate-800 hover:text-yellow-300 font-bold px-8 py-4 rounded-full text-sm transition-all hover:border-yellow-400 hover:shadow-[0_0_15px_rgba(250,204,21,0.3)]">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                    Planning
-                </a>
-                <a href="pages/createur-devoirs.html"
-                    class="flex items-center justify-center gap-2 bg-slate-900/50 border border-slate-700 text-indigo-400 hover:bg-slate-800 hover:text-indigo-300 font-bold px-8 py-4 rounded-full text-sm transition-all hover:border-indigo-400 hover:shadow-[0_0_15px_rgba(129,140,248,0.3)]">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
-                    Créateur Devoirs
+
+                <a href="pages/bilan-absences.html" class="group flex flex-col bg-[#0b1120] border border-slate-800/80 hover:bg-slate-800/60 hover:border-emerald-500/50 rounded-2xl p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_8px_30px_rgba(16,185,129,0.15)] relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 rounded-full blur-2xl -mr-16 -mt-16 transition-all group-hover:bg-emerald-500/20"></div>
+                    <div class="flex items-center gap-3 text-emerald-400 font-bold text-lg mb-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+                        Bilan Journalier
+                    </div>
+                    <p class="text-slate-400 text-sm font-medium leading-relaxed relative z-10">Récapitulatif des élèves manquants et communication aux familles.</p>
                 </a>
             </div>
-        </div>
+
+            <!-- COLONNE 2 : SANCTIONS -->
+            <div class="flex flex-col gap-4 animate-slide-up delay-200">
+                <h2 class="text-lg font-bold text-slate-200 mb-2 flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-lg bg-orange-500/10 border border-orange-500/20 flex items-center justify-center">
+                        <span class="w-2 h-2 rounded-full bg-orange-400 shadow-[0_0_8px_rgba(249,115,22,0.8)]"></span>
+                    </div>
+                    Pôle Sanctions
+                </h2>
+                
+                <a href="pages/programme-retenues.html" class="group flex flex-col bg-[#0b1120] border border-slate-800/80 hover:bg-slate-800/60 hover:border-orange-500/50 rounded-2xl p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_8px_30px_rgba(249,115,22,0.15)] relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-orange-500/5 rounded-full blur-2xl -mr-16 -mt-16 transition-all group-hover:bg-orange-500/20"></div>
+                    <div class="flex items-center gap-3 text-orange-400 font-bold text-lg mb-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2" /><line x1="16" x2="16" y1="2" y2="6" /><line x1="8" x2="8" y1="2" y2="6" /><line x1="3" x2="21" y1="10" y2="10" /></svg>
+                        Programme Retenues
+                    </div>
+                    <p class="text-slate-400 text-sm font-medium leading-relaxed relative z-10">Création, planification et impression du programme de colles.</p>
+                </a>
+
+                <a href="pages/bilan-sanctions.html" class="group flex flex-col bg-[#0b1120] border border-slate-800/80 hover:bg-slate-800/60 hover:border-violet-500/50 rounded-2xl p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_8px_30px_rgba(139,92,246,0.15)] relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-violet-500/5 rounded-full blur-2xl -mr-16 -mt-16 transition-all group-hover:bg-violet-500/20"></div>
+                    <div class="flex items-center gap-3 text-violet-400 font-bold text-lg mb-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.21 15.89A10 10 0 1 1 8 2.83" /><path d="M22 12A10 10 0 0 0 12 2v10z" /></svg>
+                        Bilan Global
+                    </div>
+                    <p class="text-slate-400 text-sm font-medium leading-relaxed relative z-10">Suivi statistique et historique des punitions et observations.</p>
+                </a>
+            </div>
+
+            <!-- COLONNE 3 : OUTILS -->
+            <div class="flex flex-col gap-4 animate-slide-up delay-300">
+                <h2 class="text-lg font-bold text-slate-200 mb-2 flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-lg bg-yellow-500/10 border border-yellow-500/20 flex items-center justify-center">
+                        <span class="w-2 h-2 rounded-full bg-yellow-400 shadow-[0_0_8px_rgba(250,204,21,0.8)]"></span>
+                    </div>
+                    Outils Complémentaires
+                </h2>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <a href="pages/planning.html" class="group flex flex-col items-center text-center bg-[#0b1120] border border-slate-800/80 hover:bg-slate-800/60 hover:border-yellow-500/50 rounded-2xl p-4 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_4px_20px_rgba(250,204,21,0.15)]">
+                        <div class="w-10 h-10 rounded-full bg-yellow-500/10 text-yellow-400 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                        </div>
+                        <span class="text-slate-300 font-bold text-sm">Planning</span>
+                    </a>
+
+                    <a href="casiers/utilitaire_casiers.html" class="group flex flex-col items-center text-center bg-[#0b1120] border border-slate-800/80 hover:bg-slate-800/60 hover:border-blue-500/50 rounded-2xl p-4 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_4px_20px_rgba(59,130,246,0.15)]">
+                        <div class="w-10 h-10 rounded-full bg-blue-500/10 text-blue-400 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                        </div>
+                        <span class="text-slate-300 font-bold text-sm">Casiers</span>
+                    </a>
+
+                    <a href="pages/createur-devoirs.html" class="group flex flex-col items-center text-center bg-[#0b1120] border border-slate-800/80 hover:bg-slate-800/60 hover:border-indigo-500/50 rounded-2xl p-4 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_4px_20px_rgba(99,102,241,0.15)]">
+                        <div class="w-10 h-10 rounded-full bg-indigo-500/10 text-indigo-400 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
+                        </div>
+                        <span class="text-slate-300 font-bold text-sm">Devoirs</span>
+                    </a>
+
+                    <a href="pages/documents.html" class="group flex flex-col items-center text-center bg-[#0b1120] border border-slate-800/80 hover:bg-slate-800/60 hover:border-pink-500/50 rounded-2xl p-4 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_4px_20px_rgba(236,72,153,0.15)]">
+                        <div class="w-10 h-10 rounded-full bg-pink-500/10 text-pink-400 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+                        </div>
+                        <span class="text-slate-300 font-bold text-sm">Docs</span>
+                    </a>
+                </div>
+            </div>
+
         </div>
     </main>
 
-    <div class="w-full px-6 pb-8 z-10 mt-auto">
+    <div class="w-full px-6 pb-8 z-10 mt-auto opacity-50 hover:opacity-100 transition-opacity">
         <div class="flex justify-center">
             <div class="flex flex-col justify-center text-center">
                 <div class="text-xs font-bold text-slate-500 mb-1">Développé pour</div>
-                <div class="text-base font-bold text-cyan-500">L'équipe Vie Scolaire</div>
+                <div class="text-sm font-bold text-cyan-600">L'équipe Vie Scolaire</div>
             </div>
         </div>
     </div>
 
-    <script>
-        function updateClock() {
-            const now = new Date();
-            const timeStr = now.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
-            const dateStr = now.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
-            const clockEl = document.getElementById('live-time');
-            if (clockEl) clockEl.textContent = dateStr.charAt(0).toUpperCase() + dateStr.slice(1) + ' • ' + timeStr;
-        }
-        setInterval(updateClock, 1000);
-        updateClock();
-    </script>
-
+    <!-- Script Menu : il va s'injecter à la place du <header> -->
     <script src="js/menu.js"></script>
 </body>
-
 </html>
