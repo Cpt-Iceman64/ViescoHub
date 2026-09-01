@@ -306,7 +306,12 @@
                 
                 let classHTML = `
                 <div class="mb-10 ${classIndex > 0 ? 'page-break' : ''}">
-                    <h2 class="text-xl font-bold text-blue-400 mb-4 border-b border-blue-900/50 pb-2">Attribution - Classe : ${nomClasse}</h2>
+                    <div class="flex justify-between items-center mb-4 border-b border-blue-900/50 pb-2">
+                        <h2 class="text-xl font-bold text-blue-400">Attribution - Classe : ${nomClasse}</h2>
+                        <button id="btn-save-${nomClasse}" onclick="sauvegarderClasse('${nomClasse}')" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold py-1.5 px-4 rounded-lg transition-colors no-print">
+                            ✅ Sauvegarder la classe
+                        </button>
+                    </div>
                     <table class="w-full text-left text-sm bg-slate-800/20 rounded-lg overflow-hidden border border-slate-700/50">
                         <thead class="bg-slate-800 text-slate-300">
                             <tr>
@@ -320,8 +325,8 @@
                 
                 casiers.forEach(casier => {
                     let typeTxt = casier.estMarge ? '<span class="text-orange-400 text-xs font-bold px-2 py-1 bg-orange-400/10 rounded">Marge</span>' : 'Standard';
-                    let input1 = `<input type="text" value="${casier.eleve1}" onchange="updateEleve(${casier.numero}, 'eleve1', this.value)" placeholder="..." class="bg-transparent border-b border-slate-600 focus:border-blue-400 px-2 py-1 w-full text-white">`;
-                    let input2 = casier.estSolo ? `<span class="text-slate-500 italic text-xs">Casier solo</span>` : `<input type="text" value="${casier.eleve2}" onchange="updateEleve(${casier.numero}, 'eleve2', this.value)" placeholder="..." class="bg-transparent border-b border-slate-600 focus:border-blue-400 px-2 py-1 w-full text-white">`;
+                    let input1 = `<input type="text" id="eleve1-${casier.numero}" value="${casier.eleve1}" oninput="marquerModifie(${casier.numero}, '${nomClasse}')" placeholder="..." class="bg-transparent border-b border-slate-600 focus:border-blue-400 px-2 py-1 w-full text-white">`;
+                    let input2 = casier.estSolo ? `<span class="text-slate-500 italic text-xs">Casier solo</span>` : `<input type="text" id="eleve2-${casier.numero}" value="${casier.eleve2}" oninput="marquerModifie(${casier.numero}, '${nomClasse}')" placeholder="..." class="bg-transparent border-b border-slate-600 focus:border-blue-400 px-2 py-1 w-full text-white">`;
                     
                     classHTML += `
                         <tr class="hover:bg-slate-800/30 transition-colors">
@@ -341,12 +346,74 @@
             afficherBaseDonnees();
         }
 
-        function updateEleve(numCasier, champ, valeur) {
-            let casier = baseCasiers.find(c => c.numero === numCasier);
-            if (casier) {
-                casier[champ] = valeur;
-                sauvegarderBase();
+        function marquerModifie(numCasier, nomClasse) {
+            let input1 = document.getElementById(`eleve1-${numCasier}`);
+            let input2 = document.getElementById(`eleve2-${numCasier}`);
+            if(input1 && document.activeElement === input1) input1.dataset.modified = "true";
+            if(input2 && document.activeElement === input2) input2.dataset.modified = "true";
+
+            const btn = document.getElementById(`btn-save-${nomClasse}`);
+            if (btn) {
+                btn.classList.add('animate-pulse', 'bg-amber-600');
+                btn.classList.remove('bg-emerald-600');
+                btn.innerText = '⚠️ Sauvegarder la classe';
             }
+        }
+
+        function sauvegarderClasse(nomClasse) {
+            let casiersClasse = baseCasiers.filter(c => c.classe === nomClasse);
+            
+            const btn = document.getElementById(`btn-save-${nomClasse}`);
+            if (btn) {
+                btn.innerText = '⏳ Enregistrement...';
+                btn.classList.remove('animate-pulse', 'bg-amber-600');
+                btn.classList.add('bg-emerald-600');
+            }
+
+            const db = firebase.firestore();
+            const docRef = db.collection('viescohub_data').doc('casiers');
+
+            db.runTransaction((transaction) => {
+                return transaction.get(docRef).then((doc) => {
+                    if (!doc.exists) throw "Le document casiers n'existe pas.";
+                    
+                    let dbCasiers = doc.data().data;
+                    
+                    casiersClasse.forEach(localC => {
+                        let dbCasier = dbCasiers.find(c => c.numero === localC.numero);
+                        if (dbCasier) {
+                            let input1 = document.getElementById(`eleve1-${localC.numero}`);
+                            let input2 = document.getElementById(`eleve2-${localC.numero}`);
+                            if(input1) dbCasier.eleve1 = input1.value;
+                            if(input2) dbCasier.eleve2 = input2.value;
+                        }
+                    });
+                    
+                    transaction.update(docRef, { data: dbCasiers });
+                });
+            }).then(() => {
+                casiersClasse.forEach(localC => {
+                    let input1 = document.getElementById(`eleve1-${localC.numero}`);
+                    let input2 = document.getElementById(`eleve2-${localC.numero}`);
+                    if (input1) input1.dataset.modified = "false";
+                    if (input2) input2.dataset.modified = "false";
+                });
+                if (btn) {
+                    btn.innerText = '✅ Sauvegardé';
+                    setTimeout(() => {
+                        if (btn.innerText === '✅ Sauvegardé') {
+                            btn.innerText = '✅ Sauvegarder la classe';
+                        }
+                    }, 2500);
+                }
+            }).catch((error) => {
+                console.error("Erreur de synchronisation:", error);
+                if (btn) {
+                    btn.innerText = '❌ Erreur (Réessayer)';
+                    btn.classList.add('bg-red-600');
+                    btn.classList.remove('bg-emerald-600');
+                }
+            });
         }
 
         // --- FIREBASE SYNC --- //
@@ -364,7 +431,24 @@
                     if (docData && docData.data) {
                         baseCasiers = docData.data;
                         if(document.getElementById('tab-saisie').classList.contains('active')) {
-                            afficherBaseDonnees();
+                            const tablesContainer = document.getElementById('tables-container');
+                            // S'il n'y a pas encore d'inputs générés, on affiche tout
+                            if (tablesContainer.querySelectorAll('input').length === 0) {
+                                afficherBaseDonnees();
+                            } else {
+                                // Mettre à jour intelligemment pour ne pas perdre le focus
+                                baseCasiers.forEach(casier => {
+                                    const input1 = document.getElementById(`eleve1-${casier.numero}`);
+                                    const input2 = document.getElementById(`eleve2-${casier.numero}`);
+                                    
+                                    if (input1 && input1.dataset.modified !== "true" && document.activeElement !== input1 && input1.value !== casier.eleve1) {
+                                        input1.value = casier.eleve1;
+                                    }
+                                    if (input2 && input2.dataset.modified !== "true" && document.activeElement !== input2 && input2.value !== casier.eleve2) {
+                                        input2.value = casier.eleve2;
+                                    }
+                                });
+                            }
                         }
                     }
                 }, (error) => {
