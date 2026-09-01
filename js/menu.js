@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', () => {
+function initMenu() {
     // 1. Déterminer le chemin de base et la page actuelle
     const path = window.location.pathname;
     const isRoot = path.endsWith('index.html') || path.endsWith('/') || !path.includes('.html');
@@ -147,4 +147,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     setInterval(updateGlobalClock, 1000);
     updateGlobalClock();
-});
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initMenu);
+} else {
+    initMenu();
+}
