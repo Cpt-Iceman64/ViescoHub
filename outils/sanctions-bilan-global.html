@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
@@ -18,6 +18,7 @@
     </style>
 </head>
 <body class="flex flex-col min-h-screen">
+    <header></header>
 
     <header></header>
 
@@ -25,11 +26,11 @@
         <div class="max-w-7xl mx-auto w-full mb-8 no-print grid grid-cols-1 lg:grid-cols-12 gap-8 z-10">
             <div class="lg:col-span-5 flex flex-col justify-center">
                 <h1 class="text-4xl font-black text-white mb-4">Analyse des <span class="text-violet-500">Exclusions</span></h1>
-                <p class="text-sm text-slate-400">Importez le journal des exclusions Pronote. L'outil calculera les durées cumulées par élève.</p>
+                <p class="text-sm text-slate-400">Importez le journal des exclusions Pronote. L'outil calculera les durÃ©es cumulÃ©es par Ã©lÃ¨ve.</p>
             </div>
             <div class="lg:col-span-7 bg-[#0d1326] p-6 rounded-3xl border border-slate-800 shadow-2xl flex flex-col min-h-[400px]">
                 <textarea id="input" class="w-full flex-grow p-4 bg-slate-950/50 border border-slate-800 rounded-2xl font-mono text-xs text-violet-100 outline-none" placeholder="> Collez le journal des exclusions Pronote ici (Tab-separated)..."></textarea>
-                <button onclick="analyzeData()" class="mt-4 w-full bg-violet-600 hover:bg-violet-500 text-white py-3 rounded-xl font-bold transition-all">Générer le rapport</button>
+                <button onclick="analyzeData()" class="mt-4 w-full bg-violet-600 hover:bg-violet-500 text-white py-3 rounded-xl font-bold transition-all">GÃ©nÃ©rer le rapport</button>
             </div>
         </div>
 
@@ -40,7 +41,7 @@
                     <div id="kpi-total" class="text-4xl font-black text-white">0</div>
                 </div>
                 <div class="stat-card p-5 rounded-xl border-t-2 border-pink-500">
-                    <div class="text-slate-400 text-xs font-bold uppercase">Élèves concernés</div>
+                    <div class="text-slate-400 text-xs font-bold uppercase">Ã‰lÃ¨ves concernÃ©s</div>
                     <div id="kpi-eleves" class="text-4xl font-black text-pink-400">0</div>
                 </div>
                 <div class="stat-card p-5 rounded-xl border-t-2 border-emerald-500">
@@ -50,11 +51,11 @@
             </div>
 
             <div class="stat-card p-6 rounded-xl">
-                <h3 class="text-lg font-bold text-white mb-4 uppercase tracking-wider">Top Perturbateurs (Durée cumulée)</h3>
+                <h3 class="text-lg font-bold text-white mb-4 uppercase tracking-wider">Top Perturbateurs (DurÃ©e cumulÃ©e)</h3>
                 <div class="overflow-x-auto">
                     <table class="w-full text-left text-sm">
                         <thead class="text-slate-500 border-b border-slate-700 uppercase text-xs">
-                            <tr><th class="pb-2">Élève</th><th class="pb-2">Classe</th><th class="pb-2 text-right">Nb Incidents</th><th class="pb-2 text-right">Total Jours</th></tr>
+                            <tr><th class="pb-2">Ã‰lÃ¨ve</th><th class="pb-2">Classe</th><th class="pb-2 text-right">Nb Incidents</th><th class="pb-2 text-right">Total Jours</th></tr>
                         </thead>
                         <tbody id="table-body" class="text-slate-300"></tbody>
                     </table>
@@ -69,7 +70,7 @@
             const lines = rawData.split('\n');
             const studentMap = {};
 
-            // Ignorer l'entête (col 0 est Classe)
+            // Ignorer l'entÃªte (col 0 est Classe)
             for(let i=1; i < lines.length; i++) {
                 if(!lines[i].trim()) continue;
                 const cols = lines[i].split('\t').map(c => c.replace(/^"|"$/g, ''));
@@ -110,5 +111,6 @@
             document.getElementById('dashboard-container').classList.remove('hidden');
         }
     </script>
+    <script src="../js/menu.js"></script>
 </body>
 </html>

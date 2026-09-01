@@ -1,9 +1,15 @@
 function initMenu() {
-    // 1. Déterminer le chemin de base et la page actuelle
+    // 1. Déterminer le chemin de base et la page courante
     const path = window.location.pathname;
-    const isRoot = path.endsWith('index.html') || path.endsWith('/') || !path.includes('.html');
-    const basePath = isRoot ? './' : '../';
-    const currentPage = path.split('/').pop().replace('.html', '');
+    const inOutils = path.includes('/outils/');
+    const inDocuments = path.includes('/documents/');
+    const basePath = (inOutils || inDocuments) ? '../' : './';
+    
+    let pageName = path.split('/').pop().replace('.html', '');
+    if (pageName === '' || pageName === 'index') {
+        if (inDocuments) pageName = 'documents';
+        else pageName = 'accueil';
+    }
 
     // 2. Générer le HTML de l'en-tête
     const headerHTML = `
@@ -26,11 +32,11 @@ function initMenu() {
             <!-- Navigation Bureau -->
             <nav class="hidden lg:flex items-center gap-2 xl:gap-4 text-xs font-bold tracking-widest uppercase text-slate-400">
                 
-                <a href="${basePath}index.html" class="px-3 py-2 rounded-lg hover:bg-slate-800/50 hover:text-cyan-400 transition-all ${currentPage==='index'?'text-white bg-slate-800/30':''}">Accueil</a>
+                <a href="${basePath}index.html" class="px-3 py-2 rounded-lg hover:bg-slate-800/50 hover:text-cyan-400 transition-all ${pageName==='accueil'?'text-white bg-slate-800/30':''}">Accueil</a>
                 
                 <!-- Pôle Absences -->
                 <div class="relative group px-1">
-                    <button class="px-3 py-2 rounded-lg hover:bg-slate-800/50 hover:text-emerald-400 transition-all flex items-center gap-1 ${(currentPage.includes('absence') && !currentPage.includes('bilan'))?'text-white':''}">
+                    <button class="px-3 py-2 rounded-lg hover:bg-slate-800/50 hover:text-emerald-400 transition-all flex items-center gap-1 ${pageName.includes('absence')?'text-white':''}">
                         Absences <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
                     </button>
                     <!-- Wrapper transparent pour le hover -->
@@ -48,7 +54,7 @@ function initMenu() {
 
                 <!-- Pôle Sanctions -->
                 <div class="relative group px-1">
-                    <button class="px-3 py-2 rounded-lg hover:bg-slate-800/50 hover:text-orange-400 transition-all flex items-center gap-1 ${(currentPage.includes('retenue') || currentPage.includes('sanction'))?'text-white':''}">
+                    <button class="px-3 py-2 rounded-lg hover:bg-slate-800/50 hover:text-orange-400 transition-all flex items-center gap-1 ${pageName.includes('sanction')?'text-white':''}">
                         Sanctions <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
                     </button>
                     <!-- Wrapper transparent pour le hover -->
@@ -66,7 +72,7 @@ function initMenu() {
 
                 <!-- Pôle Outils -->
                 <div class="relative group px-1">
-                    <button class="px-3 py-2 rounded-lg hover:bg-slate-800/50 hover:text-yellow-400 transition-all flex items-center gap-1 ${['planning','utilitaire_casiers','createur-devoirs','documents','passage_self'].includes(currentPage)?'text-white':''}">
+                    <button class="px-3 py-2 rounded-lg hover:bg-slate-800/50 hover:text-yellow-400 transition-all flex items-center gap-1 ${['planning','casiers','createur-devoirs','documents','passage-self'].includes(pageName)?'text-white':''}">
                         Outils <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
                     </button>
                     <!-- Wrapper transparent pour le hover -->
