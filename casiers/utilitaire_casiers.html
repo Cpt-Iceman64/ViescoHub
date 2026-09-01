@@ -139,13 +139,13 @@
             </p>
         </div>
 
-        <div class="flex flex-wrap gap-4 mb-8 no-print justify-center border-b border-slate-800 pb-4">
-            <button class="tab-btn active px-6 py-2.5 rounded-lg font-bold text-sm bg-slate-800 text-slate-300 border border-slate-700 transition-colors" onclick="switchTab('config')">⚙️ Configuration</button>
-            <button class="tab-btn px-6 py-2.5 rounded-lg font-bold text-sm bg-slate-800 text-slate-300 border border-slate-700 transition-colors" onclick="switchTab('saisie')">📝 Saisie & Impression</button>
+        <div class="flex flex-wrap gap-4 mb-8 no-print justify-between items-center border-b border-slate-800 pb-4">
+            <button class="tab-btn active px-6 py-2.5 rounded-lg font-bold text-sm bg-slate-800 text-slate-300 border border-slate-700 transition-colors" onclick="switchTab('saisie')">📝 Saisie & Impression</button>
+            <button class="tab-btn px-6 py-2.5 rounded-lg font-bold text-sm bg-slate-800 text-slate-300 border border-slate-700 transition-colors" onclick="switchTab('config')">⚙️ Configuration</button>
         </div>
 
         <!-- ONGLET CONFIGURATION -->
-        <div id="tab-config" class="tab-content active glass-panel rounded-xl p-6">
+        <div id="tab-config" class="tab-content glass-panel rounded-xl p-6">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 no-print">
                 <div>
                     <label class="block text-sm font-bold text-slate-300 mb-2">Total casiers</label>
@@ -165,7 +165,7 @@
         </div>
 
         <!-- ONGLET SAISIE -->
-        <div id="tab-saisie" class="tab-content glass-panel rounded-xl p-6">
+        <div id="tab-saisie" class="tab-content active glass-panel rounded-xl p-6">
             <div class="flex flex-col md:flex-row gap-4 mb-6 no-print">
                 <input type="text" id="search-input" onkeyup="filtrerBase()" placeholder="🔍 Rechercher un nom ou numéro..." class="flex-1 px-4 py-3 rounded-lg text-lg">
                 <button onclick="window.print()" class="bg-amber-600 hover:bg-amber-500 text-white font-bold py-3 px-6 rounded-lg transition-colors">
@@ -220,10 +220,10 @@
             
             if (tabName === 'config') {
                 document.getElementById('tab-config').classList.add('active');
-                document.querySelectorAll('.tab-btn')[0].classList.add('active');
+                document.querySelectorAll('.tab-btn')[1].classList.add('active');
             } else {
                 document.getElementById('tab-saisie').classList.add('active');
-                document.querySelectorAll('.tab-btn')[1].classList.add('active');
+                document.querySelectorAll('.tab-btn')[0].classList.add('active');
                 afficherBaseDonnees();
             }
         }
