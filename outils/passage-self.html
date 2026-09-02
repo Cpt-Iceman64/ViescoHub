@@ -359,71 +359,6 @@
                 </div>
             </div>
         </div>
-    </div>
-
-    <script>
-        // Données d'exemple initiales
-        let planningData = [
-            { id: "slot1", time: "11h30", classes: [] },
-            { id: "slot2", time: "12h00", classes: [] }
-        ];
-        
-        let dragSourceSlotId = null;
-        let dragSourceIndex = null;
-        let dragSourceClassName = null;
-        
-        // Liste de toutes les classes possibles
-        let allClasses = [
-            // 6èmes
-            { name: "6°1", lvl: "6" }, { name: "6°2", lvl: "6" }, { name: "6°3", lvl: "6" },
-            { name: "6°2 LV1", lvl: "6" }, { name: "6°3 LV1", lvl: "6" },
-            { name: "6° ULIS", lvl: "6" },
-            // 5èmes
-            { name: "5°1", lvl: "5" }, { name: "5°2", lvl: "5" }, { name: "5°3", lvl: "5" },
-            { name: "5°1 Esp LV2", lvl: "5" },
-            { name: "5°1 CHAM", lvl: "5" }, { name: "5° ULIS", lvl: "5" },
-            // 4èmes
-            { name: "4°1", lvl: "4" }, { name: "4°2", lvl: "4" }, { name: "4°2 Ang LV1", lvl: "4" }, { name: "4°3", lvl: "4" },
-            { name: "4°3 Latin", lvl: "4" }, { name: "4°3 Ang LV1", lvl: "4" }, { name: "4°3 Esp LV1", lvl: "4" },
-            { name: "4° ULIS", lvl: "4" },
-            // 3èmes
-            { name: "3°1", lvl: "3" }, { name: "3°2", lvl: "3" }, { name: "3°3", lvl: "3" },
-            { name: "3°2 Ang LV2", lvl: "3" }, { name: "3°2 Ang LV1", lvl: "3" }, { name: "3°3 Ang LV1", lvl: "3" },
-            { name: "3°1 CHAM", lvl: "3" }, { name: "3° ULIS", lvl: "3" },
-            // Ateliers & Groupes
-            { name: "Théâtre", lvl: "club" }, { name: "Atelier Nature", lvl: "club" }, { name: "Chorale", lvl: "club" }
-        ];
-        
-        let scheduleSettings = JSON.parse(localStorage.getItem('viescoHub_selfSettings'));
-        if (!scheduleSettings || Object.keys(scheduleSettings).length === 0) {
-            scheduleSettings = getDefault2026Schedules();
-            localStorage.setItem('viescoHub_selfSettings', JSON.stringify(scheduleSettings));
-        }
-        
-        // S'il y a un tableau de classes spécifique enregistré avec les paramètres, on l'utilise
-        const savedClasses = JSON.parse(localStorage.getItem('viescoHub_allClasses'));
-        if (savedClasses && Array.isArray(savedClasses) && savedClasses.length > 0) {
-            allClasses = savedClasses;
-        } else {
-            // Sinon on initialise avec la liste par défaut et on la sauvegarde
-            localStorage.setItem('viescoHub_allClasses', JSON.stringify(allClasses));
-        }
-        
-        // Migration logic for Week A / B side-by-side
-        let needsMigration = false;
-        for (let cls in scheduleSettings) {
-            for (let day in scheduleSettings[cls]) {
-                if (scheduleSettings[cls][day].fin !== undefined || scheduleSettings[cls][day].reprise !== undefined) {
-                    needsMigration = true;
-                    break;
-                }
-            }
-            if (needsMigration) break;
-        }
-
-        if (needsMigration) {
-            const newSettings = {};
-            for (let cls in scheduleSettings) {
                 newSettings[cls] = {};
                 for (let day in scheduleSettings[cls]) {
                     const oldFin = scheduleSettings[cls][day].fin || '';
@@ -685,7 +620,13 @@
         function removeClass(slotId, classIndex) {
             const slot = planningData.find(s => s.id === slotId);
             if (slot) {
+                const className = slot.classes[classIndex];
                 slot.classes.splice(classIndex, 1);
+                
+                if (/^\d°\d$/.test(className)) {
+                    slot.classes = slot.classes.filter(c => !c.startsWith(className + " "));
+                }
+                
                 renderSlots();
             }
         }
