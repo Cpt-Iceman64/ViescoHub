@@ -280,9 +280,15 @@
                         <tbody class="divide-y divide-slate-700/50">`;
                 
                 casiers.forEach(casier => {
-                    let typeTxt = casier.estMarge ? '<span class="text-orange-400 text-xs font-bold px-2 py-1 bg-orange-400/10 rounded">Marge</span>' : 'Standard';
+                    let typeTxt = casier.estMarge 
+                        ? `<button onclick="toggleStatus(${casier.numero}, 'marge', '${nomClasse}')" class="text-orange-400 text-xs font-bold px-2 py-1 bg-orange-400/10 hover:bg-orange-400/20 rounded transition-colors no-print">Marge</button><span class="hidden print:inline text-orange-400 text-xs font-bold px-2 py-1 bg-orange-400/10 rounded">Marge</span>` 
+                        : `<button onclick="toggleStatus(${casier.numero}, 'marge', '${nomClasse}')" class="text-slate-400 text-xs font-bold px-2 py-1 bg-slate-800 hover:bg-slate-700 rounded transition-colors no-print">Standard</button><span class="hidden print:inline">Standard</span>`;
+                    
                     let input1 = `<input type="text" id="eleve1-${casier.numero}" value="${casier.eleve1}" oninput="marquerModifie(${casier.numero}, '${nomClasse}')" placeholder="..." class="bg-transparent border-b border-slate-600 focus:border-blue-400 px-2 py-1 w-full text-white">`;
-                    let input2 = casier.estSolo ? `<span class="text-slate-500 italic text-xs">Casier solo</span>` : `<input type="text" id="eleve2-${casier.numero}" value="${casier.eleve2}" oninput="marquerModifie(${casier.numero}, '${nomClasse}')" placeholder="..." class="bg-transparent border-b border-slate-600 focus:border-blue-400 px-2 py-1 w-full text-white">`;
+                    
+                    let input2 = casier.estSolo 
+                        ? `<div class="flex items-center gap-2"><span class="text-slate-500 italic text-xs flex-1">Casier solo</span><button onclick="toggleStatus(${casier.numero}, 'solo', '${nomClasse}')" class="text-xs bg-slate-700 hover:bg-slate-600 text-slate-300 px-2 py-1 rounded no-print transition-colors whitespace-nowrap" title="Désactiver le mode solo">👥 Duo</button></div>` 
+                        : `<div class="flex items-center gap-2"><input type="text" id="eleve2-${casier.numero}" value="${casier.eleve2}" oninput="marquerModifie(${casier.numero}, '${nomClasse}')" placeholder="..." class="bg-transparent border-b border-slate-600 focus:border-blue-400 px-2 py-1 w-full text-white"><button onclick="toggleStatus(${casier.numero}, 'solo', '${nomClasse}')" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-400 px-2 py-1 rounded no-print transition-colors whitespace-nowrap" title="Activer le mode solo">👤 Solo</button></div>`;
                     
                     classHTML += `
                         <tr class="hover:bg-slate-800/30 transition-colors">
@@ -295,6 +301,39 @@
                 classHTML += `</tbody></table></div>`;
                 tablesContainer.innerHTML += classHTML;
                 classIndex++;
+            }
+        }
+
+        function toggleStatus(numero, type, nomClasse) {
+            // Sauvegarder l'état actuel des inputs avant le rafraîchissement
+            baseCasiers.forEach(c => {
+                const i1 = document.getElementById(`eleve1-${c.numero}`);
+                const i2 = document.getElementById(`eleve2-${c.numero}`);
+                if (i1) c.eleve1 = i1.value;
+                if (i2 && !c.estSolo) c.eleve2 = i2.value;
+            });
+
+            let casier = baseCasiers.find(c => c.numero === numero);
+            if (casier) {
+                if (type === 'solo') {
+                    casier.estSolo = !casier.estSolo;
+                    if (casier.estSolo) {
+                        casier.eleve2 = "X (Casier solo)";
+                    } else {
+                        if (casier.eleve2 === "X (Casier solo)") casier.eleve2 = "";
+                    }
+                } else if (type === 'marge') {
+                    casier.estMarge = !casier.estMarge;
+                }
+            }
+
+            afficherBaseDonnees();
+
+            const btn = document.getElementById(`btn-save-${nomClasse}`);
+            if (btn) {
+                btn.classList.add('animate-pulse', 'bg-amber-600');
+                btn.classList.remove('bg-emerald-600');
+                btn.innerText = '⚠️ Sauvegarder la classe';
             }
         }
 
@@ -342,6 +381,8 @@
                             let input2 = document.getElementById(`eleve2-${localC.numero}`);
                             if(input1) dbCasier.eleve1 = input1.value;
                             if(input2) dbCasier.eleve2 = input2.value;
+                            dbCasier.estSolo = localC.estSolo;
+                            dbCasier.estMarge = localC.estMarge;
                         }
                     });
                     
