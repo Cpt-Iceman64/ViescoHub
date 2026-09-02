@@ -359,6 +359,93 @@
                 </div>
             </div>
         </div>
+    </div>
+
+    <script>
+        // Données d'exemple initiales
+        let planningData = [
+            { id: "slot1", time: "11h30", classes: [] },
+            { id: "slot2", time: "12h00", classes: [] }
+        ];
+        
+        let dragSourceSlotId = null;
+        let dragSourceIndex = null;
+        let dragSourceClassName = null;
+        
+        // Liste de toutes les classes possibles
+        let allClasses = [
+            // 6èmes
+            { name: "6°1", lvl: "6" }, { name: "6°2", lvl: "6" }, { name: "6°3", lvl: "6" },
+            { name: "6°1 ULIS", lvl: "6" }, { name: "6°2 ULIS", lvl: "6" }, { name: "6°3 ULIS", lvl: "6" },
+            { name: "6°2 LV1", lvl: "6" }, { name: "6°3 LV1", lvl: "6" },
+            // 5èmes
+            { name: "5°1", lvl: "5" }, { name: "5°2", lvl: "5" }, { name: "5°3", lvl: "5" },
+            { name: "5°1 ULIS", lvl: "5" }, { name: "5°2 ULIS", lvl: "5" }, { name: "5°3 ULIS", lvl: "5" },
+            { name: "5°1 Esp LV2", lvl: "5" },
+            { name: "5°1 CHAM", lvl: "5" },
+            // 4èmes
+            { name: "4°1", lvl: "4" }, { name: "4°2", lvl: "4" }, { name: "4°2 Ang LV1", lvl: "4" }, { name: "4°3", lvl: "4" },
+            { name: "4°1 ULIS", lvl: "4" }, { name: "4°2 ULIS", lvl: "4" }, { name: "4°3 ULIS", lvl: "4" },
+            { name: "4°3 Latin", lvl: "4" }, { name: "4°3 Ang LV1", lvl: "4" }, { name: "4°3 Esp LV1", lvl: "4" },
+            // 3èmes
+            { name: "3°1", lvl: "3" }, { name: "3°2", lvl: "3" }, { name: "3°3", lvl: "3" },
+            { name: "3°1 ULIS", lvl: "3" }, { name: "3°2 ULIS", lvl: "3" }, { name: "3°3 ULIS", lvl: "3" },
+            { name: "3°2 Ang LV2", lvl: "3" }, { name: "3°2 Ang LV1", lvl: "3" }, { name: "3°3 Ang LV1", lvl: "3" },
+            { name: "3°1 CHAM", lvl: "3" },
+            // Ateliers & Groupes
+            { name: "Théâtre", lvl: "club" }, { name: "Atelier Nature", lvl: "club" }, { name: "Chorale", lvl: "club" }
+        ];
+        
+        // Initialisation des classes sauvegardées et migration ULIS
+        const savedClasses = JSON.parse(localStorage.getItem('viescoHub_allClasses'));
+        if (savedClasses && Array.isArray(savedClasses) && savedClasses.length > 0) {
+            allClasses = savedClasses;
+            
+            // Migration: Ajout des classes ULIS individuelles si absentes et suppression des génériques
+            let ulisMigrationNeeded = allClasses.some(c => c.name === "6° ULIS" || c.name === "5° ULIS" || c.name === "4° ULIS" || c.name === "3° ULIS");
+            if (ulisMigrationNeeded) {
+                allClasses = allClasses.filter(c => !c.name.match(/^\d° ULIS$/));
+                const newUlis = [
+                    { name: "6°1 ULIS", lvl: "6" }, { name: "6°2 ULIS", lvl: "6" }, { name: "6°3 ULIS", lvl: "6" },
+                    { name: "5°1 ULIS", lvl: "5" }, { name: "5°2 ULIS", lvl: "5" }, { name: "5°3 ULIS", lvl: "5" },
+                    { name: "4°1 ULIS", lvl: "4" }, { name: "4°2 ULIS", lvl: "4" }, { name: "4°3 ULIS", lvl: "4" },
+                    { name: "3°1 ULIS", lvl: "3" }, { name: "3°2 ULIS", lvl: "3" }, { name: "3°3 ULIS", lvl: "3" }
+                ];
+                newUlis.forEach(u => {
+                    if (!allClasses.find(c => c.name === u.name)) {
+                        allClasses.push(u);
+                    }
+                });
+                // Tri par niveau (6->3) puis par nom
+                allClasses.sort((a, b) => {
+                    if (a.lvl === "club" && b.lvl !== "club") return 1;
+                    if (a.lvl !== "club" && b.lvl === "club") return -1;
+                    if (a.lvl !== b.lvl) return b.lvl.localeCompare(a.lvl); 
+                    return a.name.localeCompare(b.name);
+                });
+                localStorage.setItem('viescoHub_allClasses', JSON.stringify(allClasses));
+            }
+        } else {
+            localStorage.setItem('viescoHub_allClasses', JSON.stringify(allClasses));
+        }
+
+        // Migration settings
+        let scheduleSettings = JSON.parse(localStorage.getItem('viescoHub_selfSettings')) || {};
+        
+        let needsMigration = false;
+        for (let cls in scheduleSettings) {
+            for (let day in scheduleSettings[cls]) {
+                if (scheduleSettings[cls][day].fin !== undefined || scheduleSettings[cls][day].reprise !== undefined) {
+                    needsMigration = true;
+                    break;
+                }
+            }
+            if (needsMigration) break;
+        }
+
+        if (needsMigration) {
+            const newSettings = {};
+            for (let cls in scheduleSettings) {
                 newSettings[cls] = {};
                 for (let day in scheduleSettings[cls]) {
                     const oldFin = scheduleSettings[cls][day].fin || '';
