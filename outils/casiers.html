@@ -129,6 +129,8 @@
                 </button>
             </div>
 
+            <div id="classes-tabs" class="flex flex-wrap gap-2 mb-6 no-print"></div>
+
             <div id="stats" class="text-blue-400 font-bold mb-6 text-center text-lg no-print"></div>
 
             <div id="tables-container" class="w-full">
@@ -237,19 +239,48 @@
             document.getElementById('stats').innerText = `📊 Bilan : ${totalEleves} élèves. ${numCasier - 1} casiers alloués.`;
         }
 
+        let filtreClasse = "";
+
+        function setFiltreClasse(classe) {
+            // Sauvegarder l'état actuel des inputs avant de changer d'onglet
+            baseCasiers.forEach(c => {
+                const i1 = document.getElementById(`eleve1-${c.numero}`);
+                const i2 = document.getElementById(`eleve2-${c.numero}`);
+                if (i1) c.eleve1 = i1.value;
+                if (i2 && !c.estSolo) c.eleve2 = i2.value;
+            });
+            
+            filtreClasse = classe;
+            afficherBaseDonnees();
+        }
+
         function afficherBaseDonnees() {
             const filtre = document.getElementById('search-input').value.toLowerCase();
             const tablesContainer = document.getElementById('tables-container');
+            const tabsContainer = document.getElementById('classes-tabs');
             tablesContainer.innerHTML = '';
 
             if (baseCasiers.length === 0) {
                 tablesContainer.innerHTML = `<p class="text-center text-slate-500 py-10">Aucune donnée. Générez la structure.</p>`;
+                if (tabsContainer) tabsContainer.innerHTML = '';
                 return;
+            }
+
+            const classesExistantes = [...new Set(baseCasiers.map(c => c.classe))];
+            
+            if (tabsContainer) {
+                let tabsHTML = `<button onclick="setFiltreClasse('')" class="px-4 py-2 rounded-lg text-sm font-bold transition-colors ${filtreClasse === '' ? 'bg-blue-600 text-white' : 'bg-slate-800 text-slate-400 hover:bg-slate-700'}">Toutes</button>`;
+                classesExistantes.forEach(c => {
+                    tabsHTML += `<button onclick="setFiltreClasse('${c}')" class="px-4 py-2 rounded-lg text-sm font-bold transition-colors ${filtreClasse === c ? 'bg-blue-600 text-white' : 'bg-slate-800 text-slate-400 hover:bg-slate-700'}">${c}</button>`;
+                });
+                tabsContainer.innerHTML = tabsHTML;
             }
 
             // Grouper par classe pour l'affichage/impression
             const classesGroup = {};
             baseCasiers.forEach(casier => {
+                if (filtreClasse !== "" && casier.classe !== filtreClasse) return;
+
                 if (!classesGroup[casier.classe]) classesGroup[casier.classe] = [];
                 if (filtre === "" || casier.numero.toString().includes(filtre) || casier.eleve1.toLowerCase().includes(filtre) || casier.eleve2.toLowerCase().includes(filtre) || casier.classe.toLowerCase().includes(filtre)) {
                     classesGroup[casier.classe].push(casier);
