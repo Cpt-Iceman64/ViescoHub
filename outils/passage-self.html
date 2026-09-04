@@ -710,9 +710,6 @@
                 const className = slot.classes[classIndex];
                 slot.classes.splice(classIndex, 1);
                 
-                if (/^\d°\d$/.test(className)) {
-                    slot.classes = slot.classes.filter(c => !c.startsWith(className + " "));
-                }
                 
                 renderSlots();
             }
