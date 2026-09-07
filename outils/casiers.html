@@ -126,6 +126,9 @@
         <div id="tab-saisie" class="tab-content active glass-panel rounded-xl p-6">
             <div class="flex flex-col md:flex-row gap-4 mb-6 no-print">
                 <input type="text" id="search-input" onkeyup="filtrerBase()" placeholder="🔍 Rechercher un nom ou numéro..." class="flex-1 px-4 py-3 rounded-lg text-lg">
+                <button onclick="exporterCasiers()" class="bg-slate-700 hover:bg-slate-600 text-white font-bold py-3 px-6 rounded-lg transition-colors">
+                    ⬇️ Exporter la sauvegarde
+                </button>
                 <button onclick="window.print()" class="bg-amber-600 hover:bg-amber-500 text-white font-bold py-3 px-6 rounded-lg transition-colors">
                     🖨️ Imprimer les listes
                 </button>
@@ -372,6 +375,37 @@
 
         function filtrerBase() {
             afficherBaseDonnees();
+        }
+
+        function exporterCasiers() {
+            if (!Array.isArray(baseCasiers) || baseCasiers.length === 0) {
+                alert("Aucune donnée de casier n'est disponible. Attendez la synchronisation Firebase avant d'exporter.");
+                return;
+            }
+
+            baseCasiers.forEach(casier => {
+                const input1 = document.getElementById(`eleve1-${casier.numero}`);
+                const input2 = document.getElementById(`eleve2-${casier.numero}`);
+                if (input1) casier.eleve1 = input1.value;
+                if (input2 && !casier.estSolo) casier.eleve2 = input2.value;
+            });
+
+            const sauvegarde = {
+                format: "viescohub-casiers",
+                version: 1,
+                exporteLe: new Date().toISOString(),
+                casiers: baseCasiers
+            };
+            const date = new Date().toISOString().slice(0, 10);
+            const blob = new Blob([JSON.stringify(sauvegarde, null, 2)], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            const lien = document.createElement('a');
+            lien.href = url;
+            lien.download = `sauvegarde_casiers_${date}.json`;
+            document.body.appendChild(lien);
+            lien.click();
+            lien.remove();
+            URL.revokeObjectURL(url);
         }
 
         function marquerModifie(numCasier, nomClasse) {
