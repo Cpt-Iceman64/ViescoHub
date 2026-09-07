@@ -11,6 +11,8 @@
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
     <script src="../js/firebase-config.js"></script>
+    <script src="../js/casiers-logic.js"></script>
+    <script src="../js/casiers-sync-logic.js"></script>
 
     <style>
         body {
@@ -154,6 +156,9 @@
 
         const niveaux = ["6e", "5e", "4e", "3e"];
         let baseCasiers = [];
+        let snapshotsFirebase = {};
+        let modificationsEnAttente = {};
+        let premiereSynchronisation = true;
 
         // UI Initialization
         const container = document.getElementById('niveaux-container');
@@ -201,60 +206,40 @@
         }
 
         function genererCasiers() {
+            if (Object.keys(modificationsEnAttente).length > 0) {
+                alert('⚠️ Sauvegardez d’abord les modifications en attente avant de régénérer les casiers.');
+                return;
+            }
             const maxCasiers = parseInt(document.getElementById('total-casiers').value);
             const margeParClasse = parseInt(document.getElementById('marge-casiers').value);
-            
-            let numCasier = 1;
-            let totalEleves = 0;
-            let classIndex = 0; 
-            let nouvelleBase = [];
-            
-            const rows = document.querySelectorAll('.classe-row');
-            
-            for (let row of rows) {
-                const nomClasse = row.querySelector('.nom-classe').value;
-                const effectif = parseInt(row.querySelector('.effectif-classe').value);
-                
-                if (effectif > 0) {
-                    totalEleves += effectif;
-                    for (let i = 1; i <= effectif; i += 2) {
-                        if (numCasier > maxCasiers) { alert(`⚠️ Limite atteinte (${maxCasiers}).`); return; }
-                        const estSolo = (i + 1 > effectif);
-                        const oldData = baseCasiers.find(c => c.numero === numCasier);
-                        const nom1 = oldData ? oldData.eleve1 : "";
-                        const nom2 = estSolo ? "X (Casier solo)" : (oldData ? oldData.eleve2 : "");
-                        nouvelleBase.push({ numero: numCasier, classe: nomClasse, eleve1: nom1, eleve2: nom2, estSolo: estSolo, estMarge: false });
-                        numCasier++;
-                    }
-                    for (let j = 0; j < margeParClasse; j++) {
-                        if (numCasier > maxCasiers) break;
-                        const oldData = baseCasiers.find(c => c.numero === numCasier);
-                        const nom1 = oldData ? oldData.eleve1 : "";
-                        const nom2 = oldData ? oldData.eleve2 : "";
-                        nouvelleBase.push({ numero: numCasier, classe: nomClasse, eleve1: nom1, eleve2: nom2, estSolo: false, estMarge: true });
-                        numCasier++;
-                    }
-                    classIndex++;
-                }
+            const classes = [...document.querySelectorAll('.classe-row')].map(row => ({
+                nomClasse: row.querySelector('.nom-classe').value,
+                effectif: parseInt(row.querySelector('.effectif-classe').value)
+            }));
+            const resultat = window.CasiersLogic.rebuild(baseCasiers, classes, maxCasiers, margeParClasse);
+
+            if (!resultat.ok) {
+                alert(`⚠️ ${resultat.message}`);
+                return;
             }
 
-            baseCasiers = nouvelleBase;
-            sauvegarderBase();
-            switchTab('saisie');
-            document.getElementById('stats').innerText = `📊 Bilan : ${totalEleves} élèves. ${numCasier - 1} casiers alloués.`;
+            sauvegarderBase(resultat.casiers).then(() => {
+                baseCasiers = resultat.casiers;
+                switchTab('saisie');
+                document.getElementById('stats').innerText = `📊 Bilan : ${resultat.totalEleves} élèves. ${resultat.totalAlloues} casiers alloués.`;
+            }).catch(error => {
+                console.error('Erreur de régénération:', error);
+                if (error.code === 'CASIERS_STRUCTURE_CONFLIT') {
+                    alert('⚠️ Une autre modification a été enregistrée entre-temps. La régénération a été annulée : actualisez la page puis recommencez.');
+                } else {
+                    alert('❌ La régénération n’a pas été enregistrée dans Firebase. Aucune donnée existante n’a été remplacée.');
+                }
+            });
         }
 
         let filtreClasse = "";
 
         function setFiltreClasse(classe) {
-            // Sauvegarder l'état actuel des inputs avant de changer d'onglet
-            baseCasiers.forEach(c => {
-                const i1 = document.getElementById(`eleve1-${c.numero}`);
-                const i2 = document.getElementById(`eleve2-${c.numero}`);
-                if (i1) c.eleve1 = i1.value;
-                if (i2 && !c.estSolo) c.eleve2 = i2.value;
-            });
-            
             filtreClasse = classe;
             afficherBaseDonnees();
         }
@@ -320,11 +305,11 @@
                         ? `<button onclick="toggleStatus(${casier.numero}, 'marge', '${nomClasse}')" class="text-orange-400 text-xs font-bold px-2 py-1 bg-orange-400/10 hover:bg-orange-400/20 rounded transition-colors no-print">Marge</button><span class="hidden print:inline text-orange-400 text-xs font-bold px-2 py-1 bg-orange-400/10 rounded">Marge</span>` 
                         : `<button onclick="toggleStatus(${casier.numero}, 'marge', '${nomClasse}')" class="text-slate-400 text-xs font-bold px-2 py-1 bg-slate-800 hover:bg-slate-700 rounded transition-colors no-print">Standard</button><span class="hidden print:inline">Standard</span>`;
                     
-                    let input1 = `<input type="text" id="eleve1-${casier.numero}" value="${casier.eleve1}" oninput="marquerModifie(${casier.numero}, '${nomClasse}')" placeholder="..." class="bg-transparent border-b border-slate-600 focus:border-blue-400 px-2 py-1 w-full text-white">`;
+                    let input1 = `<input type="text" id="eleve1-${casier.numero}" value="${casier.eleve1}" oninput="marquerModifie(${casier.numero}, '${nomClasse}', 'eleve1')" placeholder="..." class="bg-transparent border-b border-slate-600 focus:border-blue-400 px-2 py-1 w-full text-white">`;
                     
                     let input2 = casier.estSolo 
                         ? `<div class="flex items-center gap-2"><span class="text-slate-500 italic text-xs flex-1">Casier solo</span><button onclick="toggleStatus(${casier.numero}, 'solo', '${nomClasse}')" class="text-xs bg-slate-700 hover:bg-slate-600 text-slate-300 px-2 py-1 rounded no-print transition-colors whitespace-nowrap" title="Désactiver le mode solo">👥 Duo</button></div>` 
-                        : `<div class="flex items-center gap-2"><input type="text" id="eleve2-${casier.numero}" value="${casier.eleve2}" oninput="marquerModifie(${casier.numero}, '${nomClasse}')" placeholder="..." class="bg-transparent border-b border-slate-600 focus:border-blue-400 px-2 py-1 w-full text-white"><button onclick="toggleStatus(${casier.numero}, 'solo', '${nomClasse}')" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-400 px-2 py-1 rounded no-print transition-colors whitespace-nowrap" title="Activer le mode solo">👤 Solo</button></div>`;
+                        : `<div class="flex items-center gap-2"><input type="text" id="eleve2-${casier.numero}" value="${casier.eleve2}" oninput="marquerModifie(${casier.numero}, '${nomClasse}', 'eleve2')" placeholder="..." class="bg-transparent border-b border-slate-600 focus:border-blue-400 px-2 py-1 w-full text-white"><button onclick="toggleStatus(${casier.numero}, 'solo', '${nomClasse}')" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-400 px-2 py-1 rounded no-print transition-colors whitespace-nowrap" title="Activer le mode solo">👤 Solo</button></div>`;
                     
                     classHTML += `
                         <tr class="hover:bg-slate-800/30 transition-colors">
@@ -341,14 +326,6 @@
         }
 
         function toggleStatus(numero, type, nomClasse) {
-            // Sauvegarder l'état actuel des inputs avant le rafraîchissement
-            baseCasiers.forEach(c => {
-                const i1 = document.getElementById(`eleve1-${c.numero}`);
-                const i2 = document.getElementById(`eleve2-${c.numero}`);
-                if (i1) c.eleve1 = i1.value;
-                if (i2 && !c.estSolo) c.eleve2 = i2.value;
-            });
-
             let casier = baseCasiers.find(c => c.numero === numero);
             if (casier) {
                 if (type === 'solo') {
@@ -358,8 +335,10 @@
                     } else {
                         if (casier.eleve2 === "X (Casier solo)") casier.eleve2 = "";
                     }
+                    marquerChampsModifies(numero, ['estSolo', 'eleve2']);
                 } else if (type === 'marge') {
                     casier.estMarge = !casier.estMarge;
+                    marquerChampsModifies(numero, ['estMarge']);
                 }
             }
 
@@ -408,11 +387,20 @@
             URL.revokeObjectURL(url);
         }
 
-        function marquerModifie(numCasier, nomClasse) {
-            let input1 = document.getElementById(`eleve1-${numCasier}`);
-            let input2 = document.getElementById(`eleve2-${numCasier}`);
-            if(input1 && document.activeElement === input1) input1.dataset.modified = "true";
-            if(input2 && document.activeElement === input2) input2.dataset.modified = "true";
+        function marquerChampsModifies(numCasier, champs) {
+            const numero = String(numCasier);
+            if (!modificationsEnAttente[numero]) modificationsEnAttente[numero] = {};
+            champs.forEach(champ => modificationsEnAttente[numero][champ] = true);
+        }
+
+        function marquerModifie(numCasier, nomClasse, champ) {
+            const input = document.getElementById(`${champ}-${numCasier}`);
+            const casier = baseCasiers.find(c => c.numero === numCasier);
+            if (input && casier) {
+                casier[champ] = input.value;
+                input.dataset.modified = "true";
+                marquerChampsModifies(numCasier, [champ]);
+            }
 
             const btn = document.getElementById(`btn-save-${nomClasse}`);
             if (btn) {
@@ -422,8 +410,19 @@
             }
         }
 
+        function modificationsPourClasse(nomClasse) {
+            return baseCasiers.reduce((resultat, casier) => {
+                const numero = String(casier.numero);
+                if (casier.classe === nomClasse && modificationsEnAttente[numero]) {
+                    resultat[numero] = modificationsEnAttente[numero];
+                }
+                return resultat;
+            }, {});
+        }
+
         function sauvegarderClasse(nomClasse) {
-            let casiersClasse = baseCasiers.filter(c => c.classe === nomClasse);
+            const changements = modificationsPourClasse(nomClasse);
+            if (Object.keys(changements).length === 0) return;
             
             const btn = document.getElementById(`btn-save-${nomClasse}`);
             if (btn) {
@@ -438,27 +437,26 @@
             db.runTransaction((transaction) => {
                 return transaction.get(docRef).then((doc) => {
                     if (!doc.exists) throw "Le document casiers n'existe pas.";
-                    
-                    let dbCasiers = doc.data().data;
-                    
-                    casiersClasse.forEach(localC => {
-                        let dbCasier = dbCasiers.find(c => c.numero === localC.numero);
-                        if (dbCasier) {
-                            let input1 = document.getElementById(`eleve1-${localC.numero}`);
-                            let input2 = document.getElementById(`eleve2-${localC.numero}`);
-                            if(input1) dbCasier.eleve1 = input1.value;
-                            if(input2) dbCasier.eleve2 = input2.value;
-                            dbCasier.estSolo = localC.estSolo;
-                            dbCasier.estMarge = localC.estMarge;
-                        }
-                    });
-                    
-                    transaction.update(docRef, { data: dbCasiers });
+
+                    const dbCasiers = doc.data().data;
+                    const conflits = window.CasiersSyncLogic.findConflicts(dbCasiers, snapshotsFirebase, changements);
+                    if (conflits.length > 0) {
+                        const erreur = new Error(`Conflit sur le(s) casier(s) ${conflits.map(conflit => conflit.numero).join(', ')}.`);
+                        erreur.code = 'CASIERS_CONFLIT';
+                        throw erreur;
+                    }
+
+                    const casiersMisAJour = window.CasiersSyncLogic.applyPendingChanges(dbCasiers, baseCasiers, changements);
+                    transaction.update(docRef, { data: casiersMisAJour });
+                    return casiersMisAJour;
                 });
-            }).then(() => {
-                casiersClasse.forEach(localC => {
-                    let input1 = document.getElementById(`eleve1-${localC.numero}`);
-                    let input2 = document.getElementById(`eleve2-${localC.numero}`);
+            }).then((casiersMisAJour) => {
+                const nouveauxSnapshots = window.CasiersSyncLogic.snapshots(casiersMisAJour);
+                Object.keys(changements).forEach(numero => {
+                    delete modificationsEnAttente[numero];
+                    snapshotsFirebase[numero] = nouveauxSnapshots[numero];
+                    const input1 = document.getElementById(`eleve1-${numero}`);
+                    const input2 = document.getElementById(`eleve2-${numero}`);
                     if (input1) input1.dataset.modified = "false";
                     if (input2) input2.dataset.modified = "false";
                 });
@@ -473,18 +471,48 @@
             }).catch((error) => {
                 console.error("Erreur de synchronisation:", error);
                 if (btn) {
-                    btn.innerText = '❌ Erreur (Réessayer)';
-                    btn.classList.add('bg-red-600');
-                    btn.classList.remove('bg-emerald-600');
+                    if (error.code === 'CASIERS_CONFLIT') {
+                        btn.innerText = '⚠️ Conflit à vérifier';
+                        btn.classList.add('bg-amber-600');
+                        btn.classList.remove('bg-emerald-600');
+                        alert('⚠️ Une autre personne a modifié le même casier avant vous. Rien n’a été écrasé. Notez votre saisie si besoin, puis actualisez la page pour comparer avec la version enregistrée.');
+                    } else {
+                        btn.innerText = '❌ Erreur (Réessayer)';
+                        btn.classList.add('bg-red-600');
+                        btn.classList.remove('bg-emerald-600');
+                    }
                 }
             });
         }
 
         // --- FIREBASE SYNC --- //
-        function sauvegarderBase() {
-            if (window.fbSet) {
-                window.fbSet('viescohub_data', 'casiers', { data: baseCasiers });
+        function sauvegarderBase(casiersAEnregistrer) {
+            if (!window.firebase || premiereSynchronisation) {
+                return Promise.reject(new Error('Firebase n’est pas encore synchronisé.'));
             }
+
+            const docRef = firebase.firestore().collection('viescohub_data').doc('casiers');
+            return firebase.firestore().runTransaction(transaction => transaction.get(docRef).then(doc => {
+                if (doc.exists && !window.CasiersSyncLogic.matchesSnapshots(doc.data().data, snapshotsFirebase)) {
+                    const erreur = new Error('La liste des casiers a changé à distance.');
+                    erreur.code = 'CASIERS_STRUCTURE_CONFLIT';
+                    throw erreur;
+                }
+                if (doc.exists) {
+                    transaction.update(docRef, { data: casiersAEnregistrer });
+                } else {
+                    transaction.set(docRef, { data: casiersAEnregistrer });
+                }
+            })).then(() => {
+                snapshotsFirebase = window.CasiersSyncLogic.snapshots(casiersAEnregistrer);
+            });
+        }
+
+        function actualiserSnapshotsFirebase(casiersServeur) {
+            const nouveauxSnapshots = window.CasiersSyncLogic.snapshots(casiersServeur);
+            Object.keys(nouveauxSnapshots).forEach(numero => {
+                if (!modificationsEnAttente[numero]) snapshotsFirebase[numero] = nouveauxSnapshots[numero];
+            });
         }
 
         setTimeout(() => {
@@ -493,7 +521,14 @@
                     document.getElementById('sync-status').innerHTML = "🟢 Connecté et synchronisé en temps réel";
                     document.getElementById('sync-status').className = "text-emerald-400 font-bold text-sm md:text-base mb-2";
                     if (docData && docData.data) {
-                        baseCasiers = docData.data;
+                        if (premiereSynchronisation) {
+                            baseCasiers = docData.data;
+                            snapshotsFirebase = window.CasiersSyncLogic.snapshots(docData.data);
+                            premiereSynchronisation = false;
+                        } else {
+                            baseCasiers = window.CasiersSyncLogic.mergeServerWithPending(docData.data, baseCasiers, modificationsEnAttente);
+                            actualiserSnapshotsFirebase(docData.data);
+                        }
                         if(document.getElementById('tab-saisie').classList.contains('active')) {
                             const tablesContainer = document.getElementById('tables-container');
                             // S'il n'y a pas encore d'inputs générés, on affiche tout
