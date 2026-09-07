@@ -7,6 +7,7 @@
     <!-- Tailwind via CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="../js/menu.js"></script>
+    <script src="../js/passage-self-logic.js"></script>
     <!-- Phosphor Icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <style>
@@ -431,6 +432,21 @@
 
         // Migration settings
         let scheduleSettings = JSON.parse(localStorage.getItem('viescoHub_selfSettings')) || {};
+        if (Object.keys(scheduleSettings).length === 0) {
+            scheduleSettings = getDefault2026Schedules();
+            localStorage.setItem('viescoHub_selfSettings', JSON.stringify(scheduleSettings));
+        }
+
+        const manualPlanningStorageKey = 'viescoHub_selfManualPlanning';
+        let manualPlanningByContext = {};
+        try {
+            const savedManualPlanning = JSON.parse(localStorage.getItem(manualPlanningStorageKey));
+            if (savedManualPlanning && typeof savedManualPlanning === 'object' && !Array.isArray(savedManualPlanning)) {
+                manualPlanningByContext = savedManualPlanning;
+            }
+        } catch (error) {
+            console.warn('Les ajustements manuels du Passage self ne peuvent pas être relus.', error);
+        }
         
         let needsMigration = false;
         for (let cls in scheduleSettings) {
@@ -478,6 +494,30 @@
             document.getElementById('dayHeader').innerText = document.getElementById('daySelector').value;
             document.getElementById('weekHeader').innerText = "SEMAINE " + document.getElementById('weekTypeSelector').value;
             autoGenerate();
+        }
+
+        function getManualPlanningContext(day, weekType, rotationWeekNum) {
+            return `${day}|${weekType}|${rotationWeekNum}`;
+        }
+
+        function saveManualPlanning() {
+            const currentDay = document.getElementById('daySelector').value;
+            const weekType = document.getElementById('weekTypeSelector').value;
+            const rotationWeekNum = PassageSelfLogic.getRotationWeekNumber(getWeekNumber(new Date()), weekType);
+            const context = getManualPlanningContext(currentDay, weekType, rotationWeekNum);
+            manualPlanningByContext[context] = PassageSelfLogic.clonePlanning(planningData);
+            localStorage.setItem(manualPlanningStorageKey, JSON.stringify(manualPlanningByContext));
+        }
+
+        function getSavedManualPlanning(day, weekType, rotationWeekNum) {
+            const context = getManualPlanningContext(day, weekType, rotationWeekNum);
+            const savedPlanning = manualPlanningByContext[context];
+            return PassageSelfLogic.isValidPlanning(savedPlanning) ? PassageSelfLogic.clonePlanning(savedPlanning) : null;
+        }
+
+        function clearManualPlanning() {
+            manualPlanningByContext = {};
+            localStorage.removeItem(manualPlanningStorageKey);
         }
 
         function renderSlots() {
@@ -700,6 +740,7 @@
             const slot = planningData.find(s => s.id === slotId);
             if (slot) {
                 slot.classes.push(className);
+                saveManualPlanning();
                 renderSlots();
             }
         }
@@ -709,8 +750,7 @@
             if (slot) {
                 const className = slot.classes[classIndex];
                 slot.classes.splice(classIndex, 1);
-                
-                
+                saveManualPlanning();
                 renderSlots();
             }
         }
@@ -733,6 +773,7 @@
                 }
                 
                 targetSlot.classes.splice(insertIndex, 0, className);
+                saveManualPlanning();
                 renderSlots();
             }
         }
@@ -875,6 +916,7 @@
                 }; // Activer par défaut à 13h00
             }
             localStorage.setItem('viescoHub_selfSettings', JSON.stringify(scheduleSettings));
+            clearManualPlanning();
             renderSettingsTable();
         }
 
@@ -918,6 +960,7 @@
             localStorage.setItem('viescoHub_selfSettings', JSON.stringify(scheduleSettings));
             // On sauvegarde aussi la liste des classes modifiées
             localStorage.setItem('viescoHub_allClasses', JSON.stringify(allClasses));
+            clearManualPlanning();
             closeSettingsModal();
         }
 
@@ -1084,86 +1127,17 @@
             const currentDay = document.getElementById('daySelector').value;
             const weekType = document.getElementById('weekTypeSelector').value;
             const weekNum = getWeekNumber(new Date());
-            
-            const p1 = [];
-            const p2 = [];
-            const p3_ateliers = [];
-            const p3 = [];
-            const p4_levels = { '6': [], '5': [], '4': [], '3': [] };
-            const p4_others = [];
-            
-            allClasses.forEach(cls => {
-                if (cls.lvl === "club") {
-                    if (!scheduleSettings[cls.name]?.[currentDay]) return;
-                }
-                if (cls.name.includes("CHAM")) {
-                    if (currentDay !== "MARDI" && currentDay !== "JEUDI") return;
-                }
-                const settings = scheduleSettings[cls.name]?.[currentDay]?.[weekType] || {};
-                
-                const fin = settings.fin || '';
-                const reprise = settings.reprise || '';
-                
-                let priority = null;
-                if (fin === '11h00') priority = '1';
-                else if (fin === '11h30') priority = '2';
-                else if (reprise === '13h00') priority = '3';
-                else if (reprise === '13h30' || reprise === '14h00' || reprise === '14h30' || reprise === '15h00') priority = '4';
-                
-                if (priority === '1') p1.push(cls.name);
-                else if (priority === '2') p2.push(cls.name);
-                else if (priority === '3') {
-                    if (cls.name === "Théâtre" || cls.name === "Atelier Nature" || cls.name === "Chorale" || cls.name.includes("CHAM")) {
-                        p3_ateliers.push(cls.name);
-                    } else {
-                        p3.push(cls.name);
-                    }
-                }
-                else if (priority === '4') {
-                    if (p4_levels[cls.lvl]) p4_levels[cls.lvl].push(cls.name);
-                    else p4_others.push(cls.name);
-                }
+            const rotationWeekNum = PassageSelfLogic.getRotationWeekNumber(weekNum, weekType);
+            const savedManualPlanning = getSavedManualPlanning(currentDay, weekType, rotationWeekNum);
+            planningData = savedManualPlanning || PassageSelfLogic.generate({
+                classes: allClasses,
+                settings: scheduleSettings,
+                day: currentDay,
+                weekType,
+                weekNumber: rotationWeekNum
             });
-            
-            // Rotation pour les classes P4 (reprennent après 13h)
-            const baseOrder = ['6', '5', '4', '3'];
-            const rotationOffset = weekNum % 4;
-            const rotatedOrder = [...baseOrder.slice(rotationOffset), ...baseOrder.slice(0, rotationOffset)];
-            
-            let slot1Classes = [];
-            if (p1.length > 0) slot1Classes.push(...p1);
-            if (p2.length > 0) slot1Classes.push(...p2);
-            
-            let slot2Classes = [];
-            if (p3_ateliers.length > 0) slot2Classes.push(...p3_ateliers);
-            if (p3.length > 0) slot2Classes.push(...p3);
-            
-            let p4Classes = [];
-            rotatedOrder.forEach((lvl) => {
-                if (p4_levels[lvl].length > 0) {
-                    p4Classes.push(...p4_levels[lvl]);
-                }
-            });
-            if (p4_others.length > 0) {
-                p4Classes.push(...p4_others);
-            }
-            
-            if (slot2Classes.length > 0 && p4Classes.length > 0) {
-                slot2Classes.push("SEPARATOR");
-            }
-            if (p4Classes.length > 0) {
-                slot2Classes.push(...p4Classes);
-            }
-            
-            planningData = [
-                { id: "slot1", time: "11h30", classes: slot1Classes },
-                { id: "slot2", time: "12h00", classes: slot2Classes }
-            ];
-            
-            // Met à jour l'info de rotation imprimée
-            const lvlMap = {'6': '6èmes', '5': '5èmes', '4': '4èmes', '3': '3èmes'};
-            const rotationText = rotatedOrder.map(lvl => lvlMap[lvl]).join(' → ');
-            document.getElementById('printWeekInfo').innerText = `Semaine ${weekNum}`;
+
+            document.getElementById('printWeekInfo').innerText = `Semaine ${rotationWeekNum}`;
             
             renderSlots();
         }
@@ -1215,6 +1189,7 @@
             // 3. Sauvegarder dans le navigateur
             localStorage.setItem('viescoHub_allClasses', JSON.stringify(allClasses));
             localStorage.setItem('viescoHub_selfSettings', JSON.stringify(scheduleSettings));
+            clearManualPlanning();
 
             // 4. Mettre à jour l'interface
             nameInput.value = '';
@@ -1244,6 +1219,7 @@
             // 4. Mettre à jour la mémoire du navigateur
             localStorage.setItem('viescoHub_allClasses', JSON.stringify(allClasses));
             localStorage.setItem('viescoHub_selfSettings', JSON.stringify(scheduleSettings));
+            clearManualPlanning();
 
             // 5. Recharger l'affichage
             renderSettingsTable();
@@ -1284,6 +1260,7 @@
                         // Enregistrer dans le cache
                         localStorage.setItem('viescoHub_allClasses', JSON.stringify(allClasses));
                         localStorage.setItem('viescoHub_selfSettings', JSON.stringify(scheduleSettings));
+                        clearManualPlanning();
                         
                         renderSettingsTable();
                         autoGenerate();
