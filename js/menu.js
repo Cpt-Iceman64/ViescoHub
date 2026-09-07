@@ -72,16 +72,13 @@ function initMenu() {
 
                 <!-- Pôle Outils -->
                 <div class="relative group px-1">
-                    <button class="px-3 py-2 rounded-lg hover:bg-slate-800/50 hover:text-yellow-400 transition-all flex items-center gap-1 ${['planning','casiers','createur-devoirs','documents','passage-self'].includes(pageName)?'text-white':''}">
+                    <button class="px-3 py-2 rounded-lg hover:bg-slate-800/50 hover:text-yellow-400 transition-all flex items-center gap-1 ${['casiers','createur-devoirs','documents','passage-self'].includes(pageName)?'text-white':''}">
                         Outils <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
                     </button>
                     <!-- Wrapper transparent pour le hover -->
                     <div class="absolute right-0 top-full pt-2 hidden group-hover:block z-50 w-64">
                         <div class="flex flex-col bg-[#0f172a] border border-slate-700/80 rounded-xl shadow-2xl overflow-hidden">
-                            <a href="${basePath}outils/planning.html" class="px-5 py-3.5 hover:bg-slate-800 hover:text-yellow-400 transition-colors flex items-center gap-3">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-slate-500"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> Planning Journalier
-                            </a>
-                            <a href="${basePath}outils/casiers.html" class="px-5 py-3.5 border-t border-slate-800/50 hover:bg-slate-800 hover:text-blue-400 transition-colors flex items-center gap-3">
+                            <a href="${basePath}outils/casiers.html" class="px-5 py-3.5 hover:bg-slate-800 hover:text-blue-400 transition-colors flex items-center gap-3">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-slate-500"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg> Gestion des Casiers
                             </a>
                             <a href="${basePath}outils/passage-self.html" class="px-5 py-3.5 border-t border-slate-800/50 hover:bg-slate-800 hover:text-amber-500 transition-colors flex items-center gap-3">
@@ -118,7 +115,6 @@ function initMenu() {
                 <a href="${basePath}outils/sanctions-retenues.html" class="hover:text-orange-500 ml-4">Retenues</a>
                 <a href="${basePath}outils/sanctions-bilan.html" class="hover:text-violet-400 ml-4 border-b border-slate-800 pb-2">Bilan</a>
                 <span class="text-xs text-slate-500 mt-2 mb-1">Outils</span>
-                <a href="${basePath}outils/planning.html" class="hover:text-yellow-400 ml-4">Planning</a>
                 <a href="${basePath}outils/casiers.html" class="hover:text-blue-400 ml-4">Casiers</a>
                 <a href="${basePath}outils/passage-self.html" class="hover:text-amber-500 ml-4">Passage Self</a>
                 <a href="${basePath}outils/createur-devoirs.html" class="hover:text-indigo-400 ml-4">Devoirs</a>
