@@ -106,6 +106,12 @@
             margin: 0.25rem; transition: all 0.2s;
         }
         .class-tag:hover { border-color: rgba(245, 158, 11, 0.6); background: rgba(245, 158, 11, 0.25); }
+        .self-drop-placeholder {
+            box-sizing: border-box; flex: 0 0 auto; max-width: calc(100% - 0.5rem);
+            min-width: 90px; min-height: 42px; margin: 0.25rem;
+            border: 2px dashed #fbbf24; border-radius: 9999px;
+            background: rgba(245, 158, 11, 0.08); pointer-events: none;
+        }
         
         .tag-remove {
             color: #fbbf24; cursor: pointer; padding: 2px;
@@ -372,6 +378,41 @@
         let dragSourceSlotId = null;
         let dragSourceIndex = null;
         let dragSourceClassName = null;
+        let dragPlaceholder = null;
+
+        function clearDropPlaceholder() {
+            if (dragPlaceholder) dragPlaceholder.remove();
+        }
+
+        function showDropPlaceholder(area, event, endIndex) {
+            if (!dragPlaceholder) return;
+            // Garder la place stable lorsque le pointeur se trouve déjà dedans.
+            if (dragPlaceholder.parentElement === area) {
+                const rect = dragPlaceholder.getBoundingClientRect();
+                if (event.clientX >= rect.left && event.clientX <= rect.right &&
+                    event.clientY >= rect.top && event.clientY <= rect.bottom) return;
+            }
+            clearDropPlaceholder();
+            const items = [...area.children];
+            let before = null;
+            let index = endIndex;
+            for (const item of items) {
+                const rect = item.getBoundingClientRect();
+                // Le séparateur reste une frontière : dépôt possible de chaque côté.
+                const isSeparator = item.dataset.separator === 'true';
+                const precedes = isSeparator
+                    ? event.clientY < rect.top + rect.height / 2
+                    : event.clientY < rect.top ||
+                      (event.clientY <= rect.bottom && event.clientX < rect.left + rect.width / 2);
+                if (precedes) {
+                    before = item;
+                    index = Number(item.dataset.classIndex);
+                    break;
+                }
+            }
+            dragPlaceholder.dataset.targetIndex = String(index);
+            area.insertBefore(dragPlaceholder, before);
+        }
         
         // Liste de toutes les classes possibles
         let allClasses = [
@@ -600,14 +641,24 @@
                 editArea.className = "edit-mode-only flex-wrap gap-2 py-2 min-h-[40px]";
                 
                 editArea.addEventListener('dragover', (e) => {
+                    if (dragSourceSlotId === null) return;
                     e.preventDefault();
                     e.dataTransfer.dropEffect = 'move';
+                    showDropPlaceholder(editArea, e, slot.classes.length);
+                });
+
+                editArea.addEventListener('dragleave', (e) => {
+                    if (!editArea.contains(e.relatedTarget)) clearDropPlaceholder();
                 });
                 
                 editArea.addEventListener('drop', (e) => {
                     e.preventDefault();
-                    if (dragSourceSlotId && e.target === editArea) {
-                        moveClass(dragSourceSlotId, dragSourceIndex, slot.id, null);
+                    if (dragSourceSlotId !== null) {
+                        showDropPlaceholder(editArea, e, slot.classes.length);
+                        const targetIndex = Number(dragPlaceholder.dataset.targetIndex);
+                        clearDropPlaceholder();
+                        moveClass(dragSourceSlotId, dragSourceIndex, slot.id, targetIndex);
+                        dragSourceSlotId = null;
                     }
                 });
                 
@@ -619,6 +670,8 @@
                         isAfterSeparatorEdit = true;
                         const sepEdit = document.createElement('div');
                         sepEdit.className = "w-full h-px bg-slate-700/50 my-2";
+                        sepEdit.dataset.classIndex = originalIndex;
+                        sepEdit.dataset.separator = 'true';
                         editArea.appendChild(sepEdit);
                         return;
                     }
@@ -628,41 +681,29 @@
                     tag.className = "class-tag flex items-center";
                     tag.draggable = true;
                     tag.style.cursor = 'grab';
+                    tag.dataset.classIndex = originalIndex;
                     
                     tag.addEventListener('dragstart', (e) => {
                         dragSourceSlotId = slot.id;
                         dragSourceIndex = originalIndex;
                         dragSourceClassName = className;
                         e.dataTransfer.effectAllowed = 'move';
+                        e.dataTransfer.setData('text/plain', className);
+                        clearDropPlaceholder();
+                        dragPlaceholder = document.createElement('div');
+                        dragPlaceholder.className = 'self-drop-placeholder';
+                        dragPlaceholder.setAttribute('aria-hidden', 'true');
+                        dragPlaceholder.style.width = `${tag.getBoundingClientRect().width}px`;
+                        dragPlaceholder.style.height = `${tag.getBoundingClientRect().height}px`;
                         setTimeout(() => tag.classList.add('opacity-50'), 0);
                     });
                     
                     tag.addEventListener('dragend', (e) => {
                         tag.classList.remove('opacity-50');
                         dragSourceSlotId = null;
-                    });
-                    
-                    tag.addEventListener('dragover', (e) => {
-                        e.preventDefault();
-                        e.dataTransfer.dropEffect = 'move';
-                    });
-                    
-                    tag.addEventListener('dragenter', (e) => {
-                        e.preventDefault();
-                        if (dragSourceSlotId) tag.classList.add('ring-2', 'ring-amber-500', 'bg-amber-500/20');
-                    });
-                    
-                    tag.addEventListener('dragleave', (e) => {
-                        tag.classList.remove('ring-2', 'ring-amber-500', 'bg-amber-500/20');
-                    });
-                    
-                    tag.addEventListener('drop', (e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        tag.classList.remove('ring-2', 'ring-amber-500', 'bg-amber-500/20');
-                        if (dragSourceSlotId) {
-                            moveClass(dragSourceSlotId, dragSourceIndex, slot.id, originalIndex);
-                        }
+                        dragSourceIndex = null;
+                        clearDropPlaceholder();
+                        dragPlaceholder = null;
                     });
 
                     tag.innerHTML = `

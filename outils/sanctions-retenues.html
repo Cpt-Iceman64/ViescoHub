@@ -314,7 +314,15 @@
                     if (retIdx !== -1 && cols[retIdx + 1]) {
                         motif = cols[retIdx + 1];
                     }
-                    currentStudent = { classe: cols[0], nom: cols[1], motif: motif || "Motif non précisé", level: cols[0].split(' ')[0] };
+                    // La durée appartient à la punition, avant la programmation.
+                    // Exclure la date et son heure pour ne pas prendre 14h50 pour une durée.
+                    const programmationIdx = cols.findIndex((col, index) =>
+                        /^\d{2}\/\d{2}\/\d{4}$/.test(col.replace(/[^\d/]/g, '')) &&
+                        /^\d{1,2}h\d{2}$/.test((cols[index + 1] || '').replace(/[^\dh]/g, ''))
+                    );
+                    const colonnesPunition = cols.slice(2, programmationIdx === -1 ? cols.length : programmationIdx);
+                    const duree = colonnesPunition.find(col => /^\d{1,2}h[0-5]\d$/.test(col)) || "1h00";
+                    currentStudent = { classe: cols[0], nom: cols[1], motif: motif || "Motif non précisé", level: cols[0].split(' ')[0], duree };
                 }
 
                 if (currentStudent && !cleanLine.toLowerCase().includes("reportée")) {
@@ -330,13 +338,7 @@
                             const sessionDateStr = possibleDate;
                             const sessionTimeStr = possibleTime;
                             
-                            let sessionDuration = "1h00";
-                            if (cols[i + 2]) {
-                                const possibleDur = cols[i + 2].replace(/[^\dh]/g, '');
-                                if (timeRegex.test(possibleDur)) {
-                                    sessionDuration = possibleDur;
-                                }
-                            }
+                            const sessionDuration = currentStudent.duree;
 
                             const [d, m, y] = sessionDateStr.split('/');
                             const dateObj = new Date(y, m - 1, d);
