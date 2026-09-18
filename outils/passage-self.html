@@ -626,15 +626,10 @@
                 `;
                 card.appendChild(header);
 
-                // --- Filtrage des sous-groupes implicites ---
-                const baseClassesInSlot = slot.classes.filter(c => /^\d°\d$/.test(c));
-                const displayClasses = slot.classes.filter(c => {
-                    const isBase = baseClassesInSlot.includes(c);
-                    if (isBase) return true;
-                    const baseMatch = baseClassesInSlot.find(b => c.startsWith(b + " "));
-                    if (baseMatch) return false;
-                    return true;
-                });
+                // Classe et groupes restent indépendants, à l'écran et à l'impression.
+                // Si un groupe est placé à part, le nom de la classe désigne le reste
+                // de ses élèves : aucun groupe ne doit être masqué automatiquement.
+                const displayClasses = slot.classes;
 
                 // --- MODE ÉCRAN (Édition via Tags) ---
                 const editArea = document.createElement('div');
