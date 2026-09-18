@@ -8,6 +8,10 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="../js/menu.js"></script>
     <script src="../js/passage-self-logic.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+    <script src="../js/firebase-config.js"></script>
+    <script src="../js/self-settings-sync.js"></script>
     <!-- Phosphor Icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <style>
@@ -375,6 +379,8 @@
             { id: "slot2", time: "12h00", classes: [] }
         ];
         
+        let settingsSync = null;
+        function shareSelfSettings() { if (settingsSync) settingsSync.publish(); }
         let dragSourceSlotId = null;
         let dragSourceIndex = null;
         let dragSourceClassName = null;
@@ -824,6 +830,7 @@
         function closeSettingsModal() {
             document.getElementById('settingsModal').classList.add('hidden');
             document.getElementById('settingsModal').classList.remove('flex');
+            if (settingsSync) settingsSync.resume();
         }
 
         function renderSettingsTable() {
@@ -954,6 +961,7 @@
             localStorage.setItem('viescoHub_selfSettings', JSON.stringify(scheduleSettings));
             clearManualPlanning();
             renderSettingsTable();
+            shareSelfSettings();
         }
 
         function handleSelectChange(select) {
@@ -997,6 +1005,7 @@
             // On sauvegarde aussi la liste des classes modifiées
             localStorage.setItem('viescoHub_allClasses', JSON.stringify(allClasses));
             clearManualPlanning();
+            shareSelfSettings();
             closeSettingsModal();
         }
 
@@ -1228,6 +1237,7 @@
             clearManualPlanning();
 
             // 4. Mettre à jour l'interface
+            shareSelfSettings();
             nameInput.value = '';
             renderSettingsTable();
             autoGenerate();
@@ -1258,6 +1268,7 @@
             clearManualPlanning();
 
             // 5. Recharger l'affichage
+            shareSelfSettings();
             renderSettingsTable();
             autoGenerate();
         }
@@ -1285,7 +1296,7 @@
             reader.onload = function(e) {
                 try {
                     const importedData = JSON.parse(e.target.result);
-                    if (importedData.classes && importedData.settings) {
+                    if (SelfSettingsSync.valid(importedData)) {
                         // Remplacer proprement le contenu du tableau des classes
                         allClasses.length = 0;
                         allClasses.push(...importedData.classes);
@@ -1297,6 +1308,7 @@
                         localStorage.setItem('viescoHub_allClasses', JSON.stringify(allClasses));
                         localStorage.setItem('viescoHub_selfSettings', JSON.stringify(scheduleSettings));
                         clearManualPlanning();
+                        shareSelfSettings();
                         
                         renderSettingsTable();
                         autoGenerate();
@@ -1334,6 +1346,43 @@
             document.getElementById('printWeekInfo').innerText = `Semaine ${weekNum}`;
             
             updateDayHeader();
+            const syncPanel = document.createElement('div');
+            syncPanel.className = 'no-print text-xs text-slate-400 max-w-4xl mx-auto px-4 py-2';
+            const syncText = document.createElement('span');
+            syncText.setAttribute('role', 'status');
+            syncPanel.appendChild(syncText);
+            const retry = document.createElement('button');
+            retry.textContent = 'Réessayer';
+            retry.className = 'underline ml-3';
+            retry.onclick = () => settingsSync && settingsSync.retry();
+            syncPanel.appendChild(retry);
+            const reload = document.createElement('button');
+            reload.textContent = 'Charger la version partagée';
+            reload.className = 'underline ml-3';
+            reload.onclick = () => {
+                if (settingsSync && confirm('Remplacer les réglages locaux par la version partagée ? Exportez-les auparavant si vous souhaitez les conserver.')) settingsSync.loadShared();
+            };
+            syncPanel.appendChild(reload);
+            document.querySelector('.a4-page').before(syncPanel);
+            if (!window.firebase || !window.SelfSettingsSync) {
+                syncText.textContent = 'Partage indisponible : utilisation locale.';
+                return;
+            }
+            settingsSync = SelfSettingsSync.start({
+                db: firebase.firestore(), storage: localStorage,
+                getConfig: () => ({ classes: allClasses, settings: scheduleSettings }),
+                isEditing: () => !document.getElementById('settingsModal').classList.contains('hidden'),
+                status: message => { syncText.textContent = message; },
+                applyConfig: config => {
+                    const changed = JSON.stringify(config) !== JSON.stringify({ classes: allClasses, settings: scheduleSettings });
+                    allClasses = config.classes;
+                    scheduleSettings = config.settings;
+                    localStorage.setItem('viescoHub_allClasses', JSON.stringify(allClasses));
+                    localStorage.setItem('viescoHub_selfSettings', JSON.stringify(scheduleSettings));
+                    if (changed) { clearManualPlanning(); autoGenerate(); }
+                    renderSettingsTable();
+                }
+            });
         };
 
         function updateClock() {

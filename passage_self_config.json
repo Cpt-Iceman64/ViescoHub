@@ -1,0 +1,1190 @@
+{
+  "classes": [
+    {
+      "lvl": "6",
+      "name": "6°1"
+    },
+    {
+      "name": "6°1 ULIS",
+      "lvl": "6"
+    },
+    {
+      "lvl": "6",
+      "name": "6°2"
+    },
+    {
+      "lvl": "6",
+      "name": "6°2 LV1"
+    },
+    {
+      "name": "6°2 ULIS",
+      "lvl": "6"
+    },
+    {
+      "lvl": "6",
+      "name": "6°3"
+    },
+    {
+      "name": "6°3 LV1",
+      "lvl": "6"
+    },
+    {
+      "name": "6°3 ULIS",
+      "lvl": "6"
+    },
+    {
+      "name": "5°1",
+      "lvl": "5"
+    },
+    {
+      "lvl": "5",
+      "name": "5°1 CHAM"
+    },
+    {
+      "name": "5°1 Esp LV2",
+      "lvl": "5"
+    },
+    {
+      "lvl": "5",
+      "name": "5°1 ULIS"
+    },
+    {
+      "name": "5°2",
+      "lvl": "5"
+    },
+    {
+      "name": "5°2 ULIS",
+      "lvl": "5"
+    },
+    {
+      "lvl": "5",
+      "name": "5°3"
+    },
+    {
+      "name": "5°3 ULIS",
+      "lvl": "5"
+    },
+    {
+      "lvl": "4",
+      "name": "4°1"
+    },
+    {
+      "lvl": "4",
+      "name": "4°1 ULIS"
+    },
+    {
+      "lvl": "4",
+      "name": "4°2"
+    },
+    {
+      "name": "4°2 Ang LV1",
+      "lvl": "4"
+    },
+    {
+      "lvl": "4",
+      "name": "4°2 ULIS"
+    },
+    {
+      "lvl": "4",
+      "name": "4°3"
+    },
+    {
+      "lvl": "4",
+      "name": "4°3 Ang LV1"
+    },
+    {
+      "name": "4°3 Esp LV1",
+      "lvl": "4"
+    },
+    {
+      "name": "4°3 Latin",
+      "lvl": "4"
+    },
+    {
+      "lvl": "4",
+      "name": "4°3 ULIS"
+    },
+    {
+      "lvl": "3",
+      "name": "3°1"
+    },
+    {
+      "lvl": "3",
+      "name": "3°1 CHAM"
+    },
+    {
+      "lvl": "3",
+      "name": "3°1 ULIS"
+    },
+    {
+      "name": "3°2",
+      "lvl": "3"
+    },
+    {
+      "name": "3°2 Ang LV1",
+      "lvl": "3"
+    },
+    {
+      "lvl": "3",
+      "name": "3°2 Ang LV2"
+    },
+    {
+      "lvl": "3",
+      "name": "3°2 ULIS"
+    },
+    {
+      "name": "3°3",
+      "lvl": "3"
+    },
+    {
+      "lvl": "3",
+      "name": "3°3 Ang LV1"
+    },
+    {
+      "name": "3°3 ULIS",
+      "lvl": "3"
+    },
+    {
+      "lvl": "club",
+      "name": "Atelier Nature"
+    },
+    {
+      "lvl": "club",
+      "name": "Chorale"
+    },
+    {
+      "lvl": "club",
+      "name": "Théâtre"
+    }
+  ],
+  "settings": {
+    "4°3 Ang LV1": {
+      "MARDI": {
+        "B": {
+          "reprise": "14h00",
+          "fin": "12h00"
+        },
+        "A": {
+          "fin": "12h00",
+          "reprise": "14h00"
+        }
+      },
+      "LUNDI": {
+        "B": {
+          "fin": "11h00",
+          "reprise": "14h00"
+        },
+        "A": {
+          "fin": "11h00",
+          "reprise": "14h00"
+        }
+      },
+      "VENDREDI": {
+        "B": {
+          "reprise": "13h00",
+          "fin": "12h00"
+        },
+        "A": {
+          "fin": "12h00",
+          "reprise": "13h00"
+        }
+      },
+      "JEUDI": {
+        "B": {
+          "fin": "11h00",
+          "reprise": "13h00"
+        },
+        "A": {
+          "fin": "11h00",
+          "reprise": "13h00"
+        }
+      }
+    },
+    "4°3 Esp LV1": {
+      "VENDREDI": {
+        "B": {
+          "fin": "12h00",
+          "reprise": "13h00"
+        },
+        "A": {
+          "reprise": "13h00",
+          "fin": "12h00"
+        }
+      },
+      "JEUDI": {
+        "B": {
+          "reprise": "13h00",
+          "fin": "12h00"
+        },
+        "A": {
+          "fin": "12h00",
+          "reprise": "13h00"
+        }
+      },
+      "LUNDI": {
+        "B": {
+          "reprise": "14h00",
+          "fin": "11h00"
+        },
+        "A": {
+          "fin": "11h00",
+          "reprise": "14h00"
+        }
+      },
+      "MARDI": {
+        "B": {
+          "reprise": "14h00",
+          "fin": "11h00"
+        },
+        "A": {
+          "fin": "12h00",
+          "reprise": "14h00"
+        }
+      }
+    },
+    "5°1 CHAM": {
+      "JEUDI": {
+        "B": {
+          "reprise": "13h00",
+          "fin": "12h00"
+        },
+        "A": {
+          "reprise": "13h00",
+          "fin": "12h00"
+        }
+      },
+      "MARDI": {
+        "B": {
+          "fin": "12h00",
+          "reprise": "14h00"
+        },
+        "A": {
+          "fin": "12h00",
+          "reprise": "14h00"
+        }
+      }
+    },
+    "3°1 CHAM": {
+      "MARDI": {
+        "B": {
+          "reprise": "14h00",
+          "fin": "12h00"
+        },
+        "A": {
+          "fin": "12h00",
+          "reprise": "14h00"
+        }
+      },
+      "JEUDI": {
+        "B": {
+          "reprise": "13h00",
+          "fin": "12h00"
+        },
+        "A": {
+          "fin": "12h00",
+          "reprise": "13h00"
+        }
+      }
+    },
+    "6°3 LV1": {
+      "LUNDI": {
+        "B": {
+          "reprise": "14h00",
+          "fin": "12h00"
+        },
+        "A": {
+          "reprise": "14h00",
+          "fin": "11h00"
+        }
+      },
+      "MARDI": {
+        "B": {
+          "reprise": "14h00",
+          "fin": "11h00"
+        },
+        "A": {
+          "reprise": "14h00",
+          "fin": "12h00"
+        }
+      },
+      "VENDREDI": {
+        "B": {
+          "fin": "12h00",
+          "reprise": "14h00"
+        },
+        "A": {
+          "reprise": "14h00",
+          "fin": "12h00"
+        }
+      },
+      "JEUDI": {
+        "B": {
+          "reprise": "14h00",
+          "fin": "12h00"
+        },
+        "A": {
+          "reprise": "14h00",
+          "fin": "12h00"
+        }
+      }
+    },
+    "3°2": {
+      "MARDI": {
+        "B": {
+          "fin": "12h00",
+          "reprise": "14h00"
+        },
+        "A": {
+          "reprise": "14h00",
+          "fin": "12h00"
+        }
+      },
+      "LUNDI": {
+        "B": {
+          "fin": "12h00",
+          "reprise": "13h00"
+        },
+        "A": {
+          "fin": "12h00",
+          "reprise": "13h00"
+        }
+      },
+      "VENDREDI": {
+        "B": {
+          "reprise": "14h00",
+          "fin": "12h00"
+        },
+        "A": {
+          "fin": "12h00",
+          "reprise": "14h00"
+        }
+      },
+      "JEUDI": {
+        "B": {
+          "reprise": "13h00",
+          "fin": "11h30"
+        },
+        "A": {
+          "reprise": "13h00",
+          "fin": "11h30"
+        }
+      }
+    },
+    "4° ULIS": {
+      "LUNDI": {
+        "B": {},
+        "A": {}
+      },
+      "MARDI": {
+        "B": {},
+        "A": {}
+      },
+      "VENDREDI": {
+        "B": {},
+        "A": {}
+      },
+      "JEUDI": {
+        "B": {},
+        "A": {}
+      }
+    },
+    "Chorale": {
+      "MARDI": {
+        "B": {
+          "reprise": "13h00"
+        },
+        "A": {
+          "reprise": "13h00"
+        }
+      }
+    },
+    "3°2 Ang LV1": {
+      "MARDI": {
+        "B": {
+          "fin": "12h00",
+          "reprise": "14h00"
+        },
+        "A": {
+          "reprise": "14h00",
+          "fin": "12h00"
+        }
+      },
+      "LUNDI": {
+        "B": {
+          "fin": "12h00",
+          "reprise": "13h00"
+        },
+        "A": {
+          "fin": "12h00",
+          "reprise": "13h00"
+        }
+      },
+      "JEUDI": {
+        "B": {
+          "reprise": "13h00",
+          "fin": "11h30"
+        },
+        "A": {
+          "fin": "11h30",
+          "reprise": "13h00"
+        }
+      },
+      "VENDREDI": {
+        "B": {
+          "fin": "12h00",
+          "reprise": "13h00"
+        },
+        "A": {
+          "fin": "12h00",
+          "reprise": "13h00"
+        }
+      }
+    },
+    "6°1": {
+      "JEUDI": {
+        "B": {
+          "reprise": "15h00",
+          "fin": "12h00"
+        },
+        "A": {
+          "fin": "12h00",
+          "reprise": "15h00"
+        }
+      },
+      "VENDREDI": {
+        "B": {
+          "fin": "12h00",
+          "reprise": "14h00"
+        },
+        "A": {
+          "fin": "12h00",
+          "reprise": "14h00"
+        }
+      },
+      "LUNDI": {
+        "B": {
+          "fin": "12h00",
+          "reprise": "15h00"
+        },
+        "A": {
+          "reprise": "15h00",
+          "fin": "12h00"
+        }
+      },
+      "MARDI": {
+        "B": {
+          "fin": "12h00",
+          "reprise": "14h30"
+        },
+        "A": {
+          "fin": "12h00",
+          "reprise": "14h30"
+        }
+      }
+    },
+    "6°2 LV1": {
+      "JEUDI": {
+        "B": {
+          "reprise": "14h00",
+          "fin": "12h00"
+        },
+        "A": {
+          "fin": "12h00",
+          "reprise": "14h00"
+        }
+      },
+      "VENDREDI": {
+        "B": {
+          "reprise": "14h00",
+          "fin": "12h00"
+        },
+        "A": {
+          "fin": "12h00",
+          "reprise": "14h00"
+        }
+      },
+      "MARDI": {
+        "B": {
+          "reprise": "14h00",
+          "fin": "12h00"
+        },
+        "A": {
+          "reprise": "14h00",
+          "fin": "12h00"
+        }
+      },
+      "LUNDI": {
+        "B": {
+          "reprise": "14h00",
+          "fin": "12h00"
+        },
+        "A": {
+          "reprise": "14h00",
+          "fin": "12h00"
+        }
+      }
+    },
+    "Atelier Nature": {
+      "MARDI": {
+        "B": {
+          "reprise": "13h00"
+        },
+        "A": {
+          "reprise": "13h00"
+        }
+      }
+    },
+    "6°2": {
+      "JEUDI": {
+        "B": {
+          "fin": "12h00",
+          "reprise": "14h00"
+        },
+        "A": {
+          "reprise": "14h00",
+          "fin": "12h00"
+        }
+      },
+      "VENDREDI": {
+        "B": {
+          "reprise": "14h00",
+          "fin": "11h00"
+        },
+        "A": {
+          "reprise": "14h00",
+          "fin": "11h00"
+        }
+      },
+      "MARDI": {
+        "B": {
+          "fin": "12h00",
+          "reprise": "14h00"
+        },
+        "A": {
+          "reprise": "14h00",
+          "fin": "12h00"
+        }
+      },
+      "LUNDI": {
+        "B": {
+          "fin": "12h00",
+          "reprise": "14h00"
+        },
+        "A": {
+          "reprise": "14h00",
+          "fin": "12h00"
+        }
+      }
+    },
+    "4°3 Latin": {
+      "LUNDI": {
+        "B": {
+          "fin": "12h00",
+          "reprise": "14h00"
+        },
+        "A": {
+          "reprise": "14h00",
+          "fin": "12h00"
+        }
+      },
+      "MARDI": {
+        "B": {
+          "reprise": "14h00",
+          "fin": "11h00"
+        },
+        "A": {
+          "reprise": "14h00",
+          "fin": "12h00"
+        }
+      },
+      "VENDREDI": {
+        "B": {
+          "reprise": "13h00",
+          "fin": "12h00"
+        },
+        "A": {
+          "reprise": "13h00",
+          "fin": "12h00"
+        }
+      },
+      "JEUDI": {
+        "B": {
+          "reprise": "13h00",
+          "fin": "11h00"
+        },
+        "A": {
+          "reprise": "13h00",
+          "fin": "11h00"
+        }
+      }
+    },
+    "Théâtre": {
+      "MARDI": {
+        "B": {
+          "reprise": "13h00"
+        },
+        "A": {
+          "reprise": "13h00"
+        }
+      }
+    },
+    "6° ULIS": {
+      "JEUDI": {
+        "B": {},
+        "A": {}
+      },
+      "VENDREDI": {
+        "B": {},
+        "A": {}
+      },
+      "MARDI": {
+        "B": {},
+        "A": {}
+      },
+      "LUNDI": {
+        "B": {},
+        "A": {}
+      }
+    },
+    "4°1": {
+      "MARDI": {
+        "B": {
+          "fin": "11h30",
+          "reprise": "14h00"
+        },
+        "A": {
+          "fin": "11h30",
+          "reprise": "14h00"
+        }
+      },
+      "LUNDI": {
+        "B": {
+          "reprise": "14h00",
+          "fin": "12h00"
+        },
+        "A": {
+          "reprise": "14h00",
+          "fin": "12h00"
+        }
+      },
+      "JEUDI": {
+        "B": {
+          "reprise": "14h00",
+          "fin": "12h00"
+        },
+        "A": {
+          "reprise": "14h00",
+          "fin": "12h00"
+        }
+      },
+      "VENDREDI": {
+        "B": {
+          "fin": "12h00",
+          "reprise": "13h00"
+        },
+        "A": {
+          "reprise": "13h00",
+          "fin": "12h00"
+        }
+      }
+    },
+    "4°3": {
+      "JEUDI": {
+        "B": {
+          "reprise": "13h00",
+          "fin": "11h00"
+        },
+        "A": {
+          "fin": "11h00",
+          "reprise": "13h00"
+        }
+      },
+      "VENDREDI": {
+        "B": {
+          "fin": "12h00",
+          "reprise": "13h00"
+        },
+        "A": {
+          "fin": "12h00",
+          "reprise": "13h00"
+        }
+      },
+      "LUNDI": {
+        "B": {
+          "reprise": "14h00",
+          "fin": "11h00"
+        },
+        "A": {
+          "reprise": "14h00",
+          "fin": "11h00"
+        }
+      },
+      "MARDI": {
+        "B": {
+          "fin": "11h00",
+          "reprise": "14h00"
+        },
+        "A": {
+          "fin": "12h00",
+          "reprise": "14h00"
+        }
+      }
+    },
+    "5° ULIS": {
+      "JEUDI": {
+        "B": {},
+        "A": {}
+      },
+      "VENDREDI": {
+        "B": {},
+        "A": {}
+      },
+      "LUNDI": {
+        "B": {},
+        "A": {}
+      },
+      "MARDI": {
+        "B": {},
+        "A": {}
+      }
+    },
+    "4°2": {
+      "MARDI": {
+        "B": {
+          "fin": "11h30",
+          "reprise": "14h00"
+        },
+        "A": {
+          "reprise": "14h00",
+          "fin": "11h30"
+        }
+      },
+      "LUNDI": {
+        "B": {
+          "reprise": "14h00",
+          "fin": "12h00"
+        },
+        "A": {
+          "fin": "12h00",
+          "reprise": "14h00"
+        }
+      },
+      "VENDREDI": {
+        "B": {
+          "fin": "12h00",
+          "reprise": "13h00"
+        },
+        "A": {
+          "reprise": "13h00",
+          "fin": "12h00"
+        }
+      },
+      "JEUDI": {
+        "B": {
+          "reprise": "13h00",
+          "fin": "12h00"
+        },
+        "A": {
+          "reprise": "13h00",
+          "fin": "12h00"
+        }
+      }
+    },
+    "5°2": {
+      "MARDI": {
+        "B": {
+          "reprise": "14h30",
+          "fin": "12h00"
+        },
+        "A": {
+          "fin": "12h00",
+          "reprise": "14h30"
+        }
+      },
+      "LUNDI": {
+        "B": {
+          "reprise": "14h00",
+          "fin": "11h00"
+        },
+        "A": {
+          "fin": "11h00",
+          "reprise": "14h00"
+        }
+      },
+      "VENDREDI": {
+        "B": {
+          "fin": "12h00",
+          "reprise": "13h00"
+        },
+        "A": {
+          "reprise": "13h00",
+          "fin": "12h00"
+        }
+      },
+      "JEUDI": {
+        "B": {
+          "reprise": "13h00",
+          "fin": "11h30"
+        },
+        "A": {
+          "fin": "11h30",
+          "reprise": "13h00"
+        }
+      }
+    },
+    "5°3": {
+      "MARDI": {
+        "B": {
+          "reprise": "14h00",
+          "fin": "11h00"
+        },
+        "A": {
+          "reprise": "14h00",
+          "fin": "11h00"
+        }
+      },
+      "LUNDI": {
+        "B": {
+          "fin": "11h00",
+          "reprise": "14h00"
+        },
+        "A": {
+          "reprise": "14h00",
+          "fin": "11h00"
+        }
+      },
+      "VENDREDI": {
+        "B": {
+          "reprise": "13h00",
+          "fin": "11h30"
+        },
+        "A": {
+          "reprise": "13h00",
+          "fin": "11h30"
+        }
+      },
+      "JEUDI": {
+        "B": {
+          "reprise": "13h00",
+          "fin": "12h00"
+        },
+        "A": {
+          "fin": "12h00",
+          "reprise": "13h00"
+        }
+      }
+    },
+    "3°3": {
+      "JEUDI": {
+        "B": {
+          "reprise": "13h00",
+          "fin": "12h00"
+        },
+        "A": {
+          "reprise": "13h00",
+          "fin": "12h00"
+        }
+      },
+      "VENDREDI": {
+        "B": {
+          "reprise": "14h30",
+          "fin": "12h00"
+        },
+        "A": {
+          "reprise": "14h30",
+          "fin": "12h00"
+        }
+      },
+      "MARDI": {
+        "B": {
+          "fin": "12h00",
+          "reprise": "14h00"
+        },
+        "A": {
+          "reprise": "14h00",
+          "fin": "12h00"
+        }
+      },
+      "LUNDI": {
+        "B": {
+          "reprise": "14h00",
+          "fin": "12h00"
+        },
+        "A": {
+          "fin": "12h00",
+          "reprise": "14h00"
+        }
+      }
+    },
+    "3°2 Ang LV2": {
+      "VENDREDI": {
+        "B": {
+          "reprise": "14h00",
+          "fin": "12h00"
+        },
+        "A": {
+          "fin": "12h00",
+          "reprise": "14h00"
+        }
+      },
+      "JEUDI": {
+        "B": {
+          "reprise": "13h00",
+          "fin": "11h30"
+        },
+        "A": {
+          "reprise": "13h00",
+          "fin": "11h30"
+        }
+      },
+      "LUNDI": {
+        "B": {
+          "fin": "12h00",
+          "reprise": "13h00"
+        },
+        "A": {
+          "reprise": "13h00",
+          "fin": "12h00"
+        }
+      },
+      "MARDI": {
+        "B": {
+          "reprise": "13h00",
+          "fin": "12h00"
+        },
+        "A": {
+          "fin": "12h00",
+          "reprise": "13h00"
+        }
+      }
+    },
+    "6°3": {
+      "JEUDI": {
+        "B": {
+          "reprise": "14h00",
+          "fin": "12h00"
+        },
+        "A": {
+          "fin": "12h00",
+          "reprise": "14h00"
+        }
+      },
+      "VENDREDI": {
+        "B": {
+          "reprise": "14h00",
+          "fin": "11h00"
+        },
+        "A": {
+          "fin": "11h00",
+          "reprise": "14h00"
+        }
+      },
+      "LUNDI": {
+        "B": {
+          "fin": "12h00",
+          "reprise": "14h00"
+        },
+        "A": {
+          "fin": "11h00",
+          "reprise": "14h00"
+        }
+      },
+      "MARDI": {
+        "B": {
+          "reprise": "14h00",
+          "fin": "11h00"
+        },
+        "A": {
+          "reprise": "14h00",
+          "fin": "12h00"
+        }
+      }
+    },
+    "3°3 Ang LV1": {
+      "LUNDI": {
+        "B": {
+          "reprise": "14h00",
+          "fin": "12h00"
+        },
+        "A": {
+          "reprise": "14h00",
+          "fin": "12h00"
+        }
+      },
+      "MARDI": {
+        "B": {
+          "fin": "12h00",
+          "reprise": "14h00"
+        },
+        "A": {
+          "fin": "12h00",
+          "reprise": "14h00"
+        }
+      },
+      "VENDREDI": {
+        "B": {
+          "reprise": "13h00",
+          "fin": "12h00"
+        },
+        "A": {
+          "fin": "12h00",
+          "reprise": "13h00"
+        }
+      },
+      "JEUDI": {
+        "B": {
+          "reprise": "13h00",
+          "fin": "12h00"
+        },
+        "A": {
+          "fin": "12h00",
+          "reprise": "13h00"
+        }
+      }
+    },
+    "3°1": {
+      "JEUDI": {
+        "B": {
+          "fin": "12h00",
+          "reprise": "13h00"
+        },
+        "A": {
+          "reprise": "13h00",
+          "fin": "12h00"
+        }
+      },
+      "VENDREDI": {
+        "B": {
+          "reprise": "13h00",
+          "fin": "11h30"
+        },
+        "A": {
+          "fin": "11h30",
+          "reprise": "13h00"
+        }
+      },
+      "LUNDI": {
+        "B": {
+          "reprise": "14h00",
+          "fin": "12h00"
+        },
+        "A": {
+          "reprise": "14h00",
+          "fin": "12h00"
+        }
+      },
+      "MARDI": {
+        "B": {
+          "reprise": "14h00",
+          "fin": "12h00"
+        },
+        "A": {
+          "reprise": "14h00",
+          "fin": "12h00"
+        }
+      }
+    },
+    "3° ULIS": {
+      "JEUDI": {
+        "B": {},
+        "A": {}
+      },
+      "VENDREDI": {
+        "B": {},
+        "A": {}
+      },
+      "LUNDI": {
+        "B": {},
+        "A": {}
+      },
+      "MARDI": {
+        "B": {},
+        "A": {}
+      }
+    },
+    "5°1 Esp LV2": {
+      "MARDI": {
+        "B": {
+          "fin": "12h00",
+          "reprise": "14h00"
+        },
+        "A": {
+          "reprise": "14h00",
+          "fin": "12h00"
+        }
+      },
+      "LUNDI": {
+        "B": {
+          "fin": "11h00",
+          "reprise": "14h00"
+        },
+        "A": {
+          "reprise": "14h00",
+          "fin": "12h00"
+        }
+      },
+      "JEUDI": {
+        "B": {
+          "reprise": "13h00",
+          "fin": "11h00"
+        },
+        "A": {
+          "reprise": "13h00",
+          "fin": "11h00"
+        }
+      },
+      "VENDREDI": {
+        "B": {
+          "reprise": "13h00",
+          "fin": "12h00"
+        },
+        "A": {
+          "reprise": "13h00",
+          "fin": "12h00"
+        }
+      }
+    },
+    "5°1": {
+      "VENDREDI": {
+        "B": {
+          "reprise": "13h00",
+          "fin": "12h00"
+        },
+        "A": {
+          "fin": "12h00",
+          "reprise": "13h00"
+        }
+      },
+      "MARDI": {
+        "B": {
+          "fin": "12h00",
+          "reprise": "14h00"
+        },
+        "A": {
+          "reprise": "14h00",
+          "fin": "12h00"
+        }
+      },
+      "LUNDI": {
+        "B": {
+          "reprise": "14h00",
+          "fin": "11h00"
+        },
+        "A": {
+          "reprise": "14h00",
+          "fin": "11h00"
+        }
+      },
+      "JEUDI": {
+        "B": {
+          "reprise": "13h00",
+          "fin": "11h00"
+        },
+        "A": {
+          "reprise": "13h00",
+          "fin": "11h00"
+        }
+      }
+    }
+  }
+}
