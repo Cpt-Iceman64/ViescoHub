@@ -1,0 +1,21 @@
+#pdf-import { padding: 0 12px 12px; color: #cbd5e1; font: 13px system-ui; }
+#pdf-import h1 { font-size: 14px; font-weight: 600; }
+#pdf-import p { margin: 8px 0; }
+#pdf-import button, #pdf-import input, #pdf-import select { background: #0f172a; color: #e2e8f0; border: 1px solid #475569; border-radius: 6px; padding: 6px; margin: 3px; max-width: 100%; }
+#pdf-import button:hover { border-color: #22d3ee; }
+#pdf-import table { width: 100%; min-width: 760px; border-collapse: collapse; }
+#pdf-import th, #pdf-import td { padding: 7px; text-align: left; vertical-align: top; border-bottom: 1px solid #334155; }
+#pdf-import pre { white-space: pre-wrap; max-width: 320px; font-size: 11px; }
+#pdf-import canvas { max-width: 100%; height: auto; }
+#pdf-import .pdf-scroll { overflow: auto; max-height: 380px; }
+#pdf-import input[type=checkbox] { width: 18px; height: 18px; }
+#pdf-status { color: #67e8f9; }
+#settingsModal { position: fixed; inset: 0; z-index: 100; background: #000c; padding: 16px; align-items: center; justify-content: center; }
+#settingsModal.hidden { display: none; }
+#settingsModal.flex { display: flex; }
+#settingsModal > div { width: 100%; max-width: 1024px; max-height: 90vh; display: flex; flex-direction: column; overflow: hidden; background: #0f172a; border: 1px solid #334155; border-radius: 16px; }
+#settingsModal > div > .overflow-y-auto { overflow-y: auto; flex: 1; padding: 16px; min-height: 0; }
+#settingsModal > div > :first-child, #settingsModal > div > :last-child { padding: 16px; flex-shrink: 0; }
+#selfPdfSettings { margin-bottom: 16px; border: 1px solid #334155; border-radius: 10px; }
+#selfPdfSettings > summary { padding: 12px; cursor: pointer; font-size: 13px; }
+@media print { #selfPdfSettings { display: none; } }

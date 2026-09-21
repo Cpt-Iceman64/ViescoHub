@@ -5,7 +5,7 @@
     }
     root.PassageSelfLogic = api;
 })(typeof window !== 'undefined' ? window : globalThis, function () {
-    const AFTER_13H = new Set(['13h30', '14h00', '14h30', '15h00']);
+    const after13 = value => /^(13|14|15|16|17)h[0-5]\d$/.test(value || '') && value > '13h00';
     const PRIORITY_3_GROUPS = new Set(['Théâtre', 'Atelier Nature', 'Chorale']);
 
     function rotateClasses(classes, weekNumber) {
@@ -40,7 +40,7 @@
 
     function isActiveClass(classInfo, day, settings) {
         if (classInfo.lvl === 'club' && !settings[classInfo.name]?.[day]) return false;
-        if (classInfo.name.includes('CHAM') && day !== 'MARDI' && day !== 'JEUDI') return false;
+        if (classInfo.name.includes('CHAM') && day !== 'MARDI' && day !== 'JEUDI' && !settings[classInfo.name]?.[day]) return false;
         return true;
     }
 
@@ -57,7 +57,7 @@
             seenClasses.add(classInfo.name);
 
             const schedule = settings[classInfo.name]?.[day]?.[weekType] || {};
-            if (schedule.fin === '11h00') {
+            if (schedule.fin === '11h00' || schedule.fin === '11h05') {
                 p1.push(classInfo.name);
             } else if (schedule.fin === '11h30') {
                 p2.push(classInfo.name);
@@ -67,7 +67,7 @@
                 } else {
                     p3.push(classInfo.name);
                 }
-            } else if (AFTER_13H.has(schedule.reprise)) {
+            } else if (after13(schedule.reprise)) {
                 p4.push(classInfo);
             }
         });

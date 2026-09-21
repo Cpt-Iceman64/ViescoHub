@@ -89,3 +89,10 @@ assert.equal(isValidPlanning(manualPlanning), true);
 assert.equal(isValidPlanning([{ id: 'slot1', classes: ['6°1'] }, { id: 'slot2', classes: ['6°1'] }]), false);
 
 console.log('Passage self: 11 scénarios de rotation validés.');
+
+// Exact imported times and explicitly configured CHAM days keep both slots/rotation.
+const exactClasses = [{name:'4°1',lvl:'4'},{name:'4°1 CHAM',lvl:'4'}];
+const exactSettings = {'4°1':{LUNDI:{A:{fin:'11h05',reprise:'13h55'}}},'4°1 CHAM':{LUNDI:{A:{fin:'12h00',reprise:'13h55'}}}};
+const exact = generate({classes:exactClasses,settings:exactSettings,day:'LUNDI',weekType:'A',weekNumber:1});
+assert.deepEqual(exact[0].classes,['4°1']);
+assert.deepEqual(exact[1].classes,['4°1 CHAM']);

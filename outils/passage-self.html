@@ -8,6 +8,11 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="../js/menu.js"></script>
     <script src="../js/passage-self-logic.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+    <script src="../js/firebase-config.js"></script>
+    <script src="../js/self-settings-sync.js"></script>
+    <link rel="stylesheet" href="../css/self-pdf-import.css">
     <!-- Phosphor Icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <style>
@@ -293,10 +298,14 @@
                 </div>
             </div>
             <div class="p-4 overflow-y-auto flex-1 custom-scrollbar">
+                <details id="selfPdfSettings" class="mb-4 rounded-xl border border-slate-700 bg-slate-800/30">
+                    <summary class="p-3 cursor-pointer text-sm text-slate-300">Importer un emploi du temps PDF · comparer les horaires</summary>
+                    <div id="selfPdfMount"></div>
+                </details>
                 <div class="mb-4 text-sm text-slate-300 bg-slate-800/50 p-4 rounded-xl border border-slate-700 flex flex-col gap-2">
                     <div class="w-full font-bold text-white mb-1"><i class="ph ph-info mr-2 text-cyan-400"></i>Fonctionnement du tri automatique</div>
                     <ul class="list-disc pl-5 space-y-1">
-                        <li><strong class="text-indigo-400">Priorité 1:</strong> Les classes qui finissent à <strong>11h00</strong>.</li>
+                        <li><strong class="text-indigo-400">Priorité 1:</strong> Les classes qui finissent à <strong>11h00 ou 11h05</strong>.</li>
                         <li><strong class="text-emerald-400">Priorité 2:</strong> Les classes qui finissent à <strong>11h30</strong>.</li>
                         <li><strong class="text-amber-400">Priorité 3:</strong> Les ateliers et CHAM reprenant à 13h00 (<strong>11h55</strong>) puis les autres classes à 13h00 (<strong>12h00</strong>).</li>
                         <li><strong class="text-rose-400">Priorité 4:</strong> Les classes qui reprennent <strong>après 13h00</strong> (rotation hebdomadaire).</li>
@@ -375,6 +384,8 @@
             { id: "slot2", time: "12h00", classes: [] }
         ];
         
+        let settingsSync = null;
+        function shareSelfSettings() { if (settingsSync) settingsSync.publish(); }
         let dragSourceSlotId = null;
         let dragSourceIndex = null;
         let dragSourceClassName = null;
@@ -573,7 +584,7 @@
                     return currentDay === "MARDI";
                 }
                 if (cls.name.includes("CHAM")) {
-                    return currentDay === "MARDI" || currentDay === "JEUDI";
+                    return currentDay === "MARDI" || currentDay === "JEUDI" || !!scheduleSettings[cls.name]?.[currentDay];
                 }
                 return true;
             });
@@ -626,15 +637,10 @@
                 `;
                 card.appendChild(header);
 
-                // --- Filtrage des sous-groupes implicites ---
-                const baseClassesInSlot = slot.classes.filter(c => /^\d°\d$/.test(c));
-                const displayClasses = slot.classes.filter(c => {
-                    const isBase = baseClassesInSlot.includes(c);
-                    if (isBase) return true;
-                    const baseMatch = baseClassesInSlot.find(b => c.startsWith(b + " "));
-                    if (baseMatch) return false;
-                    return true;
-                });
+                // Classe et groupes restent indépendants, à l'écran et à l'impression.
+                // Si un groupe est placé à part, le nom de la classe désigne le reste
+                // de ses élèves : aucun groupe ne doit être masqué automatiquement.
+                const displayClasses = slot.classes;
 
                 // --- MODE ÉCRAN (Édition via Tags) ---
                 const editArea = document.createElement('div');
@@ -726,7 +732,7 @@
                         if (!scheduleSettings[cls.name]?.[currentDay]) return; // Si pas actif ce jour-là
                     }
                     if (cls.name.includes("CHAM")) {
-                        if (currentDay !== "MARDI" && currentDay !== "JEUDI") return; // Seulement mardi et jeudi
+                        if (currentDay !== "MARDI" && currentDay !== "JEUDI" && !scheduleSettings[cls.name]?.[currentDay]) return;
                     }
 
                     const btn = document.createElement('button');
@@ -829,6 +835,7 @@
         function closeSettingsModal() {
             document.getElementById('settingsModal').classList.add('hidden');
             document.getElementById('settingsModal').classList.remove('flex');
+            if (settingsSync) settingsSync.resume();
         }
 
         function renderSettingsTable() {
@@ -857,7 +864,7 @@
                     
                     let shouldShow = true;
                     if (isCHAM) {
-                        if (day !== "MARDI" && day !== "JEUDI") shouldShow = false;
+                        if (day !== "MARDI" && day !== "JEUDI" && !scheduleSettings[cls.name]?.[day]) shouldShow = false;
                     }
 
                     if (isCHAM && !shouldShow) {
@@ -959,6 +966,7 @@
             localStorage.setItem('viescoHub_selfSettings', JSON.stringify(scheduleSettings));
             clearManualPlanning();
             renderSettingsTable();
+            shareSelfSettings();
         }
 
         function handleSelectChange(select) {
@@ -1002,6 +1010,7 @@
             // On sauvegarde aussi la liste des classes modifiées
             localStorage.setItem('viescoHub_allClasses', JSON.stringify(allClasses));
             clearManualPlanning();
+            shareSelfSettings();
             closeSettingsModal();
         }
 
@@ -1233,6 +1242,7 @@
             clearManualPlanning();
 
             // 4. Mettre à jour l'interface
+            shareSelfSettings();
             nameInput.value = '';
             renderSettingsTable();
             autoGenerate();
@@ -1263,6 +1273,7 @@
             clearManualPlanning();
 
             // 5. Recharger l'affichage
+            shareSelfSettings();
             renderSettingsTable();
             autoGenerate();
         }
@@ -1290,7 +1301,7 @@
             reader.onload = function(e) {
                 try {
                     const importedData = JSON.parse(e.target.result);
-                    if (importedData.classes && importedData.settings) {
+                    if (SelfSettingsSync.valid(importedData)) {
                         // Remplacer proprement le contenu du tableau des classes
                         allClasses.length = 0;
                         allClasses.push(...importedData.classes);
@@ -1302,6 +1313,7 @@
                         localStorage.setItem('viescoHub_allClasses', JSON.stringify(allClasses));
                         localStorage.setItem('viescoHub_selfSettings', JSON.stringify(scheduleSettings));
                         clearManualPlanning();
+                        shareSelfSettings();
                         
                         renderSettingsTable();
                         autoGenerate();
@@ -1339,6 +1351,43 @@
             document.getElementById('printWeekInfo').innerText = `Semaine ${weekNum}`;
             
             updateDayHeader();
+            const syncPanel = document.createElement('div');
+            syncPanel.className = 'no-print text-xs text-slate-400 max-w-4xl mx-auto px-4 py-2';
+            const syncText = document.createElement('span');
+            syncText.setAttribute('role', 'status');
+            syncPanel.appendChild(syncText);
+            const retry = document.createElement('button');
+            retry.textContent = 'Réessayer';
+            retry.className = 'underline ml-3';
+            retry.onclick = () => settingsSync && settingsSync.retry();
+            syncPanel.appendChild(retry);
+            const reload = document.createElement('button');
+            reload.textContent = 'Charger la version partagée';
+            reload.className = 'underline ml-3';
+            reload.onclick = () => {
+                if (settingsSync && confirm('Remplacer les réglages locaux par la version partagée ? Exportez-les auparavant si vous souhaitez les conserver.')) settingsSync.loadShared();
+            };
+            syncPanel.appendChild(reload);
+            document.querySelector('.a4-page').before(syncPanel);
+            if (!window.firebase || !window.SelfSettingsSync) {
+                syncText.textContent = 'Partage indisponible : utilisation locale.';
+                return;
+            }
+            settingsSync = SelfSettingsSync.start({
+                db: firebase.firestore(), storage: localStorage,
+                getConfig: () => ({ classes: allClasses, settings: scheduleSettings }),
+                isEditing: () => !document.getElementById('settingsModal').classList.contains('hidden'),
+                status: message => { syncText.textContent = message; },
+                applyConfig: config => {
+                    const changed = JSON.stringify(config) !== JSON.stringify({ classes: allClasses, settings: scheduleSettings });
+                    allClasses = config.classes;
+                    scheduleSettings = config.settings;
+                    localStorage.setItem('viescoHub_allClasses', JSON.stringify(allClasses));
+                    localStorage.setItem('viescoHub_selfSettings', JSON.stringify(scheduleSettings));
+                    if (changed) { clearManualPlanning(); autoGenerate(); }
+                    renderSettingsTable();
+                }
+            });
         };
 
         function updateClock() {
@@ -1351,5 +1400,7 @@
         setInterval(updateClock, 1000);
         updateClock();
     </script>
+    <script src="../js/self-pdf-parser.js"></script>
+    <script src="../js/self-pdf-import.js"></script>
 </body>
 </html>
