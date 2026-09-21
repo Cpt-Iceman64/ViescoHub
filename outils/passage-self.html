@@ -12,6 +12,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
     <script src="../js/firebase-config.js"></script>
     <script src="../js/self-settings-sync.js"></script>
+    <link rel="stylesheet" href="../css/self-pdf-import.css">
     <!-- Phosphor Icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <style>
@@ -297,10 +298,14 @@
                 </div>
             </div>
             <div class="p-4 overflow-y-auto flex-1 custom-scrollbar">
+                <details id="selfPdfSettings" class="mb-4 rounded-xl border border-slate-700 bg-slate-800/30">
+                    <summary class="p-3 cursor-pointer text-sm text-slate-300">Importer un emploi du temps PDF · comparer les horaires</summary>
+                    <div id="selfPdfMount"></div>
+                </details>
                 <div class="mb-4 text-sm text-slate-300 bg-slate-800/50 p-4 rounded-xl border border-slate-700 flex flex-col gap-2">
                     <div class="w-full font-bold text-white mb-1"><i class="ph ph-info mr-2 text-cyan-400"></i>Fonctionnement du tri automatique</div>
                     <ul class="list-disc pl-5 space-y-1">
-                        <li><strong class="text-indigo-400">Priorité 1:</strong> Les classes qui finissent à <strong>11h00</strong>.</li>
+                        <li><strong class="text-indigo-400">Priorité 1:</strong> Les classes qui finissent à <strong>11h00 ou 11h05</strong>.</li>
                         <li><strong class="text-emerald-400">Priorité 2:</strong> Les classes qui finissent à <strong>11h30</strong>.</li>
                         <li><strong class="text-amber-400">Priorité 3:</strong> Les ateliers et CHAM reprenant à 13h00 (<strong>11h55</strong>) puis les autres classes à 13h00 (<strong>12h00</strong>).</li>
                         <li><strong class="text-rose-400">Priorité 4:</strong> Les classes qui reprennent <strong>après 13h00</strong> (rotation hebdomadaire).</li>
@@ -579,7 +584,7 @@
                     return currentDay === "MARDI";
                 }
                 if (cls.name.includes("CHAM")) {
-                    return currentDay === "MARDI" || currentDay === "JEUDI";
+                    return currentDay === "MARDI" || currentDay === "JEUDI" || !!scheduleSettings[cls.name]?.[currentDay];
                 }
                 return true;
             });
@@ -727,7 +732,7 @@
                         if (!scheduleSettings[cls.name]?.[currentDay]) return; // Si pas actif ce jour-là
                     }
                     if (cls.name.includes("CHAM")) {
-                        if (currentDay !== "MARDI" && currentDay !== "JEUDI") return; // Seulement mardi et jeudi
+                        if (currentDay !== "MARDI" && currentDay !== "JEUDI" && !scheduleSettings[cls.name]?.[currentDay]) return;
                     }
 
                     const btn = document.createElement('button');
@@ -859,7 +864,7 @@
                     
                     let shouldShow = true;
                     if (isCHAM) {
-                        if (day !== "MARDI" && day !== "JEUDI") shouldShow = false;
+                        if (day !== "MARDI" && day !== "JEUDI" && !scheduleSettings[cls.name]?.[day]) shouldShow = false;
                     }
 
                     if (isCHAM && !shouldShow) {
@@ -1395,5 +1400,7 @@
         setInterval(updateClock, 1000);
         updateClock();
     </script>
+    <script src="../js/self-pdf-parser.js"></script>
+    <script src="../js/self-pdf-import.js"></script>
 </body>
 </html>
