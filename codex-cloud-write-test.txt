@@ -1,0 +1,4 @@
+Test d’écriture en ligne ViescoHub
+Date : 2026-09-22
+Branche : test/ecriture-en-ligne-2026-09-22
+Statut : créé par Codex via l’intégration GitHub, sans modification de main.
