@@ -464,6 +464,9 @@
 
         // Migration settings
         let scheduleSettings = JSON.parse(localStorage.getItem('viescoHub_selfSettings')) || {};
+        let weeklySchedule = null;
+        try { weeklySchedule = JSON.parse(localStorage.getItem('viescoHub_selfWeekly')) || null; }
+        catch (_) { localStorage.removeItem('viescoHub_selfWeekly'); }
         if (Object.keys(scheduleSettings).length === 0) {
             scheduleSettings = getDefault2026Schedules();
             localStorage.setItem('viescoHub_selfSettings', JSON.stringify(scheduleSettings));
@@ -520,6 +523,21 @@
             const yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1));
             const weekNo = Math.ceil(( ( (d - yearStart) / 86400000) + 1)/7);
             return weekNo;
+        }
+
+        function effectiveScheduleSettings(weekType) {
+            // Le dernier PDF reste la référence jusqu'au prochain import. Son type
+            // A/B évite qu'un PDF de la semaine suivante modifie la semaine en cours.
+            if (!weeklySchedule || weeklySchedule.weekType !== weekType || !weeklySchedule.settings) return scheduleSettings;
+            const merged = { ...scheduleSettings };
+            for (const [name, days] of Object.entries(weeklySchedule.settings)) {
+                merged[name] = { ...(scheduleSettings[name] || {}) };
+                for (const [day, value] of Object.entries(days)) {
+                    const baseDay = scheduleSettings[name]?.[day] || { A: {}, B: {} };
+                    merged[name][day] = { ...baseDay, [weekType]: { ...(baseDay[weekType] || {}), ...value } };
+                }
+            }
+            return merged;
         }
 
         function updateDayHeader() {
@@ -1007,7 +1025,7 @@
             const savedManualPlanning = getSavedManualPlanning(currentDay, weekType, rotationWeekNum);
             planningData = savedManualPlanning || PassageSelfLogic.generate({
                 classes: allClasses,
-                settings: scheduleSettings,
+                settings: effectiveScheduleSettings(weekType),
                 day: currentDay,
                 weekType,
                 weekNumber: rotationWeekNum
@@ -1108,7 +1126,8 @@
         function exportSettings() {
             const dataToExport = {
                 classes: allClasses,
-                settings: scheduleSettings
+                settings: scheduleSettings,
+                weekly: weeklySchedule
             };
             const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(dataToExport, null, 2));
             const downloadAnchorNode = document.createElement('a');
@@ -1134,10 +1153,13 @@
                         
                         // Remplacer les paramètres
                         scheduleSettings = importedData.settings;
+                        weeklySchedule = importedData.weekly || null;
                         
                         // Enregistrer dans le cache
                         localStorage.setItem('viescoHub_allClasses', JSON.stringify(allClasses));
                         localStorage.setItem('viescoHub_selfSettings', JSON.stringify(scheduleSettings));
+                        if (weeklySchedule) localStorage.setItem('viescoHub_selfWeekly', JSON.stringify(weeklySchedule));
+                        else localStorage.removeItem('viescoHub_selfWeekly');
                         clearManualPlanning();
                         shareSelfSettings();
                         
@@ -1201,15 +1223,18 @@
             }
             settingsSync = SelfSettingsSync.start({
                 db: firebase.firestore(), storage: localStorage,
-                getConfig: () => ({ classes: allClasses, settings: scheduleSettings }),
+                getConfig: () => ({ classes: allClasses, settings: scheduleSettings, weekly: weeklySchedule }),
                 isEditing: () => !document.getElementById('settingsModal').classList.contains('hidden'),
                 status: message => { syncText.textContent = message; },
                 applyConfig: config => {
-                    const changed = JSON.stringify(config) !== JSON.stringify({ classes: allClasses, settings: scheduleSettings });
+                    const changed = JSON.stringify(config) !== JSON.stringify({ classes: allClasses, settings: scheduleSettings, weekly: weeklySchedule });
                     allClasses = config.classes;
                     scheduleSettings = config.settings;
+                    weeklySchedule = config.weekly || null;
                     localStorage.setItem('viescoHub_allClasses', JSON.stringify(allClasses));
                     localStorage.setItem('viescoHub_selfSettings', JSON.stringify(scheduleSettings));
+                    if (weeklySchedule) localStorage.setItem('viescoHub_selfWeekly', JSON.stringify(weeklySchedule));
+                    else localStorage.removeItem('viescoHub_selfWeekly');
                     if (changed) { clearManualPlanning(); autoGenerate(); }
                     renderSettingsTable();
                 }
