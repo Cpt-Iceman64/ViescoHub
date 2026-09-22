@@ -3,6 +3,29 @@
     const minute = s => { const [h,m] = s.split('h').map(Number); return h*60+m; };
     const hour = m => `${Math.floor(m/60)}h${String(m%60).padStart(2,'0')}`;
     const norm = s => s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase();
+    const isDayHeader = (value, day) => new RegExp(`^${day}(?:\\s+\\d{1,2}\\/\\d{1,2}(?:\\/\\d{2,4})?)?$`).test(norm(value).replace(/\s+/g,' ').trim());
+    const appWeekNumber = value => {
+        const date=new Date(Date.UTC(value.getFullYear(),value.getMonth(),value.getDate()));
+        date.setUTCDate(date.getUTCDate()+4-(date.getUTCDay()||7));
+        const yearStart=new Date(Date.UTC(date.getUTCFullYear(),0,1));
+        return Math.ceil((((date-yearStart)/86400000)+1)/7);
+    };
+    function datedPeriod(headers, texts) {
+        const first=headers[0]?.s.match(/(\d{1,2})\/(\d{1,2})(?:\/(\d{2,4}))?/);
+        if(!first || !headers.every(h=>/\d{1,2}\/\d{1,2}/.test(h?.s||'')))return null;
+        const printed=texts.map(t=>t.s).join(' ').match(/\b\d{1,2}\/\d{1,2}\/(\d{4})\b/);
+        let year=Number(first[3]||printed?.[1]||new Date().getFullYear());
+        if(year<100)year+=2000;
+        const dates=headers.map((header,index)=>{
+            const match=header.s.match(/(\d{1,2})\/(\d{1,2})(?:\/(\d{2,4}))?/);
+            let itemYear=Number(match[3]||year);if(itemYear<100)itemYear+=2000;
+            if(index && Number(match[2])<Number(first[2]))itemYear++;
+            return new Date(itemYear,Number(match[2])-1,Number(match[1]));
+        });
+        const iso=date=>`${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`;
+        return {start:iso(dates[0]),end:iso(dates.at(-1)),weekType:appWeekNumber(dates[0])%2===0?'A':'B'};
+    }
+    const datedWeekType = (headers,texts) => datedPeriod(headers,texts)?.weekType||null;
     function groupOf(text, name) {
         if (/CHAM/.test(text)) return `${name} CHAM`;
         if (/LATIN/.test(text)) return `${name} Latin`;
@@ -46,8 +69,11 @@
             const title=titles[ti],end=titles[ti+1]?.y||viewport.height;
             const name=title.s.replace(/\s+/,'°');
             const labels=texts.filter(t=>t.y>title.y&&t.y<end);
-            const heads=days.map(d=>labels.find(t=>norm(t.s)===d));
+            // Pronote exporte soit « lundi », soit « lundi 21/09 » dans la vue
+            // hebdomadaire. La date ne change pas la géométrie de la colonne.
+            const heads=days.map(d=>labels.find(t=>isDayHeader(t.s,d)));
             if(heads.some(x=>!x))throw new Error(`Page ${page.pageNumber} : colonnes de ${name} non reconnues.`);
+            const period=datedPeriod(heads,texts),datedWeek=period?.weekType||null;
             const centers=heads.map(t=>t.x+t.w/2),step=(centers[4]-centers[0])/4,left=centers[0]-step/2;
             const timeLabels=labels.filter(t=>t.x<left && /^(8h05|9h00|10h10|11h05|11h30|12h00|13h00|13h55|14h50|16h05)$/.test(t.s));
             if(timeLabels.length!==10) throw new Error(`Page ${page.pageNumber} : échelle horaire de ${name} non reconnue.`);
@@ -68,8 +94,10 @@
             for(let di=0;di<days.length;di++) {
                 // Un bloc peut s'étendre sur deux jours : le traiter dans chacun.
                 const dayBlocks=blocks.filter(b=>b.x<left+(di+1)*step-2&&b.x+b.w>left+di*step+2);
-                for(const week of ['A','B']) {
-                    const active=dayBlocks.filter(b=>!b.week||b.week===week);
+                for(const week of datedWeek?[datedWeek]:['A','B']) {
+                    // Une vue datée contient déjà uniquement les cours de la semaine
+                    // affichée. Les mentions SA/SB internes ne doivent pas la dupliquer.
+                    const active=datedWeek?dayBlocks:dayBlocks.filter(b=>!b.week||b.week===week);
                     const relevant=active.filter(b=>(b.start<720&&b.end>600)||(b.start>=780&&b.start<=895));
                     const groups=[...new Set(relevant.map(b=>b.group).filter(Boolean))];
                     for(const group of [null,...groups]) {
@@ -85,7 +113,7 @@
                         if(reprise===null&&days[di]!=='MERCREDI')warnings.push('Reprise non déterminée : conserver ou préciser l’horaire.');
                         if(days[di]==='MERCREDI')warnings.push('Mercredi : lecture seule, hors des jours gérés par le self.');
                         const evidence=relevant.filter(b=>!b.group||!group||b.group===group).map(b=>`${hour(b.start)}${b.end?'–'+hour(b.end):''} : ${b.text}`).join('\n');
-                        result.push({name:group||name,parent:name,day:days[di],week,fin:fin>=660&&fin<=720?hour(fin):'',reprise:reprise!==null?hour(reprise):'',warnings,evidence,page:page.pageNumber});
+                        result.push({name:group||name,parent:name,day:days[di],week,fin:fin>=660&&fin<=720?hour(fin):'',reprise:reprise!==null?hour(reprise):'',warnings,evidence,page:page.pageNumber,periodStart:period?.start||null,periodEnd:period?.end||null});
                     }
                 }
             }
@@ -93,5 +121,5 @@
         if(!titles.length)throw new Error(`Page ${page.pageNumber} : aucun tableau de classe reconnu. PDF scanné ou présentation non prise en charge.`);
         return result;
     }
-    root.SelfPdfParser={extract,minute,hour};
+    root.SelfPdfParser={extract,minute,hour,isDayHeader,appWeekNumber,datedPeriod,datedWeekType};
 })(globalThis);

@@ -1,11 +1,18 @@
 // Configuration partagée uniquement : les placements manuels restent locaux.
 (function (root) {
     const copy = value => JSON.parse(JSON.stringify(value));
+    function validWeekly(value) {
+        if (value == null) return true;
+        return value && /^\d{4}-\d{2}-\d{2}$/.test(value.start) && /^\d{4}-\d{2}-\d{2}$/.test(value.end) &&
+            value.start <= value.end && ['A','B'].includes(value.weekType) &&
+            value.settings && typeof value.settings === 'object' && !Array.isArray(value.settings);
+    }
     function valid(value) {
         return value && Array.isArray(value.classes) && value.classes.length > 0 &&
             value.classes.every(c => c && typeof c.name === 'string' && typeof c.lvl === 'string') &&
             new Set(value.classes.map(c => c.name)).size === value.classes.length &&
-            value.settings && typeof value.settings === 'object' && !Array.isArray(value.settings);
+            value.settings && typeof value.settings === 'object' && !Array.isArray(value.settings) &&
+            validWeekly(value.weekly);
     }
     function start({ db, storage, getConfig, applyConfig, isEditing, status }) {
         const ref = db.collection('viescohub_data').doc('self_settings');
@@ -107,5 +114,5 @@
             }
         };
     }
-    root.SelfSettingsSync = { start, valid };
+    root.SelfSettingsSync = { start, valid, validWeekly };
 })(typeof window === 'undefined' ? globalThis : window);
