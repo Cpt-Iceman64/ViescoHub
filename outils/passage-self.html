@@ -8,6 +8,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="../js/menu.js"></script>
     <script src="../js/passage-self-logic.js"></script>
+    <script src="../js/self-defaults.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
     <script src="../js/firebase-config.js"></script>
@@ -426,28 +427,7 @@
         }
         
         // Liste de toutes les classes possibles
-        let allClasses = [
-            // 6èmes
-            { name: "6°1", lvl: "6" }, { name: "6°2", lvl: "6" }, { name: "6°3", lvl: "6" },
-            { name: "6°1 ULIS", lvl: "6" }, { name: "6°2 ULIS", lvl: "6" }, { name: "6°3 ULIS", lvl: "6" },
-            { name: "6°2 LV1", lvl: "6" }, { name: "6°3 LV1", lvl: "6" },
-            // 5èmes
-            { name: "5°1", lvl: "5" }, { name: "5°2", lvl: "5" }, { name: "5°3", lvl: "5" },
-            { name: "5°1 ULIS", lvl: "5" }, { name: "5°2 ULIS", lvl: "5" }, { name: "5°3 ULIS", lvl: "5" },
-            { name: "5°1 Esp LV2", lvl: "5" },
-            { name: "5°1 CHAM", lvl: "5" },
-            // 4èmes
-            { name: "4°1", lvl: "4" }, { name: "4°2", lvl: "4" }, { name: "4°2 Ang LV1", lvl: "4" }, { name: "4°3", lvl: "4" },
-            { name: "4°1 ULIS", lvl: "4" }, { name: "4°2 ULIS", lvl: "4" }, { name: "4°3 ULIS", lvl: "4" },
-            { name: "4°3 Latin", lvl: "4" }, { name: "4°3 Ang LV1", lvl: "4" }, { name: "4°3 Esp LV1", lvl: "4" },
-            // 3èmes
-            { name: "3°1", lvl: "3" }, { name: "3°2", lvl: "3" }, { name: "3°3", lvl: "3" },
-            { name: "3°1 ULIS", lvl: "3" }, { name: "3°2 ULIS", lvl: "3" }, { name: "3°3 ULIS", lvl: "3" },
-            { name: "3°2 Ang LV2", lvl: "3" }, { name: "3°2 Ang LV1", lvl: "3" }, { name: "3°3 Ang LV1", lvl: "3" },
-            { name: "3°1 CHAM", lvl: "3" },
-            // Ateliers & Groupes
-            { name: "Théâtre", lvl: "club" }, { name: "Atelier Nature", lvl: "club" }, { name: "Chorale", lvl: "club" }
-        ];
+        let allClasses = SelfDefaults.getConfig().classes;
         
         // Initialisation des classes sauvegardées et migration ULIS
         const savedClasses = JSON.parse(localStorage.getItem('viescoHub_allClasses'));
@@ -1015,161 +995,7 @@
         }
 
         function getDefault2026Schedules() {
-            return {
-                "6°1": {
-                    "LUNDI": { A: { fin: "12h00", reprise: "15h00" }, B: { fin: "12h00", reprise: "15h00" } },
-                    "MARDI": { A: { fin: "12h00", reprise: "14h30" }, B: { fin: "12h00", reprise: "14h30" } },
-                    "JEUDI": { A: { fin: "12h00", reprise: "15h00" }, B: { fin: "12h00", reprise: "15h00" } },
-                    "VENDREDI": { A: { fin: "12h00", reprise: "14h00" }, B: { fin: "12h00", reprise: "14h00" } }
-                },
-                "6°2": {
-                    "LUNDI": { A: { fin: "12h00", reprise: "14h00" }, B: { fin: "12h00", reprise: "14h00" } },
-                    "MARDI": { A: { fin: "12h00", reprise: "14h00" }, B: { fin: "12h00", reprise: "14h00" } },
-                    "JEUDI": { A: { fin: "12h00", reprise: "14h00" }, B: { fin: "12h00", reprise: "14h00" } },
-                    "VENDREDI": { A: { fin: "11h00", reprise: "14h00" }, B: { fin: "11h00", reprise: "14h00" } }
-                },
-                "6°2 LV1": {
-                    "LUNDI": { A: { fin: "12h00", reprise: "14h00" }, B: { fin: "12h00", reprise: "14h00" } },
-                    "MARDI": { A: { fin: "12h00", reprise: "14h00" }, B: { fin: "12h00", reprise: "14h00" } },
-                    "JEUDI": { A: { fin: "12h00", reprise: "14h00" }, B: { fin: "12h00", reprise: "14h00" } },
-                    "VENDREDI": { A: { fin: "12h00", reprise: "14h00" }, B: { fin: "12h00", reprise: "14h00" } }
-                },
-                "6°3": {
-                    "LUNDI": { A: { fin: "11h00", reprise: "14h00" }, B: { fin: "12h00", reprise: "14h00" } },
-                    "MARDI": { A: { fin: "12h00", reprise: "14h00" }, B: { fin: "11h00", reprise: "14h00" } },
-                    "JEUDI": { A: { fin: "12h00", reprise: "14h00" }, B: { fin: "12h00", reprise: "14h00" } },
-                    "VENDREDI": { A: { fin: "11h00", reprise: "14h00" }, B: { fin: "11h00", reprise: "14h00" } }
-                },
-                "6°3 LV1": {
-                    "LUNDI": { A: { fin: "11h00", reprise: "14h00" }, B: { fin: "12h00", reprise: "14h00" } },
-                    "MARDI": { A: { fin: "12h00", reprise: "14h00" }, B: { fin: "11h00", reprise: "14h00" } },
-                    "JEUDI": { A: { fin: "12h00", reprise: "14h00" }, B: { fin: "12h00", reprise: "14h00" } },
-                    "VENDREDI": { A: { fin: "12h00", reprise: "14h00" }, B: { fin: "12h00", reprise: "14h00" } }
-                },
-                "5°1": {
-                    "LUNDI": { A: { fin: "11h00", reprise: "14h00" }, B: { fin: "11h00", reprise: "14h00" } },
-                    "MARDI": { A: { fin: "12h00", reprise: "14h00" }, B: { fin: "12h00", reprise: "14h00" } },
-                    "JEUDI": { A: { fin: "11h00", reprise: "13h00" }, B: { fin: "11h00", reprise: "13h00" } },
-                    "VENDREDI": { A: { fin: "12h00", reprise: "13h00" }, B: { fin: "12h00", reprise: "13h00" } }
-                },
-                "5°1 Esp LV2": {
-                    "LUNDI": { A: { fin: "12h00", reprise: "14h00" }, B: { fin: "11h00", reprise: "14h00" } },
-                    "MARDI": { A: { fin: "12h00", reprise: "14h00" }, B: { fin: "12h00", reprise: "14h00" } },
-                    "JEUDI": { A: { fin: "11h00", reprise: "13h00" }, B: { fin: "11h00", reprise: "13h00" } },
-                    "VENDREDI": { A: { fin: "12h00", reprise: "13h00" }, B: { fin: "12h00", reprise: "13h00" } }
-                },
-                "5°1 CHAM": {
-                    "LUNDI": { A: { fin: "11h00", reprise: "14h00" }, B: { fin: "11h00", reprise: "14h00" } },
-                    "MARDI": { A: { fin: "12h00", reprise: "14h00" }, B: { fin: "12h00", reprise: "14h00" } },
-                    "JEUDI": { A: { fin: "12h00", reprise: "13h00" }, B: { fin: "12h00", reprise: "13h00" } },
-                    "VENDREDI": { A: { fin: "12h00", reprise: "13h00" }, B: { fin: "12h00", reprise: "13h00" } }
-                },
-                "5°2": {
-                    "LUNDI": { A: { fin: "11h00", reprise: "14h00" }, B: { fin: "11h00", reprise: "14h00" } },
-                    "MARDI": { A: { fin: "12h00", reprise: "14h30" }, B: { fin: "12h00", reprise: "14h30" } },
-                    "JEUDI": { A: { fin: "11h30", reprise: "13h00" }, B: { fin: "11h30", reprise: "13h00" } },
-                    "VENDREDI": { A: { fin: "12h00", reprise: "13h00" }, B: { fin: "12h00", reprise: "13h00" } }
-                },
-                "5°3": {
-                    "LUNDI": { A: { fin: "11h00", reprise: "14h00" }, B: { fin: "11h00", reprise: "14h00" } },
-                    "MARDI": { A: { fin: "11h00", reprise: "14h00" }, B: { fin: "11h00", reprise: "14h00" } },
-                    "JEUDI": { A: { fin: "12h00", reprise: "13h00" }, B: { fin: "12h00", reprise: "13h00" } },
-                    "VENDREDI": { A: { fin: "11h30", reprise: "13h00" }, B: { fin: "11h30", reprise: "13h00" } }
-                },
-                "4°1": {
-                    "LUNDI": { A: { fin: "12h00", reprise: "14h00" }, B: { fin: "12h00", reprise: "14h00" } },
-                    "MARDI": { A: { fin: "11h30", reprise: "14h00" }, B: { fin: "11h30", reprise: "14h00" } },
-                    "JEUDI": { A: { fin: "12h00", reprise: "14h00" }, B: { fin: "12h00", reprise: "14h00" } },
-                    "VENDREDI": { A: { fin: "12h00", reprise: "13h00" }, B: { fin: "12h00", reprise: "13h00" } }
-                },
-                "4°2": {
-                    "LUNDI": { A: { fin: "12h00", reprise: "14h00" }, B: { fin: "12h00", reprise: "14h00" } },
-                    "MARDI": { A: { fin: "11h30", reprise: "14h00" }, B: { fin: "11h30", reprise: "14h00" } },
-                    "JEUDI": { A: { fin: "12h00", reprise: "13h00" }, B: { fin: "12h00", reprise: "13h00" } },
-                    "VENDREDI": { A: { fin: "12h00", reprise: "13h00" }, B: { fin: "12h00", reprise: "13h00" } }
-                },
-                "4°2 Ang LV1": {
-                    "LUNDI": { A: { fin: "12h00", reprise: "14h00" }, B: { fin: "12h00", reprise: "14h00" } },
-                    "MARDI": { A: { fin: "11h30", reprise: "14h00" }, B: { fin: "11h30", reprise: "14h00" } },
-                    "JEUDI": { A: { fin: "12h00", reprise: "13h00" }, B: { fin: "12h00", reprise: "13h00" } },
-                    "VENDREDI": { A: { fin: "12h00", reprise: "13h00" }, B: { fin: "12h00", reprise: "13h00" } }
-                },
-                "4°3": {
-                    "LUNDI": { A: { fin: "11h00", reprise: "14h00" }, B: { fin: "11h00", reprise: "14h00" } },
-                    "MARDI": { A: { fin: "12h00", reprise: "14h00" }, B: { fin: "11h00", reprise: "14h00" } },
-                    "JEUDI": { A: { fin: "11h00", reprise: "13h00" }, B: { fin: "11h00", reprise: "13h00" } },
-                    "VENDREDI": { A: { fin: "12h00", reprise: "13h00" }, B: { fin: "12h00", reprise: "13h00" } }
-                },
-                "4°3 Latin": {
-                    "LUNDI": { A: { fin: "12h00", reprise: "14h00" }, B: { fin: "12h00", reprise: "14h00" } },
-                    "MARDI": { A: { fin: "12h00", reprise: "14h00" }, B: { fin: "11h00", reprise: "14h00" } },
-                    "JEUDI": { A: { fin: "11h00", reprise: "13h00" }, B: { fin: "11h00", reprise: "13h00" } },
-                    "VENDREDI": { A: { fin: "12h00", reprise: "13h00" }, B: { fin: "12h00", reprise: "13h00" } }
-                },
-                "4°3 Ang LV1": {
-                    "LUNDI": { A: { fin: "11h00", reprise: "14h00" }, B: { fin: "11h00", reprise: "14h00" } },
-                    "MARDI": { A: { fin: "12h00", reprise: "14h00" }, B: { fin: "12h00", reprise: "14h00" } },
-                    "JEUDI": { A: { fin: "11h00", reprise: "13h00" }, B: { fin: "11h00", reprise: "13h00" } },
-                    "VENDREDI": { A: { fin: "12h00", reprise: "13h00" }, B: { fin: "12h00", reprise: "13h00" } }
-                },
-                "4°3 Esp LV1": {
-                    "LUNDI": { A: { fin: "11h00", reprise: "14h00" }, B: { fin: "11h00", reprise: "14h00" } },
-                    "MARDI": { A: { fin: "12h00", reprise: "14h00" }, B: { fin: "11h00", reprise: "14h00" } },
-                    "JEUDI": { A: { fin: "12h00", reprise: "13h00" }, B: { fin: "12h00", reprise: "13h00" } },
-                    "VENDREDI": { A: { fin: "12h00", reprise: "13h00" }, B: { fin: "12h00", reprise: "13h00" } }
-                },
-                "3°1": {
-                    "LUNDI": { A: { fin: "12h00", reprise: "14h00" }, B: { fin: "12h00", reprise: "14h00" } },
-                    "MARDI": { A: { fin: "12h00", reprise: "14h00" }, B: { fin: "12h00", reprise: "14h00" } },
-                    "JEUDI": { A: { fin: "12h00", reprise: "13h00" }, B: { fin: "12h00", reprise: "13h00" } },
-                    "VENDREDI": { A: { fin: "11h30", reprise: "13h00" }, B: { fin: "11h30", reprise: "13h00" } }
-                },
-                "3°1 CHAM": {
-                    "LUNDI": { A: { fin: "12h00", reprise: "14h00" }, B: { fin: "12h00", reprise: "14h00" } },
-                    "MARDI": { A: { fin: "12h00", reprise: "14h00" }, B: { fin: "12h00", reprise: "14h00" } },
-                    "JEUDI": { A: { fin: "12h00", reprise: "13h00" }, B: { fin: "12h00", reprise: "13h00" } },
-                    "VENDREDI": { A: { fin: "11h30", reprise: "13h00" }, B: { fin: "11h30", reprise: "13h00" } }
-                },
-                "3°2": {
-                    "LUNDI": { A: { fin: "12h00", reprise: "13h00" }, B: { fin: "12h00", reprise: "13h00" } },
-                    "MARDI": { A: { fin: "12h00", reprise: "14h00" }, B: { fin: "12h00", reprise: "14h00" } },
-                    "JEUDI": { A: { fin: "11h30", reprise: "13h00" }, B: { fin: "11h30", reprise: "13h00" } },
-                    "VENDREDI": { A: { fin: "12h00", reprise: "14h00" }, B: { fin: "12h00", reprise: "14h00" } }
-                },
-                "3°2 Ang LV2": {
-                    "LUNDI": { A: { fin: "12h00", reprise: "13h00" }, B: { fin: "12h00", reprise: "13h00" } },
-                    "MARDI": { A: { fin: "12h00", reprise: "13h00" }, B: { fin: "12h00", reprise: "13h00" } },
-                    "JEUDI": { A: { fin: "11h30", reprise: "13h00" }, B: { fin: "11h30", reprise: "13h00" } },
-                    "VENDREDI": { A: { fin: "12h00", reprise: "14h00" }, B: { fin: "12h00", reprise: "14h00" } }
-                },
-                "3°2 Ang LV1": {
-                    "LUNDI": { A: { fin: "12h00", reprise: "13h00" }, B: { fin: "12h00", reprise: "13h00" } },
-                    "MARDI": { A: { fin: "12h00", reprise: "14h00" }, B: { fin: "12h00", reprise: "14h00" } },
-                    "JEUDI": { A: { fin: "11h30", reprise: "13h00" }, B: { fin: "11h30", reprise: "13h00" } },
-                    "VENDREDI": { A: { fin: "12h00", reprise: "13h00" }, B: { fin: "12h00", reprise: "13h00" } }
-                },
-                "3°3": {
-                    "LUNDI": { A: { fin: "12h00", reprise: "14h00" }, B: { fin: "12h00", reprise: "14h00" } },
-                    "MARDI": { A: { fin: "12h00", reprise: "14h00" }, B: { fin: "12h00", reprise: "14h00" } },
-                    "JEUDI": { A: { fin: "12h00", reprise: "13h00" }, B: { fin: "12h00", reprise: "13h00" } },
-                    "VENDREDI": { A: { fin: "12h00", reprise: "14h30" }, B: { fin: "12h00", reprise: "14h30" } }
-                },
-                "3°3 Ang LV1": {
-                    "LUNDI": { A: { fin: "12h00", reprise: "14h00" }, B: { fin: "12h00", reprise: "14h00" } },
-                    "MARDI": { A: { fin: "12h00", reprise: "14h00" }, B: { fin: "12h00", reprise: "14h00" } },
-                    "JEUDI": { A: { fin: "12h00", reprise: "13h00" }, B: { fin: "12h00", reprise: "13h00" } },
-                    "VENDREDI": { A: { fin: "12h00", reprise: "13h00" }, B: { fin: "12h00", reprise: "13h00" } }
-                },
-                "Théâtre": {
-                    "MARDI": { A: { reprise: "13h00" }, B: { reprise: "13h00" } }
-                },
-                "Atelier Nature": {
-                    "MARDI": { A: { reprise: "13h00" }, B: { reprise: "13h00" } }
-                },
-                "Chorale": {
-                    "MARDI": { A: { reprise: "13h00" }, B: { reprise: "13h00" } }
-                }
-            };
+            return SelfDefaults.getConfig().settings;
         }
 
         // --- GÉNÉRATION AUTOMATIQUE ---
