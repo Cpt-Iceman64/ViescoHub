@@ -3,6 +3,7 @@
     const minute = s => { const [h,m] = s.split('h').map(Number); return h*60+m; };
     const hour = m => `${Math.floor(m/60)}h${String(m%60).padStart(2,'0')}`;
     const norm = s => s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase();
+    const isDayHeader = (value, day) => new RegExp(`^${day}(?:\\s+\\d{1,2}\\/\\d{1,2}(?:\\/\\d{2,4})?)?$`).test(norm(value).replace(/\s+/g,' ').trim());
     function groupOf(text, name) {
         if (/CHAM/.test(text)) return `${name} CHAM`;
         if (/LATIN/.test(text)) return `${name} Latin`;
@@ -46,7 +47,9 @@
             const title=titles[ti],end=titles[ti+1]?.y||viewport.height;
             const name=title.s.replace(/\s+/,'°');
             const labels=texts.filter(t=>t.y>title.y&&t.y<end);
-            const heads=days.map(d=>labels.find(t=>norm(t.s)===d));
+            // Pronote exporte soit « lundi », soit « lundi 21/09 » dans la vue
+            // hebdomadaire. La date ne change pas la géométrie de la colonne.
+            const heads=days.map(d=>labels.find(t=>isDayHeader(t.s,d)));
             if(heads.some(x=>!x))throw new Error(`Page ${page.pageNumber} : colonnes de ${name} non reconnues.`);
             const centers=heads.map(t=>t.x+t.w/2),step=(centers[4]-centers[0])/4,left=centers[0]-step/2;
             const timeLabels=labels.filter(t=>t.x<left && /^(8h05|9h00|10h10|11h05|11h30|12h00|13h00|13h55|14h50|16h05)$/.test(t.s));
@@ -93,5 +96,5 @@
         if(!titles.length)throw new Error(`Page ${page.pageNumber} : aucun tableau de classe reconnu. PDF scanné ou présentation non prise en charge.`);
         return result;
     }
-    root.SelfPdfParser={extract,minute,hour};
+    root.SelfPdfParser={extract,minute,hour,isDayHeader};
 })(globalThis);
