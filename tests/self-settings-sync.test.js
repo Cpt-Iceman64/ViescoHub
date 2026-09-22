@@ -1,9 +1,11 @@
 const assert = require('node:assert/strict');
 require('../js/self-settings-sync.js');
-const { start } = globalThis.SelfSettingsSync;
+const { start, valid } = globalThis.SelfSettingsSync;
 const copy = x => JSON.parse(JSON.stringify(x));
 const wait = () => new Promise(resolve => setImmediate(resolve));
 const initial = { classes: [{ name: '4°1', lvl: '4' }], settings: {} };
+assert.equal(valid({...initial,weekly:{start:'2026-09-28',end:'2026-10-02',weekType:'A',settings:{'4°1':{LUNDI:{fin:'12h00',reprise:'13h00'}}}}}),true);
+assert.equal(valid({...initial,weekly:{start:'02/10/2026',end:'2026-09-28',weekType:'C',settings:{}}}),false);
 
 function server() {
     let data = null, offline = false;
