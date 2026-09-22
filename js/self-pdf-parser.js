@@ -4,6 +4,16 @@
     const hour = m => `${Math.floor(m/60)}h${String(m%60).padStart(2,'0')}`;
     const norm = s => s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase();
     const isDayHeader = (value, day) => new RegExp(`^${day}(?:\\s+\\d{1,2}\\/\\d{1,2}(?:\\/\\d{2,4})?)?$`).test(norm(value).replace(/\s+/g,' ').trim());
+    const appWeekNumber = date => Math.ceil((((date-new Date(date.getFullYear(),0,1))/86400000)+1)/7);
+    function datedWeekType(headers, texts) {
+        const first=headers[0]?.s.match(/(\d{1,2})\/(\d{1,2})(?:\/(\d{2,4}))?/);
+        if(!first || !headers.every(h=>/\d{1,2}\/\d{1,2}/.test(h?.s||'')))return null;
+        const printed=texts.map(t=>t.s).join(' ').match(/\b\d{1,2}\/\d{1,2}\/(\d{4})\b/);
+        let year=Number(first[3]||printed?.[1]||new Date().getFullYear());
+        if(year<100)year+=2000;
+        const date=new Date(year,Number(first[2])-1,Number(first[1]));
+        return appWeekNumber(date)%2===0?'A':'B';
+    }
     function groupOf(text, name) {
         if (/CHAM/.test(text)) return `${name} CHAM`;
         if (/LATIN/.test(text)) return `${name} Latin`;
@@ -51,6 +61,7 @@
             // hebdomadaire. La date ne change pas la géométrie de la colonne.
             const heads=days.map(d=>labels.find(t=>isDayHeader(t.s,d)));
             if(heads.some(x=>!x))throw new Error(`Page ${page.pageNumber} : colonnes de ${name} non reconnues.`);
+            const datedWeek=datedWeekType(heads,texts);
             const centers=heads.map(t=>t.x+t.w/2),step=(centers[4]-centers[0])/4,left=centers[0]-step/2;
             const timeLabels=labels.filter(t=>t.x<left && /^(8h05|9h00|10h10|11h05|11h30|12h00|13h00|13h55|14h50|16h05)$/.test(t.s));
             if(timeLabels.length!==10) throw new Error(`Page ${page.pageNumber} : échelle horaire de ${name} non reconnue.`);
@@ -71,8 +82,10 @@
             for(let di=0;di<days.length;di++) {
                 // Un bloc peut s'étendre sur deux jours : le traiter dans chacun.
                 const dayBlocks=blocks.filter(b=>b.x<left+(di+1)*step-2&&b.x+b.w>left+di*step+2);
-                for(const week of ['A','B']) {
-                    const active=dayBlocks.filter(b=>!b.week||b.week===week);
+                for(const week of datedWeek?[datedWeek]:['A','B']) {
+                    // Une vue datée contient déjà uniquement les cours de la semaine
+                    // affichée. Les mentions SA/SB internes ne doivent pas la dupliquer.
+                    const active=datedWeek?dayBlocks:dayBlocks.filter(b=>!b.week||b.week===week);
                     const relevant=active.filter(b=>(b.start<720&&b.end>600)||(b.start>=780&&b.start<=895));
                     const groups=[...new Set(relevant.map(b=>b.group).filter(Boolean))];
                     for(const group of [null,...groups]) {
@@ -96,5 +109,5 @@
         if(!titles.length)throw new Error(`Page ${page.pageNumber} : aucun tableau de classe reconnu. PDF scanné ou présentation non prise en charge.`);
         return result;
     }
-    root.SelfPdfParser={extract,minute,hour,isDayHeader};
+    root.SelfPdfParser={extract,minute,hour,isDayHeader,appWeekNumber,datedWeekType};
 })(globalThis);
