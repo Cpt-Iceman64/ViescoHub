@@ -10,6 +10,8 @@
  const elt=(tag,text)=>{const n=document.createElement(tag);if(text!==undefined)n.textContent=text;return n;};
  const timeInput=value=>{const n=elt('input');n.type='time';n.value=value.replace('h',':');return n;};
  const validName=s=>/^[3-6]°\d+(?: [A-Za-zÀ-ÿ0-9 -]+)?$/.test(s);
+ const targetWeek=elt('select');targetWeek.id='pdf-target-week';targetWeek.add(new Option('PDF daté : choisir A ou B',''));targetWeek.add(new Option('PDF daté : semaine A','A'));targetWeek.add(new Option('PDF daté : semaine B','B'));targetWeek.setAttribute('aria-label','Semaine du PDF hebdomadaire');$('pdf-file').before(targetWeek);
+ targetWeek.onchange=()=>{rows=[];$('pdf-preview').hidden=true;$('pdf-file').value='';status('Semaine choisie. Sélectionne le PDF pour lancer la comparaison.');};
 
  $('pdf-export').onclick=()=>exportSettings();
  function persist(){localStorage.setItem('viescoHub_allClasses',JSON.stringify(allClasses));localStorage.setItem('viescoHub_selfSettings',JSON.stringify(scheduleSettings));clearManualPlanning();autoGenerate();renderSettingsTable();shareSelfSettings();}
@@ -17,24 +19,24 @@
  $('pdf-file').onchange=async e=>{
   $('pdf-preview').hidden=true;$('pdf-rows').replaceChildren();rows=[];const file=e.target.files[0];if(!file)return;
   if(renderedTable && tableState()!==renderedTable){status('Enregistre les modifications des paramètres avant d’importer le PDF.');e.target.value='';return;}
-  analysisTable=tableState();e.target.disabled=true;
+  analysisTable=tableState();e.target.disabled=true;targetWeek.disabled=true;
   try {
    if(file.size>30*1024*1024)throw Error('PDF trop volumineux (maximum 30 Mo).');
    status('Lecture du PDF en cours…');
    if(!lib){if(!window.SelfPdfEngine){await new Promise((resolve,reject)=>{const script=document.createElement('script');script.src=new URL('../js/vendor/self-pdf-engine.js',location.href).href;script.onload=resolve;script.onerror=()=>{script.remove();reject(Error('Moteur PDF indisponible. Réessaie après avoir vérifié la connexion.'));};document.head.append(script);});}lib=await SelfPdfEngine.load();}
    if(doc)await doc.destroy();doc=await lib.getDocument({data:await file.arrayBuffer(),useSystemFonts:true,isEvalSupported:false}).promise;
    if(doc.numPages>30)throw Error('Maximum 30 pages pour cet import.');
-   for(let p=1;p<=doc.numPages;p++){status(`Analyse de la page ${p}/${doc.numPages}…`);rows.push(...await SelfPdfParser.extract(await doc.getPage(p),lib));}
+   for(let p=1;p<=doc.numPages;p++){status(`Analyse de la page ${p}/${doc.numPages}…`);rows.push(...await SelfPdfParser.extract(await doc.getPage(p),lib,{weekType:targetWeek.value}));}
    if(rows.some(r=>!validName(r.name)))throw Error('Un nom de classe ou groupe n’est pas reconnu. Aucun changement appliqué.');
    base=fingerprint();const body=$('pdf-rows');
    rows.forEach(r=>{const tr=elt('tr'),check=elt('input');tr.dataset.parent=r.parent;check.type='checkbox';check.disabled=r.day==='MERCREDI';r.check=check;let td=elt('td');td.append(check);tr.append(td);
-    td=elt('td');const name=elt('select');const names=[...new Set([r.name,...allClasses.filter(c=>c.name.startsWith(r.parent)).map(c=>c.name)])];names.forEach(s=>name.add(new Option(s,s)));r.nameInput=name;td.append(name);tr.append(td);tr.append(elt('td',`${r.day} · ${r.week}`));
+    td=elt('td');const name=elt('select');const names=[...new Set([r.name,...allClasses.filter(c=>c.name.startsWith(r.parent)).map(c=>c.name)])];names.forEach(s=>name.add(new Option(s,s)));r.nameInput=name;td.append(name);tr.append(td);tr.append(elt('td',`${r.date||r.day} · ${r.week}`));
     const old=elt('td');const refresh=()=>{const s=scheduleSettings[name.value]?.[r.day]?.[r.week];old.textContent=s?`${s.fin||'—'} / ${s.reprise||'—'}`:'Non configuré';};name.onchange=refresh;refresh();tr.append(old);
     r.finInput=timeInput(r.fin);r.repInput=timeInput(r.reprise);[r.finInput,r.repInput].forEach(n=>{td=elt('td');td.append(n);tr.append(td);});
     td=elt('td');td.append(elt('p',r.warnings.join(' ')||'Vérifier les horaires avant de cocher.'));const detail=elt('details'),sum=elt('summary',`Source · page ${r.page}`);detail.append(sum,elt('pre',r.evidence||'Aucun cours proche de midi reconnu.'));td.append(detail);tr.append(td);body.append(tr);
    });
    $('pdf-page').replaceChildren();for(let p=1;p<=doc.numPages;p++)$('pdf-page').add(new Option(`Page ${p}`,p));$('pdf-preview').hidden=false;status(`${doc.numPages} pages analysées · ${new Set(rows.map(r=>r.parent)).size} classes · ${rows.length} propositions. Rien n’a été modifié. Coche uniquement les lignes vérifiées.`);await showPage();
-  }catch(err){rows=[];$('pdf-preview').hidden=true;status(`Import interrompu : ${err.message}. Les réglages sont inchangés.`);}finally{e.target.disabled=false;}
+  }catch(err){rows=[];$('pdf-preview').hidden=true;status(`Import interrompu : ${err.message}. Les réglages sont inchangés.`);}finally{e.target.disabled=false;targetWeek.disabled=false;e.target.value='';}
  };
  async function showPage(){try{const page=await doc.getPage(Number($('pdf-page').value));const viewport=page.getViewport({scale:1.4}),canvas=$('pdf-canvas');canvas.width=viewport.width;canvas.height=viewport.height;await page.render({canvasContext:canvas.getContext('2d'),viewport}).promise;}catch(e){status('Aperçu indisponible : '+e.message);}}
  $('pdf-page').onchange=showPage;
@@ -43,7 +45,8 @@
   if(base!==fingerprint()||analysisTable!==tableState()){status('Les réglages ont changé depuis l’analyse. Réimporte le PDF avant d’appliquer.');return;}
    const chosen=rows.filter(r=>r.check.checked&&!r.check.disabled);if(!chosen.length){status('Coche au moins une différence à corriger.');return;}
   const keys=new Set();for(const r of chosen){const key=[r.nameInput.value,r.day,r.week].join('|');if(keys.has(key)){status('Deux lignes ciblent le même groupe, jour et semaine : garde une seule proposition.');return;}keys.add(key);const f=r.finInput.value,p=r.repInput.value;if(!f||!p||f<'11:00'||f>'12:00'||p<'13:00'||p>'17:00'){status('Renseigne pour chaque ligne cochée une fin entre 11h00 et 12h00 et une reprise entre 13h00 et 17h00.');return;}}
-  if(!confirm(`Appliquer ${chosen.length} lignes aux réglages du self et les partager via la synchronisation habituelle ? Les autres réglages seront conservés. Les placements manuels seront recalculés.`))return;
+  const datedNotice=chosen.some(r=>r.dated)?` Attention : ce PDF concerne une semaine datée. Les corrections modifieront les réglages récurrents de la semaine ${targetWeek.value}, pas uniquement ces dates.`:'';
+  if(!confirm(`Appliquer ${chosen.length} lignes aux réglages du self et les partager via la synchronisation habituelle ?${datedNotice} Les autres réglages seront conservés. Les placements manuels seront recalculés.`))return;
   localStorage.setItem('viescoHub_backup',JSON.stringify({classes:allClasses,settings:scheduleSettings,manual:manualPlanningByContext}));
   for(const r of chosen){const name=r.nameInput.value;if(!allClasses.some(c=>c.name===name))allClasses.push({name,lvl:name[0]});scheduleSettings[name]??={};scheduleSettings[name][r.day]??={A:{},B:{}};scheduleSettings[name][r.day][r.week]={...scheduleSettings[name][r.day][r.week],fin:r.finInput.value.replace(':','h'),reprise:r.repInput.value.replace(':','h')};}
   persist();$('pdf-preview').hidden=true;status(`${chosen.length} lignes enregistrées. Synchronisation habituelle sollicitée : consulte son état sur la page. Tu peux annuler le dernier import.`);
@@ -82,7 +85,7 @@
  $('pdf-file').onchange=async e=>{await parseFile(e);if($('pdf-preview').hidden)return;
   filter.value='';mode.value='changes';
   const trs=[...$('pdf-rows').children];rows.forEach((r,i)=>{r.tr=trs[i];r.description=r.tr.lastElementChild.querySelector('p');classify(r);const previous=r.nameInput.onchange;r.nameInput.onchange=()=>{previous();classify(r);filterResults();};});
-  filterResults();status('Analyse terminée. Seules les différences sont affichées. Les lectures incertaines sont accessibles dans le filtre ; rien n’a été modifié.');
+  filterResults();status('Analyse terminée. Seules les différences sont affichées. Les lectures incertaines sont accessibles dans le filtre ; rien n’a été modifié.'+(rows.some(r=>r.dated)?` PDF hebdomadaire : cible ${targetWeek.value}. Appliquer modifiera les réglages récurrents A/B, pas seulement les dates du PDF.`:''));
  };
  // Préserver les heures exactes importées lorsque les réglages sont ouverts.
  const original=renderSettingsTable;renderSettingsTable=function(){original();document.querySelectorAll('select[data-class][data-week][data-type]').forEach(s=>{const v=scheduleSettings[s.dataset.class]?.[s.dataset.day]?.[s.dataset.week]?.[s.dataset.type];if(v&&![...s.options].some(o=>o.value===v))s.add(new Option(v,v));if(v)s.value=v;});renderedTable=tableState();};
