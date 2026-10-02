@@ -341,7 +341,7 @@
                             // Priorité à la durée de la séance (colonne juste après son heure).
                             // Le total de la punition ne doit pas être répété sur chaque séance.
                             const dureeSeance = (cols[i + 2] || '').trim();
-                            const sessionDuration = /^\\d{1,2}h[0-5]\\d$/.test(dureeSeance)
+                            const sessionDuration = /^\d{1,2}h[0-5]\d$/.test(dureeSeance)
                                 ? dureeSeance
                                 : currentStudent.duree;
 
